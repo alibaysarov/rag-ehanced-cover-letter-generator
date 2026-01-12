@@ -34,8 +34,6 @@ class CVRepository:
         """Update an existing CV record"""
         cv.sqlmodel_update(data)
         self.session.add(cv)
-        await self.session.commit()
-        await self.session.refresh(cv)
         return cv
     async def get_cv_by_source_id(self, source_id: int) -> Optional[CV]:
         """Get CV by source_id"""

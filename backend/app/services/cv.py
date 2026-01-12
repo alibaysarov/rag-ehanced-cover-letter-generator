@@ -47,9 +47,10 @@ class CVService():
         cv = await self.repo.get_cv_by_id(cv_id)
         if not cv:
             raise ValueError(f"CV with id {cv_id} not found")
-        backup_points = self._get_points_by_source_id(source_id)
+        current_source_id = cv.source_id
+        backup_points = self._get_points_by_source_id(current_source_id)
         try:
-            self._delete_points_by_source_id(source_id)
+            self._delete_points_by_source_id(current_source_id)
             data = {
                 "source_id": source_id,
                 "filename": filename or cv.filename,
@@ -62,7 +63,8 @@ class CVService():
                 "updated_at": datetime.now(),
             }
             await self.repo.update_cv(cv, data)
-            await self.repo.session.commit()
+            self._upsert_points(pdf_path, original_filename or filename, source_id, cv.user_id)
+            self.repo.session.commit()
         except Exception as e:
             logger.error("Error updating CV", exc_info=True)
             # Откатываем БД
@@ -119,6 +121,10 @@ class CVService():
     def _delete_points_by_source_id(self, source_id: int):
         """Delete all points with given source_id"""
         self.storage.delete_by_source_id(source_id)
+
+    def _upsert_points(self, pdf_path:str,original_filename: str,source_id:str,user_id:int):
+        self.pdf_service.upsert_vectors(pdf_path=pdf_path,original_filename=original_filename,source_id=source_id,user_id=user_id)
+
     def _get_points_by_source_id(self, source_id: int):
         """Get all points for potential rollback"""
         return self.storage.get_points_by_source_id(source_id)

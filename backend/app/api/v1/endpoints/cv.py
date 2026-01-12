@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, File, Request,HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Request,HTTPException, UploadFile
 
 from app.api.v1.endpoints.user import get_cv_service
 from app.services.cv import CVService
@@ -15,19 +15,16 @@ router = APIRouter()
 @router.put("/{cv_id}")
 async def update_cv(
     cv_id: int,
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
+    source_id: str = Form(..., description="Unique identifier for the CV source"),
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
     cv_service:CVService = Depends(get_cv_service)
 ):
     file_data = await validate_pdf_and_get_path(file)
     
     try:
-        user_email = request.state.user_email
-        current_user = _get_user_by_mail(user_email,user_repo)
         await cv_service.update_cv(
             cv_id=cv_id,
-            user_id=current_user.id,
+            source_id=source_id,
             pdf_path=file_data["temp_file_path"],
             filename=file.filename,
             original_filename=file.filename,
