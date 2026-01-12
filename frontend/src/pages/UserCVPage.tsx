@@ -459,7 +459,7 @@ const UserCVPage: React.FC = () => {
   return (
     <Box maxW="1000px" mx="auto" mt={8} p={4}>
         <Flex>
-            <Button onClick={() => navigate('/')}>На главную</Button>
+            <Button onClick={() => navigate('/')}>Generate letter</Button>
         </Flex>
       <Heading mb={6} textAlign="center">
         My Resumes
