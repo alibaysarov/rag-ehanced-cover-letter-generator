@@ -5,6 +5,10 @@ dev:
 # Database operations
 
 # Alembic commands (when database is accessible)
+
+migrate:
+	alembic upgrade head
+
 alembic-init:
 	@echo "Initializing Alembic..."
 	uv run alembic init alembic

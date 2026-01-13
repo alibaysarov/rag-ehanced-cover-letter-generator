@@ -32,7 +32,6 @@ def get_current_user(
 ) -> User:
     """Get current user from JWT token"""
     try:
-        print(vars(security.model.type_))
         payload = jwt_service.decode_jwt(security.credentials)
         email = payload.get("email")
         if not email:

@@ -109,8 +109,7 @@ class LetterService():
                 input=prompt,
                 temperature=1.0
             )
-            print("========================== LETTER ==========================")
-            print(response.output_text)
+            
             letter_content = response.output_text
             return letter_content
 
@@ -196,8 +195,6 @@ class LetterService():
                 tools=[{ "type": "web_search_preview" }],
                 input=prompt
             )
-            print("========================== RESPONSE ==========================")
-            print(response.output_text)
             return response.output_text
 
         except Exception as e:
