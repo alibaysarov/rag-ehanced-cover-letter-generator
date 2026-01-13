@@ -49,7 +49,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
    ```
 
 3. **Database Setup**
-   
+
    Start PostgreSQL and Qdrant:
    ```bash
    cd backend
@@ -59,7 +59,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
    Run migrations:
    ```bash
    cd backend
-   source .venv/Scripts/activate
+   source .venv/Scripts/activate (для Windows) source .venv/bin/activate (для macos)
    make  migrate
    ```
 
