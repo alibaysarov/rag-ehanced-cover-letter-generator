@@ -3,7 +3,7 @@ from datetime import datetime
 
 from requests import session
 from app.repository.cv_repository import CVRepository
-from app.storage.repository.qdrant import QdrantStorage
+from app.storage.repository.qdrant import get_vector_storage
 from qdrant_client.models import PointStruct
 
 from app.services.pdf import PdfService
@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 class CVService():
     def __init__(self,repo:CVRepository):
         self.repo = repo
-        self.storage = QdrantStorage()
-        repo.session
+        self.storage = get_vector_storage()
         self.pdf_service = PdfService(repo.session)
     
 

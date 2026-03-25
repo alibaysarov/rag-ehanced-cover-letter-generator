@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+.env
+.git
+.gitignore
+qdrant_storage
+postgres_data
+*.egg-info
+.mypy_cache
+.pytest_cache

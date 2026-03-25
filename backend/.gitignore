@@ -1,0 +1,76 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# =========================
+# Virtual environment
+# =========================
+.venv/
+venv/
+env/
+
+# =========================
+# uv
+# =========================
+uv.lock
+
+# =========================
+# Environment variables
+# =========================
+.env
+!.env.example
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.cursor/
+.idea/
+*.swp
+*.swo
+*~
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# Qdrant local storage
+# =========================
+qdrant_storage/
+
+# =========================
+# Uploaded files
+# =========================
+uploads/
+*.pdf
+
+# =========================
+# Docker
+# =========================
+postgres_data/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Alembic
+# =========================
+alembic/versions/__pycache__/

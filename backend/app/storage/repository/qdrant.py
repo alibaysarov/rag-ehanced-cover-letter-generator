@@ -1,9 +1,11 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance,PointStruct
+from app.core.config import settings
 
 
 class QdrantStorage():
-    def __init__(self,url="http://localhost:6333", collection_name:str = "cvs",dim=3072):
+    def __init__(self,url=settings.QDRANT_URL, collection_name:str = "cvs",dim=3072):
+        print("qdrant init")
         self.client = QdrantClient(url=url)
         self.collection = collection_name
         if not self.client.collection_exists(collection_name=collection_name):
@@ -68,3 +70,12 @@ class QdrantStorage():
             with_vectors=True
         )
         return results[0] 
+
+
+_vector_storage = None
+
+def get_vector_storage() -> QdrantStorage:
+    global _vector_storage
+    if _vector_storage is None:
+        _vector_storage = QdrantStorage()
+    return _vector_storage

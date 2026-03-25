@@ -5,8 +5,6 @@ import logging
 from sqlalchemy.exc import OperationalError
 logger = logging.getLogger(__name__)
 
-
-
 # Create engine
 engine = create_engine(settings.DATABASE_URL)
 
