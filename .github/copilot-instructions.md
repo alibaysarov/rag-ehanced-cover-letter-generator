@@ -1,5 +1,10 @@
 # AI Agent Instructions for RAG Enhanced Cover Letter Generator
 
+> **Detailed instructions by domain:**
+> - [Backend](instructions/backend.instructions.md) — FastAPI, SQLModel, async patterns, DB, auth
+> - [Frontend](instructions/frontend.instructions.md) — React, TypeScript, Chakra UI, React Query
+> - [AI Integration](instructions/ai-integration.instructions.md) — OpenAI, RAG, Qdrant, embeddings, prompts
+
 ## Architecture Overview
 
 **Dual-service application**: FastAPI backend (Python 3.10+) + React/TypeScript frontend. Core purpose: RAG-powered cover letter generation using PDF resume extraction, Qdrant vector search, and OpenAI GPT.
