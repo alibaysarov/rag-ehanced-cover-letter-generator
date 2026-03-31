@@ -1,15 +1,16 @@
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.pdf import PdfService
 from app.schemas.rag import RAGSearchResult
 from app.storage.repository.qdrant import QdrantStorage
 from app.repository.cv_repository import CVRepository
 from app.repository.letter_repository import LetterRepository
-from typing import List, Dict, Any
+from typing import List, Dict, Any, AsyncGenerator
 import json
 class LetterService():
     def __init__(self, session: AsyncSession = None):
         self.client = OpenAI()
+        self.async_client = AsyncOpenAI()
         self.storage = QdrantStorage()
         self.session = session
         self.pdf_service = PdfService(session)
@@ -115,6 +116,101 @@ class LetterService():
 
         except Exception as e:
             return f"Ошибка при генерации сопроводительного письма: {str(e)}" 
+
+    async def stream_cover_letter(
+        self, job_requirements: str, source_id: int
+    ) -> AsyncGenerator[str, None]:
+        """
+        Streams cover letter tokens.
+        Yields raw text deltas (caller wraps in SSE frame).
+        Raises ValueError if no resume data found.
+        """
+        def _search_resume_data(query: str, top_k: int = 10):
+            query_vec = self.pdf_service.embed_texts([query])[0]
+            found = self.storage.search(query_vector=query_vec, top_k=top_k)
+            filtered_contexts = []
+            filtered_sources = []
+            for context, source in zip(found["contexts"], found["sources"]):
+                if str(source.get("source_id")) == str(source_id):
+                    filtered_contexts.append(context)
+                    filtered_sources.append(source)
+            return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
+
+        skills_query = "ключевые навыки опыт образование достижения"
+        resume_data = _search_resume_data(skills_query)
+
+        if not resume_data.contexts:
+            raise ValueError("Не найдены данные резюме в базе данных.")
+
+        resume_context = "\n\n".join(f"- {c}" for c in resume_data.contexts)
+
+        prompt = f"""
+       Ты - помощник по созданию профессиональных сопроводительных писем.
+
+        У тебя есть:
+        1. Требования к вакансии: {job_requirements}
+        2. Данные из резюме кандидата: {resume_context}
+    Задача: на основе этих данных сгенерировать персонализированное сопроводительное письмо, которое
+        Показывает почему мой предыдущий опыт поможет в их работе 
+        Имеет ключевые слова из резюме
+        Сопоставь (там где это максимально корректно) кейсы из моего релевантного опыта  к требованиям в вакансии, но так чтобы технологии соответствовали по смыслу
+        Пиши в профессиональном, но дружелюбном тоне
+        Избегай общих фраз и клише
+        Письмо должно быть на том языке, на котором написаны требования для вакансии. Объемом 200-300 слов.
+"""
+
+        async with self.async_client.responses.stream(
+            model="gpt-4o",
+            input=prompt,
+            max_output_tokens=2048,
+            temperature=1.0,
+        ) as stream:
+            async for event in stream:
+                if event.type == "response.output_text.delta":
+                    yield event.delta
+
+    async def stream_by_url(
+        self, job_url: str, source_id: int
+    ) -> AsyncGenerator[str, None]:
+        """
+        Phase 1: silently accumulate job requirements from URL.
+        Phase 2: stream cover letter generation.
+        Yields raw text deltas and status sentinels.
+        """
+        yield "__PARSING__"
+
+        prompt = f"""
+        Проанализируй страницу вакансии по URL: {job_url}
+        Затем пиши на том языке, на котором информация на странице вакансии.
+        Извлеки и суммируй следующую информацию:
+        - Название вакансии
+        - Основные обязанности
+        - Требуемые навыки и компетенции
+        - Требуемый опыт работы
+        - Образование и квалификация
+        - Дополнительные требования
+
+        Представь информацию в структурированном виде.
+        """
+
+        requirements_parts: list[str] = []
+        async with self.async_client.responses.stream(
+            model="gpt-4.1-mini",
+            tools=[{"type": "web_search_preview"}],
+            input=prompt,
+        ) as stream:
+            async for event in stream:
+                if event.type == "response.output_text.delta":
+                    requirements_parts.append(event.delta)
+
+        job_requirements = "".join(requirements_parts)
+        if not job_requirements:
+            raise ValueError("Не удалось извлечь требования из URL.")
+
+        yield "__READY__"
+
+        async for delta in self.stream_cover_letter(job_requirements, source_id):
+            yield delta
         
     async def add_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
                     original_filename: str = None, file_size: int = 0, content_type: str = "application/pdf",

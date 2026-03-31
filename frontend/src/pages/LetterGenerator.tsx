@@ -24,11 +24,11 @@ import {
   Text,
   Select,
   Spinner,
-  IconButton,
   HStack,
 } from '@chakra-ui/react';
-import { useCreateLetterFromUrl, useCreateLetterFromText, useCVOptions } from '@/hooks/useLetter';
-import type {  CVOptionsResponse } from '@/types/letter';
+import { CloseIcon } from '@chakra-ui/icons';
+import { useCreateLetterFromUrl, useCreateLetterFromText, useCVOptions, useStreamLetter } from '@/hooks/useLetter';
+import type { CVOptionsResponse } from '@/types/letter';
 import { useNavigate } from 'react-router-dom';
 
 interface LetterGeneratorProps {
@@ -58,22 +58,34 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedSourceId, setSelectedSourceId] = useState<number>(0);
-  const [showCopiedAlertUrl, setShowCopiedAlertUrl] = useState(false);
-  const [showCopiedAlertText, setShowCopiedAlertText] = useState(false);
+  const [showCopiedAlert, setShowCopiedAlert] = useState(false);
   const navigate = useNavigate();
 
   const createFromUrl = useCreateLetterFromUrl();
   const createFromText = useCreateLetterFromText();
   const { data: cvOptions, isLoading: isLoadingOptions, error: optionsError } = useCVOptions();
+  const {
+    content: streamContent,
+    status: streamStatus,
+    error: streamError,
+    streamFromUrl,
+    streamFromText,
+    reset: resetStream,
+  } = useStreamLetter();
+
+  void createFromUrl;
+  void createFromText;
+
+  const isStreaming = streamStatus === 'parsing' || streamStatus === 'streaming';
 
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createFromUrl.mutate({ url, source_id: selectedSourceId });
+    streamFromUrl({ url, source_id: selectedSourceId });
   };
 
   const handleTextSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createFromText.mutate({ name, description, source_id: selectedSourceId });
+    streamFromText({ name, description, source_id: selectedSourceId });
   };
 
   return (
@@ -151,7 +163,8 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                     <Button
                       type="submit"
                       colorScheme="blue"
-                      isLoading={createFromUrl.isPending}
+                      isLoading={isStreaming}
+                      isDisabled={isStreaming || !url || !selectedSourceId}
                       loadingText="Creating..."
                       width="full"
                     >
@@ -159,65 +172,6 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                     </Button>
                   </VStack>
                 </form>
-
-                {createFromUrl.isError && (
-                  <Alert status="error" mt={4}>
-                    <AlertIcon />
-                    <AlertTitle>Error!</AlertTitle>
-                    <AlertDescription>
-                      {createFromUrl.error.message}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {createFromUrl.isSuccess && (
-                  <>
-                    <Alert status="success" mt={4}>
-                      <AlertIcon />
-                      <AlertTitle>Success!</AlertTitle>
-                      <AlertDescription>
-                        {createFromUrl.data.message}
-                      </AlertDescription>
-                    </Alert>
-                    
-                    {createFromUrl.data.data?.letter_content && (
-                      <Box mt={4} p={4} borderWidth="1px" borderRadius="lg" bg="gray.50" position="relative">
-                        <HStack justify="space-between" mb={2}>
-                          <Heading size="sm">Generated Letter</Heading>
-                          <IconButton
-                            aria-label="Copy to clipboard"
-                            icon={<span>📋</span>}
-                            size="sm"
-                            onClick={() => {
-                              navigator.clipboard.writeText(createFromUrl.data.data?.letter_content || '');
-                              setShowCopiedAlertUrl(true);
-                              setTimeout(() => setShowCopiedAlertUrl(false), 3000);
-                            }}
-                            colorScheme="blue"
-                          />
-                        </HStack>
-                        {showCopiedAlertUrl && (
-                          <Alert status="info" borderRadius="md" position="absolute" top={4} left={4} right={4} zIndex={10} boxShadow="lg">
-                            <AlertIcon />
-                            <AlertDescription>Скопировано в буфер обмена</AlertDescription>
-                          </Alert>
-                        )}
-                        <Box
-                          mt={2}
-                          p={4}
-                          bg="white"
-                          borderRadius="md"
-                          maxH="400px"
-                          overflowY="auto"
-                          whiteSpace="pre-wrap"
-                          fontSize="sm"
-                        >
-                          {createFromUrl.data.data.letter_content}
-                        </Box>
-                      </Box>
-                    )}
-                  </>
-                )}
               </CardBody>
             </Card>
           </TabPanel>
@@ -269,7 +223,8 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                     <Button
                       type="submit"
                       colorScheme="green"
-                      isLoading={createFromText.isPending}
+                      isLoading={isStreaming}
+                      isDisabled={isStreaming || !name || !description || !selectedSourceId}
                       loadingText="Creating..."
                       width="full"
                     >
@@ -277,70 +232,79 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                     </Button>
                   </VStack>
                 </form>
-
-                {createFromText.isError && (
-                  <Alert status="error" mt={4}>
-                    <AlertIcon />
-                    <AlertTitle>Error!</AlertTitle>
-                    <AlertDescription>
-                      {createFromText.error.message}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {createFromText.isSuccess && (
-                  <>
-                    <Alert status="success" mt={4}>
-                      <AlertIcon />
-                      <AlertTitle>Success!</AlertTitle>
-                      <AlertDescription>
-                        {createFromText.data.message}
-                      </AlertDescription>
-                    </Alert>
-                    
-                    {createFromText.data.data?.letter_content && (
-                      <Box mt={4} p={4} borderWidth="1px" borderRadius="lg" bg="gray.50" position="relative">
-                        <HStack justify="space-between" mb={2}>
-                          <Heading size="sm">Generated Letter</Heading>
-                          <IconButton
-                            aria-label="Copy to clipboard"
-                            icon={<span>📋</span>}
-                            size="sm"
-                            onClick={() => {
-                              navigator.clipboard.writeText(createFromText.data.data?.letter_content || '');
-                              setShowCopiedAlertText(true);
-                              setTimeout(() => setShowCopiedAlertText(false), 3000);
-                            }}
-                            colorScheme="blue"
-                          />
-                        </HStack>
-                        {showCopiedAlertText && (
-                          <Alert status="info" borderRadius="md" position="absolute" top={4} left={4} right={4} zIndex={10} boxShadow="lg">
-                            <AlertIcon />
-                            <AlertDescription>Скопировано в буфер обмена</AlertDescription>
-                          </Alert>
-                        )}
-                        <Box
-                          mt={2}
-                          p={4}
-                          bg="white"
-                          borderRadius="md"
-                          maxH="400px"
-                          overflowY="auto"
-                          whiteSpace="pre-wrap"
-                          fontSize="sm"
-                        >
-                          {createFromText.data.data.letter_content}
-                        </Box>
-                      </Box>
-                    )}
-                  </>
-                )}
               </CardBody>
             </Card>
           </TabPanel>
         </TabPanels>
       </Tabs>
+
+      {/* Streaming Status & Result */}
+      {streamStatus === 'parsing' && (
+        <Card mt={6}>
+          <CardBody>
+            <HStack>
+              <Spinner size="sm" />
+              <Text>Analysing job post...</Text>
+            </HStack>
+          </CardBody>
+        </Card>
+      )}
+
+      {streamError && (
+        <Alert status="error" mt={6}>
+          <AlertIcon />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{streamError}</AlertDescription>
+        </Alert>
+      )}
+
+      {(streamStatus === 'streaming' || streamStatus === 'done') && streamContent && (
+        <Card mt={6}>
+          <CardHeader>
+            <HStack justifyContent="space-between">
+              <Heading size="md">Generated Cover Letter</Heading>
+              <HStack>
+                {streamStatus === 'streaming' && (
+                  <Button
+                    size="sm"
+                    colorScheme="red"
+                    variant="outline"
+                    leftIcon={<CloseIcon />}
+                    onClick={resetStream}
+                  >
+                    Stop
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  colorScheme="blue"
+                  isDisabled={streamStatus !== 'done'}
+                  onClick={() => {
+                    navigator.clipboard.writeText(streamContent);
+                    setShowCopiedAlert(true);
+                    setTimeout(() => setShowCopiedAlert(false), 2000);
+                  }}
+                >
+                  Copy
+                </Button>
+              </HStack>
+            </HStack>
+          </CardHeader>
+          <CardBody>
+            <Box whiteSpace="pre-wrap" p={4} bg="gray.50" borderRadius="md" minH="200px">
+              {streamContent}
+              {streamStatus === 'streaming' && <Spinner size="xs" ml={1} />}
+            </Box>
+          </CardBody>
+        </Card>
+      )}
+
+      {showCopiedAlert && (
+        <Alert status="success" mt={4}>
+          <AlertIcon />
+          Copied to clipboard!
+        </Alert>
+      )}
     </Box>
   );
 };
