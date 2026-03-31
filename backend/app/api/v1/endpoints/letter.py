@@ -1,7 +1,9 @@
 import logging
+import json
 
-from typing import Annotated, Optional
+from typing import Annotated, AsyncGenerator, Optional
 from fastapi import APIRouter, Request, UploadFile, File, Form, HTTPException, Depends
+from fastapi.responses import StreamingResponse
 from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.letter import (
@@ -21,6 +23,23 @@ router = APIRouter()
 def get_letter_service(db: AsyncSession = Depends(get_db)) -> LetterService:
     """Dependency to get LetterService instance with database session"""
     return LetterService(db)
+
+
+async def _sse_wrap(
+    generator: AsyncGenerator[str, None],
+) -> AsyncGenerator[str, None]:
+    try:
+        async for delta in generator:
+            if delta in ("__PARSING__", "__READY__"):
+                yield f"data: {json.dumps({'status': delta})}\n\n"
+            else:
+                yield f"data: {json.dumps({'delta': delta})}\n\n"
+        yield "data: [DONE]\n\n"
+    except ValueError as exc:
+        yield f"data: {json.dumps({'error': str(exc)})}\n\n"
+    except Exception as exc:
+        logger.exception("Streaming error")
+        yield f"data: {json.dumps({'error': 'Internal streaming error'})}\n\n"
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
@@ -64,6 +83,23 @@ async def create_letter_from_url(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.post("/url/stream")
+async def stream_letter_from_url(
+    url: str = Form(...),
+    source_id: int = Form(...),
+    letter_service: LetterService = Depends(get_letter_service),
+):
+    http_url = HttpUrl(url)
+    return StreamingResponse(
+        _sse_wrap(letter_service.stream_by_url(str(http_url), source_id)),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 
 @router.post("/text", response_model=LetterResponse)
 async def create_letter_from_text(
@@ -105,6 +141,24 @@ async def create_letter_from_text(
     except Exception as e:
         logging.error("Error uploading CV", exc_info=True)
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/text/stream")
+async def stream_letter_from_text(
+    name: str = Form(..., min_length=1, max_length=100),
+    description: str = Form(..., min_length=1, max_length=2000),
+    source_id: int = Form(...),
+    letter_service: LetterService = Depends(get_letter_service),
+):
+    job_requirements = f"{name}\n{description}"
+    return StreamingResponse(
+        _sse_wrap(letter_service.stream_cover_letter(job_requirements, source_id)),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @router.post("/upload-cv", response_model=CVUploadResponse)

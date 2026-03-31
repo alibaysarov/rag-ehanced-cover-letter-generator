@@ -48,3 +48,24 @@ export interface CVOptionsResponse {
     options:GeneralOption[]
   }
 }
+
+export interface StreamLetterRequest {
+  source_id: number;
+}
+
+export interface StreamLetterFromUrlRequest extends StreamLetterRequest {
+  url: string;
+}
+
+export interface StreamLetterFromTextRequest extends StreamLetterRequest {
+  name: string;
+  description: string;
+}
+
+export type StreamStatus = 'idle' | 'parsing' | 'streaming' | 'done' | 'error';
+
+export interface StreamChunk {
+  delta?: string;
+  status?: '__PARSING__' | '__READY__';
+  error?: string;
+}
