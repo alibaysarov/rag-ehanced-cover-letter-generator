@@ -25,9 +25,12 @@ import {
   Select,
   Spinner,
   HStack,
+  Divider,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import { useCreateLetterFromUrl, useCreateLetterFromText, useCVOptions, useStreamLetter } from '@/hooks/useLetter';
+import { useStreamTranslate } from '@/hooks/useLetter';
+import { LANGUAGES } from '@/types/letter';
 import type { CVOptionsResponse } from '@/types/letter';
 import { useNavigate } from 'react-router-dom';
 
@@ -59,6 +62,8 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
   const [description, setDescription] = useState('');
   const [selectedSourceId, setSelectedSourceId] = useState<number>(0);
   const [showCopiedAlert, setShowCopiedAlert] = useState(false);
+  const [generateLanguage, setGenerateLanguage] = useState<string>('');
+  const [translateLanguage, setTranslateLanguage] = useState<string>('');
   const navigate = useNavigate();
 
   const createFromUrl = useCreateLetterFromUrl();
@@ -72,6 +77,16 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
     streamFromText,
     reset: resetStream,
   } = useStreamLetter();
+  const {
+    content: translatedContent,
+    status: translateStatus,
+    error: translateError,
+    translate,
+    reset: resetTranslate,
+  } = useStreamTranslate();
+
+  const isTranslating = translateStatus === 'streaming';
+  const hasTranslation = (translateStatus === 'streaming' || translateStatus === 'done') && translatedContent;
 
   void createFromUrl;
   void createFromText;
@@ -80,16 +95,25 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
 
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    streamFromUrl({ url, source_id: selectedSourceId });
+    resetTranslate();
+    streamFromUrl({ url, source_id: selectedSourceId, target_language: generateLanguage || undefined });
   };
 
   const handleTextSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    streamFromText({ name, description, source_id: selectedSourceId });
+    resetTranslate();
+    streamFromText({ name, description, source_id: selectedSourceId, target_language: generateLanguage || undefined });
   };
 
   return (
-    <Box maxW="800px" mx="auto" mt={8} p={4}>
+    <Box
+      w="full"
+      maxW={{ base: '100%', sm: '640px', md: '860px', lg: '1080px', xl: '1200px' }}
+      mx="auto"
+      mt={8}
+      py="2"
+      px={{ base: 4, md: 8 }}
+    >
       {onBack && (
         <Button
           onClick={()=>navigate('/my-cvs')}
@@ -160,6 +184,24 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                       />
                     </FormControl>
 
+                    <FormControl>
+                      <FormLabel>Letter language (optional)</FormLabel>
+                      <Select
+                        placeholder="Auto-detect from job posting"
+                        value={generateLanguage}
+                        onChange={(e) => setGenerateLanguage(e.target.value)}
+                      >
+                        {LANGUAGES.map((lang) => (
+                          <option key={lang.code} value={lang.apiName}>
+                            {lang.label}
+                          </option>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        Leave blank to auto-detect from the job posting language
+                      </FormHelperText>
+                    </FormControl>
+
                     <Button
                       type="submit"
                       colorScheme="blue"
@@ -217,6 +259,24 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                         onChange={(e) => setDescription(e.target.value)}
                         rows={4}
                       />
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>Letter language (optional)</FormLabel>
+                      <Select
+                        placeholder="Auto-detect from job posting"
+                        value={generateLanguage}
+                        onChange={(e) => setGenerateLanguage(e.target.value)}
+                      >
+                        {LANGUAGES.map((lang) => (
+                          <option key={lang.code} value={lang.apiName}>
+                            {lang.label}
+                          </option>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        Leave blank to auto-detect from the job posting language
+                      </FormHelperText>
                     </FormControl>
 
 
@@ -295,6 +355,78 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
               {streamContent}
               {streamStatus === 'streaming' && <Spinner size="xs" ml={1} />}
             </Box>
+            <Divider my={4} />
+            <VStack spacing={3} align="stretch">
+              <HStack>
+                <Select
+                  placeholder="Translate to..."
+                  value={translateLanguage}
+                  onChange={(e) => setTranslateLanguage(e.target.value)}
+                  maxW="260px"
+                  isDisabled={streamStatus !== 'done' || isTranslating}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.apiName}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </Select>
+                <Button
+                  colorScheme="teal"
+                  isDisabled={!translateLanguage || streamStatus !== 'done' || isTranslating}
+                  isLoading={isTranslating}
+                  loadingText="Translating..."
+                  onClick={() => {
+                    resetTranslate();
+                    translate({ text: streamContent, target_language: translateLanguage });
+                  }}
+                >
+                  Translate
+                </Button>
+                {hasTranslation && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={resetTranslate}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </HStack>
+
+              {translateError && (
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertDescription>{translateError}</AlertDescription>
+                </Alert>
+              )}
+
+              {hasTranslation && (
+                <Box>
+                  <HStack justify="space-between" mb={2}>
+                    <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+                      Translated letter
+                    </Text>
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      isDisabled={translateStatus !== 'done'}
+                      onClick={() => {
+                        navigator.clipboard.writeText(translatedContent);
+                        setShowCopiedAlert(true);
+                        setTimeout(() => setShowCopiedAlert(false), 2000);
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </HStack>
+                  <Box whiteSpace="pre-wrap" p={4} bg="teal.50" borderRadius="md" minH="100px">
+                    {translatedContent}
+                    {isTranslating && <Spinner size="xs" ml={1} />}
+                  </Box>
+                </Box>
+              )}
+            </VStack>
           </CardBody>
         </Card>
       )}

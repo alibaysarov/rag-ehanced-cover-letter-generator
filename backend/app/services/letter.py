@@ -118,7 +118,7 @@ class LetterService():
             return f"Ошибка при генерации сопроводительного письма: {str(e)}" 
 
     async def stream_cover_letter(
-        self, job_requirements: str, source_id: int
+        self, job_requirements: str, source_id: int, target_language: str | None = None
     ) -> AsyncGenerator[str, None]:
         """
         Streams cover letter tokens.
@@ -144,6 +144,12 @@ class LetterService():
 
         resume_context = "\n\n".join(f"- {c}" for c in resume_data.contexts)
 
+        language_instruction = (
+            f"Письмо должно быть написано строго на {target_language}."
+            if target_language
+            else "Письмо должно быть на том языке, на котором написаны требования для вакансии."
+        )
+
         prompt = f"""
        Ты - помощник по созданию профессиональных сопроводительных писем.
 
@@ -156,7 +162,7 @@ class LetterService():
         Сопоставь (там где это максимально корректно) кейсы из моего релевантного опыта  к требованиям в вакансии, но так чтобы технологии соответствовали по смыслу
         Пиши в профессиональном, но дружелюбном тоне
         Избегай общих фраз и клише
-        Письмо должно быть на том языке, на котором написаны требования для вакансии. Объемом 200-300 слов.
+        {language_instruction} Объемом 200-300 слов.
 """
 
         async with self.async_client.responses.stream(
@@ -169,8 +175,40 @@ class LetterService():
                 if event.type == "response.output_text.delta":
                     yield event.delta
 
+    async def stream_translate_letter(
+        self, text: str, target_language: str
+    ) -> AsyncGenerator[str, None]:
+        """
+        Translates an existing cover letter into target_language, streaming tokens.
+        Raises ValueError for empty input.
+        """
+        if not text.strip():
+            raise ValueError("Cannot translate empty text.")
+
+        system_prompt = (
+            "You are a professional translator specialising in business correspondence. "
+            "Translate the provided cover letter into "
+            f"{target_language}. "
+            "Preserve all formatting, paragraph breaks, and professional tone. "
+            "Output only the translated letter — no explanations or metadata."
+        )
+
+        async with self.async_client.chat.completions.stream(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": text},
+            ],
+            max_tokens=2048,
+            temperature=0.3,
+        ) as stream:
+            async for chunk in stream:
+                delta = chunk.choices[0].delta.content if chunk.choices else None
+                if delta:
+                    yield delta
+
     async def stream_by_url(
-        self, job_url: str, source_id: int
+        self, job_url: str, source_id: int, target_language: str | None = None
     ) -> AsyncGenerator[str, None]:
         """
         Phase 1: silently accumulate job requirements from URL.
@@ -209,7 +247,7 @@ class LetterService():
 
         yield "__READY__"
 
-        async for delta in self.stream_cover_letter(job_requirements, source_id):
+        async for delta in self.stream_cover_letter(job_requirements, source_id, target_language):
             yield delta
         
     async def add_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
