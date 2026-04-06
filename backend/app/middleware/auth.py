@@ -5,11 +5,16 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.services.jwt import JwtService
 
 jwt_service = JwtService()
-
+UNPROTECTED_ROUTES=[
+    "/health", "/docs", "/redoc",
+    "/openapi.json", "/api/v1/auth/register",
+    "/api/v1/auth/login",
+    # "/api/v1/letter/async-test"
+]
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Пропускаем health check и некоторые другие эндпоинты
-        if request.url.path in ["/health", "/docs", "/redoc", "/openapi.json", "/api/v1/auth/register","/api/v1/auth/login"]:
+        if request.url.path in UNPROTECTED_ROUTES:
             return await call_next(request)
 
         # Проверяем авторизацию для API эндпоинтов

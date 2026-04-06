@@ -12,6 +12,7 @@ class LetterService():
         self.client = OpenAI()
         self.async_client = AsyncOpenAI()
         self.storage = QdrantStorage()
+        
         self.session = session
         self.pdf_service = PdfService(session)
         self.cv_repository = CVRepository(session) if session else None
@@ -250,6 +251,22 @@ class LetterService():
         async for delta in self.stream_cover_letter(job_requirements, source_id, target_language):
             yield delta
         
+    async def parse_cv(self,user_id: int,pdf_path: str, source_id: str, filename: str = None,
+                    original_filename: str = None,
+                    file_size: int = 0, content_type: str = "application/pdf",
+                    upload_ip: str = None, user_agent: str = None):
+        await self.pdf_service.parse_cv(
+            user_id=user_id,
+            pdf_path=pdf_path,
+            source_id=source_id,
+            filename=filename,
+            original_filename=original_filename,
+            file_size=file_size,
+            content_type=content_type,
+            upload_ip=upload_ip,
+            user_agent=user_agent
+        )
+
     async def add_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
                     original_filename: str = None, file_size: int = 0, content_type: str = "application/pdf",
                     upload_ip: str = None, user_agent: str = None):
