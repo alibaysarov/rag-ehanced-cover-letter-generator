@@ -103,6 +103,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
       const fd = new FormData();
       fd.append('url', req.url);
       fd.append('source_id', req.source_id.toString());
+      if (req.target_language) fd.append('target_language', req.target_language);
       _stream('url/stream', fd);
     },
     [_stream],
@@ -114,6 +115,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
       fd.append('name', req.name);
       fd.append('description', req.description);
       fd.append('source_id', req.source_id.toString());
+      if (req.target_language) fd.append('target_language', req.target_language);
       _stream('text/stream', fd);
     },
     [_stream],
