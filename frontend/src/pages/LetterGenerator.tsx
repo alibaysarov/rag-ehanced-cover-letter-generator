@@ -89,7 +89,14 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
   };
 
   return (
-    <Box maxW="800px" mx="auto" mt={8} p={4}>
+    <Box
+      w="full"
+      maxW={{ base: '100%', sm: '640px', md: '860px', lg: '1080px', xl: '1200px' }}
+      mx="auto"
+      mt={8}
+      py="2"
+      px={{ base: 4, md: 8 }}
+    >
       {onBack && (
         <Button
           onClick={()=>navigate('/my-cvs')}

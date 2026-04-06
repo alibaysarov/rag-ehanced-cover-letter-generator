@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Box, ChakraProvider } from '@chakra-ui/react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { queryClient } from '@/api/client';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Box } from '@chakra-ui/react';
 
 // Auth components
 import LoginPage from '@/features/auth/components/LoginPage';
@@ -17,7 +14,7 @@ import LetterGenerator from '@/pages/LetterGenerator';
 import UserCVPage from './pages/UserCVPage';
 
 function App() {
-  const [sourceId, setSourceId] = useState<number | null>(null);
+  const [_, setSourceId] = useState<number | null>(null);
 
   const handleUploadSuccess = (uploadedSourceId: number) => {
     setSourceId(uploadedSourceId);
@@ -29,43 +26,43 @@ function App() {
 
   return (
     <Box minH="100vh" bg="gray.50">
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-              {/* Protected routes */}
-              <Route path="/" element={
-                <PrivateRoute>
-                  <LetterGenerator onBack={handleBackToUpload} />
-                </PrivateRoute>
-              } />
-              <Route
-               path="/my-cvs"
-              element={<UserCVPage/>}
-              
-              />
-              <Route
-                path="/upload-cv"
-                element={
-                  <PrivateRoute>
-                    <Box>
-                      <Navigation />
-                      <Box pt={4}>
-                        <CVUploadPage onUploadSuccess={handleUploadSuccess} />
-                      </Box>
-                    </Box>
-                  </PrivateRoute>
-                }
-              />
+        {/* Protected routes */}
+        <Route path="/" element={
+          <PrivateRoute>
+            <LetterGenerator onBack={handleBackToUpload} />
+          </PrivateRoute>
+        } />
+        <Route
+          path="/my-cvs"
+          element={<UserCVPage />}
 
-              {/* Redirect root to main app */}
-              <Route path="/" element={<Navigate to="/" replace />} />
+        />
+        <Route
+          path="/upload-cv"
+          element={
+            <PrivateRoute>
+              <Box>
+                <Navigation />
+                <Box pt={4}>
+                  <CVUploadPage onUploadSuccess={handleUploadSuccess} />
+                </Box>
+              </Box>
+            </PrivateRoute>
+          }
+        />
 
-              {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Box>
+        {/* Redirect root to main app */}
+        <Route path="/" element={<Navigate to="/" replace />} />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Box>
   );
 }
 
