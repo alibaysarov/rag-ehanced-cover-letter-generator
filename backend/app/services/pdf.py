@@ -17,12 +17,16 @@ class PdfService():
         self.reader = PDFReader()
         self.client = OpenAI()
         self.storage = QdrantStorage()
+        self.skill_storage = QdrantStorage(collection_name="skills")
+        self.project_storage = QdrantStorage(collection_name="projects")
         self.splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=0)
         self.session = session
         self.cv_repository = CVRepository(session) if session else None
 
-    def upsert_vectors(self,pdf_path:str,original_filename: str,source_id:str,user_id:int):
+    def upsert_vectors(self,pdf_path:str,original_filename: str,source_id:str,user_id:int,storage = None):
         """Embedding pdf файла и upsert в векторную БД."""
+        if storage is None:
+            storage = self.storage
         text_chunks = self._load_and_chunk_pdf(pdf_path)
         vectors = self.embed_texts(text_chunks)
         ids = [abs(hash(f"{original_filename}_{source_id}_{i+1}")) for i in range(len(text_chunks))]
@@ -36,7 +40,15 @@ class PdfService():
             }
             for i, chunk in enumerate(text_chunks)
         ]
-        self.storage.upsert(ids=ids, vectors=vectors, payloads=payloads)
+        storage.upsert(ids=ids, vectors=vectors, payloads=payloads)
+    
+
+    async def parse_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
+                    original_filename: str = None, file_size: int = 0, content_type: str = "application/pdf",
+                    upload_ip: str = None, user_agent: str = None):
+        """Загружает CV в векторную БД и сохраняет метаданные в PostgreSQL"""
+        # skill parsing
+        self.upsert_vectors(pdf_path, original_filename or filename, source_id, user_id,self.skill_storage)
 
     async def add_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
                     original_filename: str = None, file_size: int = 0, content_type: str = "application/pdf",

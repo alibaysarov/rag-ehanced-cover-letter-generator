@@ -5,7 +5,7 @@ from app.main import app
 def main():
     """Main entry point for the application"""
     print("Starting Cover Letter RAG Backend...")
-
+    
     # Run the FastAPI application
     uvicorn.run(
         "app.main:app",

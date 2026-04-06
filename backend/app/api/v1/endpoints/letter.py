@@ -1,6 +1,6 @@
 import logging
 import json
-
+import asyncio
 from typing import Annotated, AsyncGenerator, Optional
 from fastapi import APIRouter, Request, UploadFile, File, Form, HTTPException, Depends
 from fastapi.responses import StreamingResponse
@@ -43,6 +43,76 @@ async def _sse_wrap(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+async def fetch(name, delay):
+    print(f"{name}: начало")
+    await asyncio.sleep(delay)  # имитация сетевого запроса
+    print(f"{name}: готово")
+    return name
+
+@router.post("/async-test",response_model=CVUploadResponse)
+async def load_test(
+    request: Request,
+    user_repo: UserRepository = Depends(get_user_repository),
+    file: UploadFile = File(..., description="PDF file containing the CV/resume"),
+    source_id: str = Form(..., description="Unique identifier for the CV source"),
+    
+    letter_service: LetterService = Depends(get_letter_service),
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        # Validate file type
+        if not file.filename.lower().endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
+        # Validate file size (max 10MB)
+        file_content = await file.read()
+        if len(file_content) > 10 * 1024 * 1024:  # 10MB
+            raise HTTPException(status_code=400, detail="File size must be less than 10MB")
+
+        # Save file temporarily
+        import tempfile
+        import os
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+            temp_file.write(file_content)
+            temp_file_path = temp_file.name
+
+        try:
+            user_email = request.state.user_email
+            current_user = _get_user_by_mail(user_email,user_repo)
+            await letter_service.parse_cv(
+                user_id=current_user.id,
+                pdf_path=temp_file_path,
+                source_id=source_id,
+                filename=file.filename,
+                original_filename=file.filename,
+                file_size=len(file_content),
+                content_type=file.content_type or "application/pdf"
+            )
+
+            return CVUploadResponse(
+                success=True,
+                message=f"CV uploaded successfully with source_id: {source_id}",
+                source_id=source_id,
+                data={
+                    "filename": file.filename,
+                    "file_size": len(file_content),
+                    "source_id": source_id
+                }
+            )
+
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_file_path):
+                os.unlink(temp_file_path)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error("Error uploading CV", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error uploading CV: {str(e)}")
+    
 
 @router.post("/url", response_model=LetterResponse)
 async def create_letter_from_url(
@@ -147,7 +217,7 @@ async def create_letter_from_text(
 @router.post("/text/stream")
 async def stream_letter_from_text(
     name: str = Form(..., min_length=1, max_length=100),
-    description: str = Form(..., min_length=1, max_length=2000),
+    description: str = Form(..., min_length=1),
     source_id: int = Form(...),
     target_language: Optional[str] = Form(None),
     letter_service: LetterService = Depends(get_letter_service),
