@@ -44,3 +44,14 @@ class GeneralResponse(BaseModel):
 class LetterResponse(GeneralResponse):
     """Response schema for letter operations"""
     message: str
+
+
+class TranslateLetterRequest(BaseModel):
+    """Request schema for translating an existing letter"""
+    text: str = Field(..., min_length=1, description="Letter text to translate")
+    target_language: str = Field(
+        ...,
+        min_length=2,
+        max_length=50,
+        description="Target language name in English, e.g. 'Russian', 'German'",
+    )

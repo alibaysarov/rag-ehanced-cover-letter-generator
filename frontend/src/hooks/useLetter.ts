@@ -110,3 +110,4 @@ export const useUploadCV = () => {
 };
 
 export { useStreamLetter } from './useStreamLetter';
+export { useStreamTranslate } from './useStreamTranslate';

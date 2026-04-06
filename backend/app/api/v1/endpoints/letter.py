@@ -87,11 +87,12 @@ async def create_letter_from_url(
 async def stream_letter_from_url(
     url: str = Form(...),
     source_id: int = Form(...),
+    target_language: Optional[str] = Form(None),
     letter_service: LetterService = Depends(get_letter_service),
 ):
     http_url = HttpUrl(url)
     return StreamingResponse(
-        _sse_wrap(letter_service.stream_by_url(str(http_url), source_id)),
+        _sse_wrap(letter_service.stream_by_url(str(http_url), source_id, target_language)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -148,11 +149,29 @@ async def stream_letter_from_text(
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form(..., min_length=1, max_length=2000),
     source_id: int = Form(...),
+    target_language: Optional[str] = Form(None),
     letter_service: LetterService = Depends(get_letter_service),
 ):
     job_requirements = f"{name}\n{description}"
     return StreamingResponse(
-        _sse_wrap(letter_service.stream_cover_letter(job_requirements, source_id)),
+        _sse_wrap(letter_service.stream_cover_letter(job_requirements, source_id, target_language)),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.post("/translate/stream")
+async def stream_translate_letter(
+    current_user: CurrentUser,
+    text: str = Form(..., max_length=10_000, description="Letter content to translate"),
+    target_language: str = Form(..., max_length=50, description="Target language, e.g. 'Russian'"),
+    letter_service: LetterService = Depends(get_letter_service),
+):
+    return StreamingResponse(
+        _sse_wrap(letter_service.stream_translate_letter(text, target_language)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
