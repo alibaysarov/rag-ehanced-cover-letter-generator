@@ -12,6 +12,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+html {
+  background-color: transparent !important;
+}
+#root {
+  width: 100%;
+}
 
 a {
   font-weight: 500;
@@ -24,7 +30,7 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  background: transparent;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -79,7 +85,16 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+}
+
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 @media (prefers-color-scheme: light) {

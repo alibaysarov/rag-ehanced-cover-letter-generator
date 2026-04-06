@@ -55,11 +55,13 @@ export interface StreamLetterRequest {
 
 export interface StreamLetterFromUrlRequest extends StreamLetterRequest {
   url: string;
+  target_language?: string;
 }
 
 export interface StreamLetterFromTextRequest extends StreamLetterRequest {
   name: string;
   description: string;
+  target_language?: string;
 }
 
 export type StreamStatus = 'idle' | 'parsing' | 'streaming' | 'done' | 'error';
@@ -68,4 +70,32 @@ export interface StreamChunk {
   delta?: string;
   status?: '__PARSING__' | '__READY__';
   error?: string;
+}
+
+/** ISO language name displayed to user and sent to API */
+export interface Language {
+  code: string;
+  label: string;
+  apiName: string;
+}
+
+export const LANGUAGES: Language[] = [
+  { code: 'en', label: 'English', apiName: 'English' },
+  { code: 'ru', label: 'Русский', apiName: 'Russian' },
+  { code: 'de', label: 'Deutsch', apiName: 'German' },
+  { code: 'fr', label: 'Français', apiName: 'French' },
+  { code: 'es', label: 'Español', apiName: 'Spanish' },
+  { code: 'pt', label: 'Português', apiName: 'Portuguese' },
+  { code: 'it', label: 'Italiano', apiName: 'Italian' },
+  { code: 'pl', label: 'Polski', apiName: 'Polish' },
+  { code: 'uk', label: 'Українська', apiName: 'Ukrainian' },
+  { code: 'tr', label: 'Türkçe', apiName: 'Turkish' },
+  { code: 'nl', label: 'Nederlands', apiName: 'Dutch' },
+  { code: 'zh', label: '中文', apiName: 'Chinese (Simplified)' },
+  { code: 'ar', label: 'العربية', apiName: 'Arabic' },
+];
+
+export interface TranslateRequest {
+  text: string;
+  target_language: string;
 }
