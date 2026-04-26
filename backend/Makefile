@@ -52,3 +52,7 @@ logs:
 # Full setup
 setup: up alembic-upgrade
 	@echo "Database setup complete!" --reload
+
+
+restart-backend:
+	docker compose -f docker-compose.local.yml up --build backend -d

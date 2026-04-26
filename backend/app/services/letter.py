@@ -5,11 +5,16 @@ from app.schemas.rag import RAGSearchResult
 from app.storage.repository.qdrant import QdrantStorage
 from app.repository.cv_repository import CVRepository
 from app.repository.letter_repository import LetterRepository
-from typing import List, Dict, Any, AsyncGenerator
-import json
+from typing import AsyncGenerator
+from app.services.llm.open_ai import OpenAiClient
+from app.services.llm.mistral import MistralClient
+
+
 class LetterService():
     def __init__(self, session: AsyncSession = None):
         self.client = OpenAI()
+        # self.llm = OpenAiClient()
+        self.llm = MistralClient()
         self.async_client = AsyncOpenAI()
         self.storage = QdrantStorage()
         
@@ -64,24 +69,12 @@ class LetterService():
         Returns:
             str: Сгенерированное сопроводительное письмо
         """
-        # Ищем релевантные данные из резюме в векторной базе
-        def _search_resume_data(query: str, top_k: int = 10):
-            query_vec = self.pdf_service.embed_texts([query])[0]
-            found = self.storage.search(query_vector=query_vec, top_k=top_k)
-
-            # Фильтруем результаты по source_id
-            filtered_contexts = []
-            filtered_sources = []
-            for context, source in zip(found["contexts"], found["sources"]):
-                if str(source.get("source_id")) == str(source_id):
-                    filtered_contexts.append(context)
-                    filtered_sources.append(source)
-
-            return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
+        
 
         # Получаем ключевые навыки и опыт из резюме
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = _search_resume_data(skills_query)
+        resume_data = self.__search_resume_data(skills_query,source_id=source_id)
+        
 
         if not resume_data.contexts:
             return "Не найдены данные резюме в базе данных. Сначала загрузите свое резюме."
@@ -103,6 +96,7 @@ class LetterService():
         Избегай общих фраз и клише
         Письмо должно быть на том языке, на котором написаны требования для вакансии. Объемом 200-300 слов.
     """
+    
 
         try:
             response = self.client.responses.create(
@@ -126,19 +120,9 @@ class LetterService():
         Yields raw text deltas (caller wraps in SSE frame).
         Raises ValueError if no resume data found.
         """
-        def _search_resume_data(query: str, top_k: int = 10):
-            query_vec = self.pdf_service.embed_texts([query])[0]
-            found = self.storage.search(query_vector=query_vec, top_k=top_k)
-            filtered_contexts = []
-            filtered_sources = []
-            for context, source in zip(found["contexts"], found["sources"]):
-                if str(source.get("source_id")) == str(source_id):
-                    filtered_contexts.append(context)
-                    filtered_sources.append(source)
-            return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
 
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = _search_resume_data(skills_query)
+        resume_data = self.__search_resume_data(skills_query,source_id=source_id)
 
         if not resume_data.contexts:
             raise ValueError("Не найдены данные резюме в базе данных.")
@@ -148,33 +132,27 @@ class LetterService():
         language_instruction = (
             f"Письмо должно быть написано строго на {target_language}."
             if target_language
-            else "Письмо должно быть на том языке, на котором написаны требования для вакансии."
+            else "Письмо должно быть русском языке."
         )
 
-        prompt = f"""
-       Ты - помощник по созданию профессиональных сопроводительных писем.
+        body = {
+            "job_requirements":job_requirements,
+            "resume_context":resume_context,
+            "language_instruction":language_instruction
+        }
 
-        У тебя есть:
-        1. Требования к вакансии: {job_requirements}
-        2. Данные из резюме кандидата: {resume_context}
-    Задача: на основе этих данных сгенерировать персонализированное сопроводительное письмо, которое
-        Показывает почему мой предыдущий опыт поможет в их работе 
-        Имеет ключевые слова из резюме
-        Сопоставь (там где это максимально корректно) кейсы из моего релевантного опыта  к требованиям в вакансии, но так чтобы технологии соответствовали по смыслу
-        Пиши в профессиональном, но дружелюбном тоне
-        Избегай общих фраз и клише
-        {language_instruction} Объемом 200-300 слов.
-"""
-
-        async with self.async_client.responses.stream(
-            model="gpt-4o",
-            input=prompt,
-            max_output_tokens=2048,
-            temperature=1.0,
-        ) as stream:
-            async for event in stream:
-                if event.type == "response.output_text.delta":
-                    yield event.delta
+        async for delta in self.llm.get_stream_response(body):
+            yield delta
+        # prompt = self.__get_letter_prompt(job_requirements,resume_context,language_instruction)
+        # async with self.async_client.responses.stream(
+        #     model="gpt-4o",
+        #     input=prompt,
+        #     max_output_tokens=2048,
+        #     temperature=1.0,
+        # ) as stream:
+        #     async for event in stream:
+        #         if event.type == "response.output_text.delta":
+        #             yield event.delta
 
     async def stream_translate_letter(
         self, text: str, target_language: str
@@ -315,6 +293,38 @@ class LetterService():
 
         # Шаг 2: Получаем данные из резюме и генерируем письмо
         return await self.generate_cover_letter(job_requirements, source_id)
+
+    def __get_letter_prompt(self,job_requirements:str,resume_context:str,language_instruction:str)->str:
+        prompt = f"""
+        Ты - помощник по созданию профессиональных сопроводительных писем.
+
+        У тебя есть:
+        1. Требования к вакансии: {job_requirements}
+        2. Данные из резюме кандидата: {resume_context}
+        Задача: на основе этих данных сгенерировать персонализированное сопроводительное письмо, которое
+        Показывает почему мой предыдущий опыт поможет в их работе 
+        Имеет ключевые слова из резюме
+        Сопоставь (там где это максимально корректно) кейсы из моего релевантного опыта  к требованиям в вакансии, но так чтобы технологии соответствовали по смыслу
+        Пиши в профессиональном, но дружелюбном тоне
+        Избегай общих фраз и клише
+        {language_instruction} Объемом 200-300 слов.
+        """
+        return prompt
+
+    def __search_resume_data(self,query: str,source_id, top_k: int = 10)->RAGSearchResult:
+            """
+            Ищем релевантные данные из резюме в векторной базе
+            """
+            
+            query_vec = self.pdf_service.embed_texts([query])[0]
+            found = self.storage.search(query_vector=query_vec, top_k=top_k)
+            filtered_contexts = []
+            filtered_sources = []
+            for context, source in zip(found["contexts"], found["sources"]):
+                if str(source.get("source_id")) == str(source_id):
+                    filtered_contexts.append(context)
+                    filtered_sources.append(source)
+            return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
 
     async def _parse_job_requirements_from_url(self, job_url: str) -> str:
         """

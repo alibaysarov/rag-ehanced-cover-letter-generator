@@ -1,21 +1,18 @@
 import time
-from openai import OpenAI
 from llama_index.readers.file import PDFReader
 from llama_index.core.node_parser import SentenceSplitter
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.storage.repository.qdrant import QdrantStorage
 from app.repository.cv_repository import CVRepository
+from app.services.embeddings import BaseEmbedder, OpenAIEmbedder
 
 load_dotenv()
 
-EMBED_MODEL="text-embedding-3-large"
-EMBED_DIM=3072
-
 class PdfService():
-    def __init__(self, session: AsyncSession = None):
+    def __init__(self, session: AsyncSession = None, embedder: BaseEmbedder = None):
         self.reader = PDFReader()
-        self.client = OpenAI()
+        self.embedder: BaseEmbedder = embedder or OpenAIEmbedder()
         self.storage = QdrantStorage()
         self.skill_storage = QdrantStorage(collection_name="skills")
         self.project_storage = QdrantStorage(collection_name="projects")
@@ -80,10 +77,5 @@ class PdfService():
             chunks.extend(self.splitter.split_text(t))
         return chunks
     
-    def embed_texts(self,texts:list[str])-> list[list[float]]:
-        response =self.client.embeddings.create(
-            model=EMBED_MODEL,
-            dimensions=EMBED_DIM,
-            input=texts
-        )
-        return [item.embedding for item in response.data]
+    def embed_texts(self, texts: list[str]) -> list[list[float]]:
+        return self.embedder.embed_texts(texts)

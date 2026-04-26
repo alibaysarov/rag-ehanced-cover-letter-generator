@@ -254,10 +254,11 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                     <FormControl isRequired>
                       <FormLabel>Описание</FormLabel>
                       <Textarea
+                        resize={"none"}                      
                         placeholder="Enter letter description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        rows={4}
+                        rows={6}
                       />
                     </FormControl>
 

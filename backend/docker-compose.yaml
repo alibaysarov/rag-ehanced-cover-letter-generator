@@ -8,6 +8,8 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -26,6 +28,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - QDRANT_URL=${QDRANT_URL}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - OLLAMA_HOST=http://host.docker.internal:11434
 
   frontend:
     build:
