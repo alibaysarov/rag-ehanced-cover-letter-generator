@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import letter,auth,user,cv
+from app.api.v1.endpoints import letter, auth, user, cv, projects, parse
 
 api_router = APIRouter()
 
@@ -23,4 +23,14 @@ api_router.include_router(
     cv.router,
     prefix="/cv",
     tags=["cv"]
+)
+api_router.include_router(
+    projects.router,
+    prefix="/projects",
+    tags=["projects"]
+)
+api_router.include_router(
+    parse.router,
+    prefix="/parse",
+    tags=["parse"]
 )

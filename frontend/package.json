@@ -34,7 +34,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "framer-motion": "^12.23.26",
+    "framer-motion": "^12.38.0",
     "prettier": "^3.7.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

@@ -8,9 +8,12 @@ class MistralClient(GeneralLLMClient):
     def __init__(self):
         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
         
-        model = ChatOllama(model="mistral:7b", temperature=0.7, base_url=base_url)
-        
+        model = ChatOllama(model="mistral:7b",format="json", temperature=0.7, base_url=base_url)
         super().__init__(model=model)
+
+
+    def get_schema(self):
+        return None
 
     @property
     def prompt_template(self):

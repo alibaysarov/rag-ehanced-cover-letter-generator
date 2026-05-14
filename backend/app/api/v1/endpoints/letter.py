@@ -11,6 +11,7 @@ from app.schemas.letter import (
     CVUploadResponse
 )
 from app.services.letter import LetterService
+from app.services.cover_letter import CoverLetterService
 from app.database import get_db
 from app.helper.user import CurrentUser, get_current_user, get_user_repository
 from app.models.user import User
@@ -23,6 +24,10 @@ router = APIRouter()
 def get_letter_service(db: AsyncSession = Depends(get_db)) -> LetterService:
     """Dependency to get LetterService instance with database session"""
     return LetterService(db)
+
+
+def get_cover_letter_service() -> CoverLetterService:
+    return CoverLetterService()
 
 
 async def _sse_wrap(
@@ -163,6 +168,55 @@ async def stream_letter_from_url(
     http_url = HttpUrl(url)
     return StreamingResponse(
         _sse_wrap(letter_service.stream_by_url(str(http_url), source_id, target_language)),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.post("/url/test")
+async def create_letter_from_url_test(
+    request: Request,
+    url: str = Form(..., description="URL to extract content from"),
+    user_repo: UserRepository = Depends(get_user_repository),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
+):
+    try:
+        http_url = HttpUrl(url)
+
+        user_email = request.state.user_email
+        current_user = user_repo.get_user_by_email(user_email)
+        if not current_user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        result = await cover_letter_service.sync_by_url(str(http_url), current_user.id)
+        return {"result": result}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error("Error generating cover letter (test)", exc_info=True)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/url/stream/test")
+async def stream_letter_from_url_test(
+    request: Request,
+    url: str = Form(...),
+    user_repo: UserRepository = Depends(get_user_repository),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
+):
+    http_url = HttpUrl(url)
+
+    user_email = request.state.user_email
+    current_user = user_repo.get_user_by_email(user_email)
+    if not current_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return StreamingResponse(
+        _sse_wrap(cover_letter_service.stream_by_url(str(http_url), current_user.id)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
