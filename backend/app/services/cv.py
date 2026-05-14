@@ -7,8 +7,11 @@ from app.storage.repository.qdrant import get_vector_storage
 from qdrant_client.models import PointStruct
 
 from app.services.pdf import PdfService
-
+from pydantic import BaseModel
 logger = logging.getLogger(__name__)
+
+
+
 
 class CVService():
     def __init__(self,repo:CVRepository):
@@ -16,7 +19,8 @@ class CVService():
         self.storage = get_vector_storage()
         self.pdf_service = PdfService(repo.session)
     
-
+    async def import_cv(self,user_id:int,):
+        pass
     async def get_cvs_by_user(self,user_id:int):
         """
         Get all CVs as options for a user.

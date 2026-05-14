@@ -8,6 +8,8 @@ class OpenAiClient(GeneralLLMClient):
         model = ChatOpenAI(model="gpt-4o", temperature=0.7, max_completion_tokens=2000)
         super().__init__(model=model)
 
+    def get_schema(self):
+        return None
     @property
     def prompt_template(self):
         human = """

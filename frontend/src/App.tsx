@@ -12,6 +12,7 @@ import Navigation from '@/features/auth/components/Navigation';
 import CVUploadPage from '@/pages/CVUploadPage';
 import LetterGenerator from '@/pages/LetterGenerator';
 import UserCVPage from './pages/UserCVPage';
+import ProjectsPage from '@/pages/ProjectsPage';
 
 function App() {
   const [_, setSourceId] = useState<number | null>(null);
@@ -41,6 +42,14 @@ function App() {
           path="/my-cvs"
           element={<UserCVPage />}
 
+        />
+        <Route
+          path="/projects"
+          element={
+            <PrivateRoute>
+              <ProjectsPage />
+            </PrivateRoute>
+          }
         />
         <Route
           path="/upload-cv"

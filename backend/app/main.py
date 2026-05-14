@@ -6,6 +6,8 @@ from app.core.config import settings
 from app.middleware.auth import AuthMiddleware
 from app.database import init_db, check_db_connection
 import logging
+from .services.llm.agents.tools.fetch_url import parse_hh
+from .services.llm.agents.job_requirement import JobRequirementAgent
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -60,3 +62,25 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "API is running"}
+
+
+
+
+human = """
+        Проанализируй текст вакансии по: {job_text}
+        Затем пиши на том языке, на котором информация на странице вакансии.
+        item_a = 'Языки программирования'
+        item_b='базы данных'
+        item_c='dev ops навыки'
+        item_d = 'Софт скиллы и прочее'
+        Извлеки и суммируй следующую информацию:
+        - Название вакансии
+        - Название/область проекта
+        - Требуемые навыки и компетенции (порядок:[item_a, item_b,item_c,item_d (только значения)])
+        Представь информацию в структурированном виде.
+        Отвечай на русском языке
+"""
+
+
+
+

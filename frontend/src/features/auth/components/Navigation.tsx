@@ -8,9 +8,11 @@ import {
   MenuList,
   MenuItem,
   Button,
+  HStack,
   useToast
 } from '@chakra-ui/react';
 import { IconChevronDown, IconUser } from '@tabler/icons-react';
+import { Link as RouterLink } from 'react-router-dom';
 
 import { useAuth } from '../hooks/useAuth';
 
@@ -41,6 +43,14 @@ const Navigation: React.FC = () => {
 
         {user && (
           <Flex align="center" gap={4}>
+            <HStack spacing={2}>
+              <Button as={RouterLink} to="/my-cvs" variant="ghost" size="sm">
+                Резюме
+              </Button>
+              <Button as={RouterLink} to="/projects" variant="ghost" size="sm">
+                Проекты
+              </Button>
+            </HStack>
             <Text color="gray.600">
               Добро пожаловать, {user.first_name} {user.last_name}
             </Text>

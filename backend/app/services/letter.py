@@ -8,13 +8,14 @@ from app.repository.letter_repository import LetterRepository
 from typing import AsyncGenerator
 from app.services.llm.open_ai import OpenAiClient
 from app.services.llm.mistral import MistralClient
-
+from app.services.llm.agents.job_requirement import JobRequirementAgent
 
 class LetterService():
     def __init__(self, session: AsyncSession = None):
         self.client = OpenAI()
         # self.llm = OpenAiClient()
         self.llm = MistralClient()
+        self.job_requirement_agent = JobRequirementAgent()
         self.async_client = AsyncOpenAI()
         self.storage = QdrantStorage()
         
@@ -136,23 +137,13 @@ class LetterService():
         )
 
         body = {
-            "job_requirements":job_requirements,
+            "job_requirements": job_requirements,
             "resume_context":resume_context,
             "language_instruction":language_instruction
         }
 
         async for delta in self.llm.get_stream_response(body):
             yield delta
-        # prompt = self.__get_letter_prompt(job_requirements,resume_context,language_instruction)
-        # async with self.async_client.responses.stream(
-        #     model="gpt-4o",
-        #     input=prompt,
-        #     max_output_tokens=2048,
-        #     temperature=1.0,
-        # ) as stream:
-        #     async for event in stream:
-        #         if event.type == "response.output_text.delta":
-        #             yield event.delta
 
     async def stream_translate_letter(
         self, text: str, target_language: str
@@ -196,31 +187,12 @@ class LetterService():
         """
         yield "__PARSING__"
 
-        prompt = f"""
-        Проанализируй страницу вакансии по URL: {job_url}
-        Затем пиши на том языке, на котором информация на странице вакансии.
-        Извлеки и суммируй следующую информацию:
-        - Название вакансии
-        - Основные обязанности
-        - Требуемые навыки и компетенции
-        - Требуемый опыт работы
-        - Образование и квалификация
-        - Дополнительные требования
-
-        Представь информацию в структурированном виде.
-        """
-
-        requirements_parts: list[str] = []
-        async with self.async_client.responses.stream(
-            model="gpt-4.1-mini",
-            tools=[{"type": "web_search_preview"}],
-            input=prompt,
-        ) as stream:
-            async for event in stream:
-                if event.type == "response.output_text.delta":
-                    requirements_parts.append(event.delta)
-
-        job_requirements = "".join(requirements_parts)
+        # prompt = self.__get_job_requirements_prompt(job_url=job_url)
+        # job_requirements = await self.__fetch_job_requirements(prompt)
+        job_requirements = await self.__fetch_job_requirements_by_agent({
+            "job_url":job_url
+        })
+        print("reqs are ",job_requirements)
         if not job_requirements:
             raise ValueError("Не удалось извлечь требования из URL.")
 
@@ -325,6 +297,44 @@ class LetterService():
                     filtered_contexts.append(context)
                     filtered_sources.append(source)
             return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
+    
+    
+    def __get_job_requirements_prompt(self,job_url:str):
+        prompt = f"""
+        Проанализируй страницу вакансии по URL: {job_url}
+        Затем пиши на том языке, на котором информация на странице вакансии.
+        Извлеки и суммируй следующую информацию:
+        - Название вакансии
+        - Основные обязанности
+        - Требуемые навыки и компетенции
+        - Требуемый опыт работы
+        - Образование и квалификация
+        - Дополнительные требования
+
+        Представь информацию в структурированном виде.
+        """
+        return prompt
+
+    async def __fetch_job_requirements_by_agent(self, body: dict) -> str:
+        parts: list[str] = []
+        async for chunk in self.job_requirement_agent.stream(body):
+            if "output" in chunk:
+                result = chunk["output"]
+                parts.append(result.requirements)
+                # return "\n".join(result.requirements)
+        return "".join(parts)
+
+    async def __fetch_job_requirements(self, prompt: str) -> str:
+        parts: list[str] = []
+        async with self.async_client.responses.stream(
+            model="gpt-4.1-mini",
+            tools=[{"type": "web_search_preview"}],
+            input=prompt,
+        ) as stream:
+            async for event in stream:
+                if event.type == "response.output_text.delta":
+                    parts.append(event.delta)
+        return "".join(parts)
 
     async def _parse_job_requirements_from_url(self, job_url: str) -> str:
         """

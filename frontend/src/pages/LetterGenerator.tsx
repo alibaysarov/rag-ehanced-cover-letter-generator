@@ -115,13 +115,21 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
       px={{ base: 4, md: 8 }}
     >
       {onBack && (
-        <Button
-          onClick={()=>navigate('/my-cvs')}
-          mb={4}
-          variant="outline"
-        >
-          My CVs
-        </Button>
+        <HStack mb={4} spacing={2}>
+          <Button
+            onClick={() => navigate('/my-cvs')}
+            variant="outline"
+          >
+            My CVs
+          </Button>
+          <Button
+            onClick={() => navigate('/projects')}
+            variant="outline"
+            colorScheme="blue"
+          >
+            Проекты
+          </Button>
+        </HStack>
       )}
 
       <Heading mb={4} textAlign="center">

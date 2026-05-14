@@ -22,13 +22,29 @@ import traceback
 class GeneralLLMClient(ABC):
     model:BaseChatModel = None
     def __init__(self,model:BaseChatModel):
-        self.model = model
+        schema = self.get_schema()
+        if schema is None:
+            self.model = model
+        else:
+            self.model = model.with_structured_output(schema=schema)
+        
     
+    
+    
+    
+    @property
+    def get_model(self):
+        return self.model
     
     @property
     @abstractmethod
     def prompt_template(self) -> ChatPromptTemplate:
         """Наследники возвращают ChatPromptTemplate"""
+        ...
+    
+    @abstractmethod
+    def get_schema(self)->Optional[type[BaseModel]]:
+        """Для настройки structured output"""
         ...
     
     def get_prompt(self, body: dict) -> list[BaseMessage]:
@@ -38,6 +54,7 @@ class GeneralLLMClient(ABC):
     def set_output(self, schema: Optional[type[BaseModel]] = None) -> None:
         if schema is not None:
             self.model = self.model.with_structured_output(schema=schema)
+    
     
     async def get_stream_response(self,body:dict={})-> AsyncIterator[str]:
         messages = self.get_prompt(body)

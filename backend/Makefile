@@ -56,3 +56,6 @@ setup: up alembic-upgrade
 
 restart-backend:
 	docker compose -f docker-compose.local.yml up --build backend -d
+
+ngrok-start:
+	ngrok http --url=https://limpidly-unensnared-anika.ngrok-free.dev 5173
