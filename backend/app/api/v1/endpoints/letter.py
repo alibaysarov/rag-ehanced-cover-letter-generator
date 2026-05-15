@@ -160,14 +160,20 @@ async def create_letter_from_url(
 
 @router.post("/url/stream")
 async def stream_letter_from_url(
+    request: Request,
     url: str = Form(...),
-    source_id: int = Form(...),
-    target_language: Optional[str] = Form(None),
-    letter_service: LetterService = Depends(get_letter_service),
+    user_repo: UserRepository = Depends(get_user_repository),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
     http_url = HttpUrl(url)
+
+    user_email = request.state.user_email
+    current_user = user_repo.get_user_by_email(user_email)
+    if not current_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return StreamingResponse(
-        _sse_wrap(letter_service.stream_by_url(str(http_url), source_id, target_language)),
+        _sse_wrap(cover_letter_service.stream_by_url(str(http_url), current_user.id)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -199,30 +205,6 @@ async def create_letter_from_url_test(
     except Exception as e:
         logging.error("Error generating cover letter (test)", exc_info=True)
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/url/stream/test")
-async def stream_letter_from_url_test(
-    request: Request,
-    url: str = Form(...),
-    user_repo: UserRepository = Depends(get_user_repository),
-    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
-):
-    http_url = HttpUrl(url)
-
-    user_email = request.state.user_email
-    current_user = user_repo.get_user_by_email(user_email)
-    if not current_user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return StreamingResponse(
-        _sse_wrap(cover_letter_service.stream_by_url(str(http_url), current_user.id)),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-        },
-    )
 
 
 
@@ -270,15 +252,19 @@ async def create_letter_from_text(
 
 @router.post("/text/stream")
 async def stream_letter_from_text(
+    request: Request,
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form(..., min_length=1),
-    source_id: int = Form(...),
-    target_language: Optional[str] = Form(None),
-    letter_service: LetterService = Depends(get_letter_service),
+    user_repo: UserRepository = Depends(get_user_repository),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
-    job_requirements = f"{name}\n{description}"
+    user_email = request.state.user_email
+    current_user = user_repo.get_user_by_email(user_email)
+    if not current_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return StreamingResponse(
-        _sse_wrap(letter_service.stream_cover_letter(job_requirements, source_id, target_language)),
+        _sse_wrap(cover_letter_service.stream_by_text(name, description, current_user.id)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

@@ -1,21 +1,27 @@
-from .mistral import MistralClient
+import os
+
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel
+from langchain_ollama import ChatOllama
 
-class CoverLetterModel(BaseModel):
-    text:str
+from .general import GeneralLLMClient
 
-class CoverLetterPrompt(MistralClient):
-    
+
+class CoverLetterPrompt(GeneralLLMClient):
+
+    def __init__(self):
+        base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        model = ChatOllama(model="mistral:7b", temperature=0.7, base_url=base_url)
+        super().__init__(model=model)
+
     def get_schema(self):
-        return CoverLetterModel
+        return None
     
     @property
     def prompt_template(self):
         system_message = """Ты — профессиональный карьерный консультант и копирайтер с опытом написания сопроводительных писем для IT-специалистов. Твоя задача — создавать персонализированные сопроводительные письма, которые проходят ATS-фильтры и цепляют HR.
 
         СТРОГИЕ ПРАВИЛА:
-        1. Пиши ТОЛЬКО на русском языке.
+        1. Пиши ТОЛЬКО на {lang} языке или на русском языке.
         2. Письмо должно быть от первого лица (от имени кандидата).
         3. Длина письма: 180-280 слов. Не больше, не меньше.
         4. Структура письма:
@@ -36,6 +42,7 @@ class CoverLetterPrompt(MistralClient):
         - Достижения (achievements) переформулируй так, чтобы они отражали именно те качества, которые ищет работодатель в вакансии {name}.
 
         ЧЕГО ИЗБЕГАТЬ:
+        - Избегай разных языков в письме
         - Не выдумывай проекты, технологии или достижения, которых нет в user_projects.
         - Не используй клише вроде "командный игрок", "стрессоустойчивый", "быстро обучаюсь" без подкрепления фактами.
         - Не пиши маркированные списки и заголовки — только связный текст абзацами.

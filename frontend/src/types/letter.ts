@@ -38,30 +38,13 @@ export interface LetterResponse {
   errors?: string[];
 }
 
-export interface GeneralOption {
-  value: string;
-  name: string;
-}
-
-export interface CVOptionsResponse {
-  data:{
-    options:GeneralOption[]
-  }
-}
-
-export interface StreamLetterRequest {
-  source_id: number;
-}
-
-export interface StreamLetterFromUrlRequest extends StreamLetterRequest {
+export interface StreamLetterFromUrlRequest {
   url: string;
-  target_language?: string;
 }
 
-export interface StreamLetterFromTextRequest extends StreamLetterRequest {
+export interface StreamLetterFromTextRequest {
   name: string;
   description: string;
-  target_language?: string;
 }
 
 export type StreamStatus = 'idle' | 'parsing' | 'streaming' | 'done' | 'error';

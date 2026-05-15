@@ -1,26 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { authApi } from '@/api/client';
-import type { 
-  LetterFromUrlRequest, 
-  LetterFromTextRequest, 
-  LetterResponse, 
-  CVUploadRequest, 
+import type {
+  LetterFromUrlRequest,
+  LetterFromTextRequest,
+  LetterResponse,
+  CVUploadRequest,
   CVUploadResponse,
-  CVOptionsResponse
 } from '@/types/letter';
-
-/**
- * Hook for fetching CV options
- */
-export const useCVOptions = () => {
-  return useQuery<CVOptionsResponse, Error>({
-    queryKey: ['cvOptions'],
-    queryFn: async () => {
-      const response = await authApi.get('/user/cvs/options');
-      return response.data;
-    },
-  });
-};
 
 /**
  * Hook for creating a letter from URL

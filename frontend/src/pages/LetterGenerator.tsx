@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -28,10 +28,9 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
-import { useCreateLetterFromUrl, useCreateLetterFromText, useCVOptions, useStreamLetter } from '@/hooks/useLetter';
+import { useCreateLetterFromUrl, useCreateLetterFromText, useStreamLetter } from '@/hooks/useLetter';
 import { useStreamTranslate } from '@/hooks/useLetter';
 import { LANGUAGES } from '@/types/letter';
-import type { CVOptionsResponse } from '@/types/letter';
 import { useNavigate } from 'react-router-dom';
 
 interface LetterGeneratorProps {
@@ -39,28 +38,11 @@ interface LetterGeneratorProps {
   onBack?: () => void;
 }
 
-const OptionsList: React.FC<{ response:CVOptionsResponse|undefined }> =memo(({ response }) =>  {
-  if (!response) {
-    return null;
-  }
- console.log("CV Options Response:", response.data);
-  return (
-    <>
-    {response.data.options.map((cv) => (
-      <option key={`${cv.value}_option`} value={cv.value}>
-        {cv.name}
-      </option>
-    ))}
-    </>
-  )
-}) 
-
 
 const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedSourceId, setSelectedSourceId] = useState<number>(0);
   const [showCopiedAlert, setShowCopiedAlert] = useState(false);
   const [generateLanguage, setGenerateLanguage] = useState<string>('');
   const [translateLanguage, setTranslateLanguage] = useState<string>('');
@@ -68,7 +50,6 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
 
   const createFromUrl = useCreateLetterFromUrl();
   const createFromText = useCreateLetterFromText();
-  const { data: cvOptions, isLoading: isLoadingOptions, error: optionsError } = useCVOptions();
   const {
     content: streamContent,
     status: streamStatus,
@@ -96,13 +77,13 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     resetTranslate();
-    streamFromUrl({ url, source_id: selectedSourceId, target_language: generateLanguage || undefined });
+    streamFromUrl({ url });
   };
 
   const handleTextSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     resetTranslate();
-    streamFromText({ name, description, source_id: selectedSourceId, target_language: generateLanguage || undefined });
+    streamFromText({ name, description });
   };
 
   return (
@@ -136,22 +117,6 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
         Cover Letter Generator
       </Heading>
 
-      {isLoadingOptions && (
-        <Box textAlign="center" mb={4}>
-          <Spinner size="md" />
-          <Text ml={2}>Loading CV options...</Text>
-        </Box>
-      )}
-
-      {optionsError && (
-        <Alert status="error" mb={4}>
-          <AlertIcon />
-          <AlertDescription>
-            Failed to load CV options: {optionsError.message}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <Tabs variant="enclosed" defaultIndex={0}>
         <TabList>
           <Tab>From URL</Tab>
@@ -167,21 +132,6 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
               <CardBody>
                 <form onSubmit={handleUrlSubmit}>
                   <VStack spacing={4}>
-                    <FormControl isRequired>
-                      <FormLabel>Select Resume</FormLabel>
-                      <Select
-                        placeholder="Choose your resume"
-                        value={selectedSourceId}
-                        onChange={(e) => setSelectedSourceId(Number(e.target.value))}
-                        isDisabled={isLoadingOptions}
-                      >
-                        <OptionsList response={cvOptions} />
-                      </Select>
-                      <FormHelperText>
-                        Select which resume to use for generating the cover letter
-                      </FormHelperText>
-                    </FormControl>
-
                     <FormControl isRequired>
                       <FormLabel>URL</FormLabel>
                       <Input
@@ -214,7 +164,7 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                       type="submit"
                       colorScheme="blue"
                       isLoading={isStreaming}
-                      isDisabled={isStreaming || !url || !selectedSourceId}
+                      isDisabled={isStreaming || !url}
                       loadingText="Creating..."
                       width="full"
                     >
@@ -234,22 +184,6 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
               <CardBody>
                 <form onSubmit={handleTextSubmit}>
                   <VStack spacing={4}>
-                    <FormControl isRequired>
-                      <FormLabel>Select Resume</FormLabel>
-                      <Select
-                        placeholder="Choose your resume"
-                        value={selectedSourceId}
-                        onChange={(e) => setSelectedSourceId(Number(e.target.value))}
-                        isDisabled={isLoadingOptions}
-                      >
-                        <OptionsList response={cvOptions} />
-                    
-                      </Select>
-                      <FormHelperText>
-                        Select which resume to use for generating the cover letter
-                      </FormHelperText>
-                    </FormControl>
-
                     <FormControl isRequired>
                       <FormLabel>Название</FormLabel>
                       <Input
@@ -293,7 +227,7 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
                       type="submit"
                       colorScheme="green"
                       isLoading={isStreaming}
-                      isDisabled={isStreaming || !name || !description || !selectedSourceId}
+                      isDisabled={isStreaming || !name || !description}
                       loadingText="Creating..."
                       width="full"
                     >
