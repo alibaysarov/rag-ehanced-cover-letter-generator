@@ -19,19 +19,52 @@ class CoverLetterService:
     
     async def sync_by_url(self,url:str,user_id:int):
         chain = self.llm.prompt_template | self.llm.get_model
-        body = await self.__get_prepared_data(url,user_id)
+        body = await self.__get_data_from_url(url,user_id)
         result = await chain.ainvoke(body)
-        return result
+        return result.content
+    
+    
+    async def stream_by_text(self,vacancy_name:str,vacancy_text:str,user_id:int):
+        
+        text = f"""
+        {vacancy_name}\n
+        {vacancy_text}
+        """
+        
+        body = await self.__get_data_from_text(text=text,user_id=user_id)
+        
+        async for delta in self.llm.get_stream_response(body):
+            yield delta
     
     async def stream_by_url(self,url:str,user_id:int ):
         
-        body = await self.__get_prepared_data(url,user_id)
+        body = await self.__get_data_from_url(url,user_id)
 
         async for delta in self.llm.get_stream_response(body):
             yield delta
     
+    async def __get_data_from_text(self,text:str,user_id:int):
+        job_parse = JobParsePrompt()
+        chain = job_parse.prompt_template | job_parse.get_model
+        vacancy: JobRequirement = chain.invoke({"job_text": text})
+        
+        ranked = self.projects_service.rank_projects(
+            user_id=user_id,
+            vacancy=vacancy,
+            top_k=5,
+        )
+        
+        user_projects = self.__projects_normalize(ranked=ranked)
+        body = {
+            "name":vacancy.name,
+            "lang":vacancy.lang,
+            "project_name":vacancy.project_name,
+            "user_projects":user_projects,
+            "requirements":vacancy.requirements
+        }
+        return body
     
-    async def __get_prepared_data(self,url:str,user_id:int):
+    async def __get_data_from_url(self,url:str,user_id:int):
         text = await parse_hh(url)
         
         job_parse = JobParsePrompt()
@@ -47,6 +80,7 @@ class CoverLetterService:
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name":vacancy.name,
+            "lang":vacancy.lang,
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
             "requirements":vacancy.requirements

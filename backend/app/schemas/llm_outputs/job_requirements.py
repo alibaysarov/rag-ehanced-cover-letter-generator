@@ -7,5 +7,6 @@ class Skill(BaseModel):
 
 class JobRequirement(BaseModel):
     name: str = Field("Название вакансии")
+    lang:str = Field(...,description="язык на котором написана вакансия (прим. RU,EN)")
     project_name: str = Field("Название/область проекта")
     requirements: list[str] = Field("Требуемые навыки и компетенции")
