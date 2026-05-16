@@ -1,77 +1,83 @@
-import { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
 
-// Auth components
 import LoginPage from '@/features/auth/components/LoginPage';
 import RegisterPage from '@/features/auth/components/RegisterPage';
 import PrivateRoute from '@/features/auth/components/PrivateRoute';
-import Navigation from '@/features/auth/components/Navigation';
 
-// Main app components
 import CVUploadPage from '@/pages/CVUploadPage';
 import LetterGenerator from '@/pages/LetterGenerator';
-import UserCVPage from './pages/UserCVPage';
+import UserCVPage from '@/pages/UserCVPage';
 import ProjectsPage from '@/pages/ProjectsPage';
 
+import AppShell from '@/layouts/AppShell';
+
+function ProfilePagePlaceholder() {
+  return <div>Profile (pending merge)</div>;
+}
+
 function App() {
-  const [_, setSourceId] = useState<number | null>(null);
-
-  const handleUploadSuccess = (uploadedSourceId: number) => {
-    setSourceId(uploadedSourceId);
-  };
-
-  const handleBackToUpload = () => {
-    setSourceId(null);
+  const handleUploadSuccess = (_uploadedSourceId: number) => {
+    // CVUploadPage may handle its own post-upload navigation in a later wave.
   };
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected routes */}
-        <Route path="/" element={
+      <Route
+        path="/"
+        element={
           <PrivateRoute>
-            <LetterGenerator onBack={handleBackToUpload} />
+            <AppShell>
+              <LetterGenerator />
+            </AppShell>
           </PrivateRoute>
-        } />
-        <Route
-          path="/my-cvs"
-          element={<UserCVPage />}
-
-        />
-        <Route
-          path="/projects"
-          element={
-            <PrivateRoute>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <PrivateRoute>
+            <AppShell>
               <ProjectsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/upload-cv"
-          element={
-            <PrivateRoute>
-              <Box>
-                <Navigation />
-                <Box pt={4}>
-                  <CVUploadPage onUploadSuccess={handleUploadSuccess} />
-                </Box>
-              </Box>
-            </PrivateRoute>
-          }
-        />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/my-cvs"
+        element={
+          <PrivateRoute>
+            <AppShell>
+              <UserCVPage />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/upload-cv"
+        element={
+          <PrivateRoute>
+            <AppShell>
+              <CVUploadPage onUploadSuccess={handleUploadSuccess} />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <AppShell>
+              <ProfilePagePlaceholder />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
 
-        {/* Redirect root to main app */}
-        <Route path="/" element={<Navigate to="/" replace />} />
-
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Box>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
