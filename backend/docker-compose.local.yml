@@ -54,7 +54,22 @@ services:
     restart: unless-stopped
     volumes:
       - ./qdrant_storage:/qdrant/storage
+  redis:
+      image: redis:latest
+      container_name: app_cache
+      ports:
+       - "6390:6379"
+      restart: always
+      env_file:
+        - .env
+      environment:
+        - REDIS_USER=${REDIS_USER}
+        - REDIS_PASSWORD=${REDIS_PASSWORD}
 
+      command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+
+      volumes:
+        - redis_data:/data
   postgres:
     image: postgres:17
     container_name: db-postgres
@@ -75,3 +90,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:

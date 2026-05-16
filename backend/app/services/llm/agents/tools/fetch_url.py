@@ -9,23 +9,16 @@ async def parse_hh(url: str):
     Parses hh.ru vacancy page and retrieves text data
     """
     browser = None
+    print("parsing with browser")
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
             await page.goto(url, timeout=30000)
-            # await asyncio.sleep(5)
-            # await page.screenshot(path="example.png")
             html = await page.locator('[data-qa="vacancy-description"]').inner_text()
-            # html = await page.content() 
-            # soup = BeautifulSoup(html, "html.parser")
-            # for tag in soup(["script", "style", "noscript", "svg", "iframe", "header", "footer", "nav"]):
-            #     tag.decompose()
-            # text = soup.get_text(separator="\n", strip=True)
+            
             await browser.close()
             return html
-            # with open('page.txt','w') as writer:
-            #     writer.write(html)
 
     except Exception as e:
         print(f"Ошибка при парсинге {url}: {e}")

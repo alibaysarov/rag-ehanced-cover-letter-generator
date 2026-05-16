@@ -4,7 +4,7 @@ from ..services.llm.job_requirements import JobParsePrompt
 from ..schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.llm.job_items import CoverLetterPrompt
 from app.services.llm.agents.tools.fetch_url import parse_hh
-
+from app.cache import redis as redis_db
 import json
 
 def get_projects_storage_service() -> ProjectStorageService:
@@ -37,8 +37,11 @@ class CoverLetterService:
             yield delta
     
     async def stream_by_url(self,url:str,user_id:int ):
-        
-        body = await self.__get_data_from_url(url,user_id)
+        try:
+            body = await self.__get_data_from_url(url,user_id)
+        except Exception as e:
+            print(f"Error {e}")
+            return
 
         async for delta in self.llm.get_stream_response(body):
             yield delta
@@ -48,7 +51,7 @@ class CoverLetterService:
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
         
-        ranked = self.projects_service.rank_projects(
+        ranked = self.projects_service.rank_projects_overlap(
             user_id=user_id,
             vacancy=vacancy,
             top_k=5,
@@ -65,18 +68,27 @@ class CoverLetterService:
         return body
     
     async def __get_data_from_url(self,url:str,user_id:int):
-        text = await parse_hh(url)
-        
+        text = None
+        if await redis_db.redis_client.get(url) is None:
+            text = await parse_hh(url)
+            await redis_db.redis_client.set(url,text,ex=3600)
+        else:
+            text = await redis_db.redis_client.get(url)
+            print("cache hit")
         job_parse = JobParsePrompt()
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
         
-        ranked = self.projects_service.rank_projects(
+        ranked = self.projects_service.rank_projects_overlap(
             user_id=user_id,
             vacancy=vacancy,
             top_k=5,
         )
-        
+        printed_ranked = [{
+            "project_name": item["payload"]["project_name"],
+            "technologies": item["payload"]["technologies"],
+            }for item in ranked]
+        print("ranked ",printed_ranked)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name":vacancy.name,

@@ -1,5 +1,5 @@
 import uuid
-from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue,MatchAny
 
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
 from app.schemas.llm_outputs.job_requirements import JobRequirement
@@ -118,6 +118,69 @@ class ProjectStorageService:
     ) -> list[dict]:
         query_text = self._build_vacancy_text(vacancy)
         query_vector = self.embedder.embed_query(query_text)
+        techs = [i.lower() for i in vacancy.technologies]
+        query_filter = Filter(
+            must=[
+                FieldCondition(
+                    key="user_id",
+                    match=MatchValue(value=user_id),
+                ),
+                FieldCondition(
+                    key="tech_normalized",
+                    match=MatchAny(any=techs)
+                )
+            ]
+        )
+
+        found = []
+        
+        found = self._search(
+            query_vector=query_vector,
+            top_k=top_k,
+            query_filter=query_filter,
+        )
+        if len(found) == 0: 
+            print("using default filtering")
+            backup_query_filter = [
+                Filter(
+                    must=[
+                        FieldCondition(
+                            key="user_id",
+                            match=MatchValue(value=user_id),
+                        )
+                    ]
+                )
+            ]
+            found = self._search(
+                query_vector=query_vector,
+                top_k=top_k,
+                query_filter=backup_query_filter,
+            )
+        
+        ranked = []
+        for payload, score in zip(found["sources"], found.get("scores", [])):
+            ranked.append({"score": score, "payload": payload})
+        return ranked
+    
+    def rank_projects_overlap(
+        self,
+        user_id: int,
+        vacancy: JobRequirement,
+        top_k: int = 5,
+        semantic_weight: float = 0.6,
+        required_weight: float = 1.0,
+        preferred_weight: float = 0.5,
+        nice_to_have_weight: float = 0.2,
+    ) -> list[dict]:
+        query_text = self._build_vacancy_text(vacancy)
+        query_vector = self.embedder.embed_query(query_text)
+
+        buckets = [
+            ("required", [t.lower().strip() for t in vacancy.required_technologies], required_weight),
+            ("preferred", [t.lower().strip() for t in vacancy.preferred_technologies], preferred_weight),
+            ("nice_to_have", [t.lower().strip() for t in vacancy.nice_to_have_technologies], nice_to_have_weight),
+        ]
+        total_weight = sum(len(techs) * w for _, techs, w in buckets)
 
         query_filter = Filter(
             must=[
@@ -128,17 +191,47 @@ class ProjectStorageService:
             ]
         )
 
-        found = self.storage.search(
+        found = self._search(
             query_vector=query_vector,
-            top_k=top_k,
+            top_k=top_k * 3,
             query_filter=query_filter,
         )
 
-        ranked = []
+        overlap_weight = 1.0 - semantic_weight
+        candidates = []
         for payload, score in zip(found["sources"], found.get("scores", [])):
-            ranked.append({"score": score, "payload": payload})
-        return ranked
+            project_techs = set(payload.get("tech_normalized", []))
 
+            matched_weight = 0.0
+            matched = {"required": [], "preferred": [], "nice_to_have": []}
+            for label, techs, w in buckets:
+                for t in techs:
+                    if t in project_techs:
+                        matched_weight += w
+                        matched[label].append(t)
+
+            weighted_overlap = matched_weight / total_weight if total_weight > 0 else 0.0
+            final_score = semantic_weight * score + overlap_weight * weighted_overlap
+            candidates.append({
+                "semantic_score": round(score, 7),
+                "weighted_overlap": round(weighted_overlap, 4),
+                "score": round(final_score, 7),
+                "matched": matched,
+                "payload": payload,
+            })
+
+        candidates.sort(
+            key=lambda x: (x["score"], len(x["matched"]["required"])),
+            reverse=True,
+        )
+        return candidates[:top_k]
+
+    def _search(self,query_vector:list[float],top_k:int,query_filter:Filter):
+        return self.storage.search(
+            query_vector=query_vector,
+            top_k=top_k,
+            query_filter=query_filter
+        )
     @staticmethod
     def _build_project_text(p: ProjectFromCVModel) -> str:
         lines = [f"Проект: {p.name}"]
@@ -153,12 +246,18 @@ class ProjectStorageService:
 
     @staticmethod
     def _build_vacancy_text(v: JobRequirement) -> str:
-        lines = [f"Должность: {v.name}"]
+        lines = [""]
         if v.project_name:
             lines.append(f"Область проекта: {v.project_name}")
-        if v.requirements:
-            lines.append("Требования:")
-            lines.extend(f"- {r}" for r in v.requirements)
+
+        all_techs = []
+        all_techs.extend(v.required_technologies * 2)
+        all_techs.extend(v.preferred_technologies)
+        all_techs.extend(v.nice_to_have_technologies)
+
+        if all_techs:
+            lines.append("Технологии:")
+            lines.extend(f"- {t}" for t in all_techs)
         return "\n".join(lines)
 
 
