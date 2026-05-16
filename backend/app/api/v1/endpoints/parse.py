@@ -9,7 +9,7 @@ from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.services.llm.job_requirements import JobParsePrompt
 from app.services.projects import ProjectStorageService, get_projects_service
-
+from app.cache import redis as redis_db
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -33,14 +33,20 @@ async def parse(
     user = user_repo.get_user_by_email(user_email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-
-    text = await parse_hh(body.url)
+    cached = await redis_db.redis_client.get(body.url)
+    if cached is None:
+        text = await parse_hh(body.url)
+        if not text:
+            raise HTTPException(status_code=502, detail="Не удалось распарсить вакансию по URL")
+        await redis_db.redis_client.set(body.url, text, ex=3600)
+    else:
+        text = cached
 
     job_parse = JobParsePrompt()
     chain = job_parse.prompt_template | job_parse.get_model
     vacancy: JobRequirement = chain.invoke({"job_text": text})
 
-    ranked = projects_service.rank_projects(
+    ranked = projects_service.rank_projects_overlap(
         user_id=user.id,
         vacancy=vacancy,
         top_k=5,

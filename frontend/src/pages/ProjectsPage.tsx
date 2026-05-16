@@ -27,6 +27,7 @@ import {
   Spinner,
   Stack,
   Text,
+  Tooltip,
   useDisclosure,
   useToast,
   VStack,
@@ -525,8 +526,23 @@ const ProjectsPage: React.FC = () => {
                             </Text>
                             <Wrap>
                               {p.technologies.map((t, i) => (
-                                <WrapItem key={i}>
-                                  <Badge colorScheme="purple">{t}</Badge>
+                                <WrapItem key={i} maxW="100%">
+                                  <Tooltip
+                                    label={t}
+                                    isDisabled={t.length <= 30}
+                                    hasArrow
+                                    placement="top"
+                                    openDelay={200}
+                                  >
+                                    <Badge
+                                      colorScheme="purple"
+                                      maxW="200px"
+                                      isTruncated
+                                      display="block"
+                                    >
+                                      {t}
+                                    </Badge>
+                                  </Tooltip>
                                 </WrapItem>
                               ))}
                             </Wrap>
@@ -539,8 +555,23 @@ const ProjectsPage: React.FC = () => {
                             </Text>
                             <Wrap>
                               {p.skills.map((s, i) => (
-                                <WrapItem key={i}>
-                                  <Badge colorScheme="blue">{s}</Badge>
+                                <WrapItem key={i} maxW="100%">
+                                  <Tooltip
+                                    label={s}
+                                    isDisabled={s.length <= 30}
+                                    hasArrow
+                                    placement="top"
+                                    openDelay={200}
+                                  >
+                                    <Badge
+                                      colorScheme="blue"
+                                      maxW="200px"
+                                      isTruncated
+                                      display="block"
+                                    >
+                                      {s}
+                                    </Badge>
+                                  </Tooltip>
                                 </WrapItem>
                               ))}
                             </Wrap>
