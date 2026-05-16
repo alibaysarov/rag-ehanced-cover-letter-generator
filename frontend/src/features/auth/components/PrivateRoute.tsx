@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Box, Spinner, Center } from '@chakra-ui/react';
+import { Spinner, Center } from '@chakra-ui/react';
 
 interface PrivateRouteProps {
   children: React.ReactNode;

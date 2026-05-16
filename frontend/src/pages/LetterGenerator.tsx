@@ -1,55 +1,16 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Input,
-  Textarea,
-  VStack,
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Text,
-  Select,
-  Spinner,
-  HStack,
-  Divider,
-} from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
-import { useCreateLetterFromUrl, useCreateLetterFromText, useStreamLetter } from '@/hooks/useLetter';
-import { useStreamTranslate } from '@/hooks/useLetter';
-import { LANGUAGES } from '@/types/letter';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Box, Grid, Heading, Text } from '@chakra-ui/react';
+import { useStreamLetter, useStreamTranslate } from '@/hooks/useLetter';
+import LetterForm, { type LetterFormMode } from '@/components/letter/LetterForm';
+import LetterOutput from '@/components/letter/LetterOutput';
 
-interface LetterGeneratorProps {
-  // sourceId: number;
-  onBack?: () => void;
-}
-
-
-const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
+export default function LetterGenerator() {
+  const [mode, setMode] = useState<LetterFormMode>('url');
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [showCopiedAlert, setShowCopiedAlert] = useState(false);
   const [generateLanguage, setGenerateLanguage] = useState<string>('');
-  const [translateLanguage, setTranslateLanguage] = useState<string>('');
-  const navigate = useNavigate();
 
-  const createFromUrl = useCreateLetterFromUrl();
-  const createFromText = useCreateLetterFromText();
   const {
     content: streamContent,
     status: streamStatus,
@@ -66,322 +27,73 @@ const LetterGenerator: React.FC<LetterGeneratorProps> = ({ onBack }) => {
     reset: resetTranslate,
   } = useStreamTranslate();
 
-  const isTranslating = translateStatus === 'streaming';
-  const hasTranslation = (translateStatus === 'streaming' || translateStatus === 'done') && translatedContent;
+  const isBusy = streamStatus === 'parsing' || streamStatus === 'streaming';
 
-  void createFromUrl;
-  void createFromText;
-
-  const isStreaming = streamStatus === 'parsing' || streamStatus === 'streaming';
-
-  const handleUrlSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     resetTranslate();
-    streamFromUrl({ url });
+    if (mode === 'url') {
+      streamFromUrl({ url });
+    } else {
+      streamFromText({ name, description });
+    }
   };
 
-  const handleTextSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleTranslate = (targetLanguage: string) => {
+    if (!streamContent) return;
     resetTranslate();
-    streamFromText({ name, description });
+    translate({ text: streamContent, target_language: targetLanguage });
   };
 
   return (
-    <Box
-      w="full"
-      maxW={{ base: '100%', sm: '640px', md: '860px', lg: '1080px', xl: '1200px' }}
-      mx="auto"
-      mt={8}
-      py="2"
-      px={{ base: 4, md: 8 }}
-    >
-      {onBack && (
-        <HStack mb={4} spacing={2}>
-          <Button
-            onClick={() => navigate('/my-cvs')}
-            variant="outline"
-          >
-            My CVs
-          </Button>
-          <Button
-            onClick={() => navigate('/projects')}
-            variant="outline"
-            colorScheme="blue"
-          >
-            Проекты
-          </Button>
-        </HStack>
-      )}
+    <Box>
+      <Box mb={8}>
+        <Heading
+          fontFamily="heading"
+          fontSize="3xl"
+          fontWeight={600}
+          color="slate.900"
+          letterSpacing="-0.02em"
+          mb={1}
+        >
+          Cover Letter Generator
+        </Heading>
+        <Text color="slate.500" fontSize="sm">
+          Сгенерируйте сопроводительное письмо под конкретную вакансию
+        </Text>
+      </Box>
 
-      <Heading mb={4} textAlign="center">
-        Cover Letter Generator
-      </Heading>
+      <Grid
+        templateColumns={{ base: '1fr', lg: '1fr 1.5fr' }}
+        gap={{ base: 6, lg: 8 }}
+        alignItems="start"
+      >
+        <LetterForm
+          mode={mode}
+          onModeChange={setMode}
+          url={url}
+          onUrlChange={setUrl}
+          name={name}
+          onNameChange={setName}
+          description={description}
+          onDescriptionChange={setDescription}
+          language={generateLanguage}
+          onLanguageChange={setGenerateLanguage}
+          isBusy={isBusy}
+          onSubmit={handleSubmit}
+        />
 
-      <Tabs variant="enclosed" defaultIndex={0}>
-        <TabList>
-          <Tab>From URL</Tab>
-          <Tab>From Text</Tab>
-        </TabList>
-
-        <TabPanels>
-          <TabPanel>
-            <Card>
-              <CardHeader>
-                <Heading size="md">Create Letter from URL</Heading>
-              </CardHeader>
-              <CardBody>
-                <form onSubmit={handleUrlSubmit}>
-                  <VStack spacing={4}>
-                    <FormControl isRequired>
-                      <FormLabel>URL</FormLabel>
-                      <Input
-                        type="url"
-                        placeholder="https://example.com/job-description"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Letter language (optional)</FormLabel>
-                      <Select
-                        placeholder="Auto-detect from job posting"
-                        value={generateLanguage}
-                        onChange={(e) => setGenerateLanguage(e.target.value)}
-                      >
-                        {LANGUAGES.map((lang) => (
-                          <option key={lang.code} value={lang.apiName}>
-                            {lang.label}
-                          </option>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Leave blank to auto-detect from the job posting language
-                      </FormHelperText>
-                    </FormControl>
-
-                    <Button
-                      type="submit"
-                      colorScheme="blue"
-                      isLoading={isStreaming}
-                      isDisabled={isStreaming || !url}
-                      loadingText="Creating..."
-                      width="full"
-                    >
-                      Create Letter from URL
-                    </Button>
-                  </VStack>
-                </form>
-              </CardBody>
-            </Card>
-          </TabPanel>
-
-          <TabPanel>
-            <Card>
-              <CardHeader>
-                <Heading size="md">Create Letter from Text</Heading>
-              </CardHeader>
-              <CardBody>
-                <form onSubmit={handleTextSubmit}>
-                  <VStack spacing={4}>
-                    <FormControl isRequired>
-                      <FormLabel>Название</FormLabel>
-                      <Input
-                        placeholder="Enter letter name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </FormControl>
-
-                    <FormControl isRequired>
-                      <FormLabel>Описание</FormLabel>
-                      <Textarea
-                        resize={"none"}                      
-                        placeholder="Enter letter description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={6}
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Letter language (optional)</FormLabel>
-                      <Select
-                        placeholder="Auto-detect from job posting"
-                        value={generateLanguage}
-                        onChange={(e) => setGenerateLanguage(e.target.value)}
-                      >
-                        {LANGUAGES.map((lang) => (
-                          <option key={lang.code} value={lang.apiName}>
-                            {lang.label}
-                          </option>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Leave blank to auto-detect from the job posting language
-                      </FormHelperText>
-                    </FormControl>
-
-
-                    <Button
-                      type="submit"
-                      colorScheme="green"
-                      isLoading={isStreaming}
-                      isDisabled={isStreaming || !name || !description}
-                      loadingText="Creating..."
-                      width="full"
-                    >
-                      Create Letter from Text
-                    </Button>
-                  </VStack>
-                </form>
-              </CardBody>
-            </Card>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-
-      {/* Streaming Status & Result */}
-      {streamStatus === 'parsing' && (
-        <Card mt={6}>
-          <CardBody>
-            <HStack>
-              <Spinner size="sm" />
-              <Text>Analysing job post...</Text>
-            </HStack>
-          </CardBody>
-        </Card>
-      )}
-
-      {streamError && (
-        <Alert status="error" mt={6}>
-          <AlertIcon />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{streamError}</AlertDescription>
-        </Alert>
-      )}
-
-      {(streamStatus === 'streaming' || streamStatus === 'done') && streamContent && (
-        <Card mt={6}>
-          <CardHeader>
-            <HStack justifyContent="space-between">
-              <Heading size="md">Generated Cover Letter</Heading>
-              <HStack>
-                {streamStatus === 'streaming' && (
-                  <Button
-                    size="sm"
-                    colorScheme="red"
-                    variant="outline"
-                    leftIcon={<CloseIcon />}
-                    onClick={resetStream}
-                  >
-                    Stop
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  colorScheme="blue"
-                  isDisabled={streamStatus !== 'done'}
-                  onClick={() => {
-                    navigator.clipboard.writeText(streamContent);
-                    setShowCopiedAlert(true);
-                    setTimeout(() => setShowCopiedAlert(false), 2000);
-                  }}
-                >
-                  Copy
-                </Button>
-              </HStack>
-            </HStack>
-          </CardHeader>
-          <CardBody>
-            <Box whiteSpace="pre-wrap" p={4} bg="gray.50" borderRadius="md" minH="200px">
-              {streamContent}
-              {streamStatus === 'streaming' && <Spinner size="xs" ml={1} />}
-            </Box>
-            <Divider my={4} />
-            <VStack spacing={3} align="stretch">
-              <HStack>
-                <Select
-                  placeholder="Translate to..."
-                  value={translateLanguage}
-                  onChange={(e) => setTranslateLanguage(e.target.value)}
-                  maxW="260px"
-                  isDisabled={streamStatus !== 'done' || isTranslating}
-                >
-                  {LANGUAGES.map((lang) => (
-                    <option key={lang.code} value={lang.apiName}>
-                      {lang.label}
-                    </option>
-                  ))}
-                </Select>
-                <Button
-                  colorScheme="teal"
-                  isDisabled={!translateLanguage || streamStatus !== 'done' || isTranslating}
-                  isLoading={isTranslating}
-                  loadingText="Translating..."
-                  onClick={() => {
-                    resetTranslate();
-                    translate({ text: streamContent, target_language: translateLanguage });
-                  }}
-                >
-                  Translate
-                </Button>
-                {hasTranslation && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={resetTranslate}
-                  >
-                    Clear
-                  </Button>
-                )}
-              </HStack>
-
-              {translateError && (
-                <Alert status="error">
-                  <AlertIcon />
-                  <AlertDescription>{translateError}</AlertDescription>
-                </Alert>
-              )}
-
-              {hasTranslation && (
-                <Box>
-                  <HStack justify="space-between" mb={2}>
-                    <Text fontWeight="semibold" fontSize="sm" color="gray.600">
-                      Translated letter
-                    </Text>
-                    <Button
-                      size="sm"
-                      colorScheme="blue"
-                      isDisabled={translateStatus !== 'done'}
-                      onClick={() => {
-                        navigator.clipboard.writeText(translatedContent);
-                        setShowCopiedAlert(true);
-                        setTimeout(() => setShowCopiedAlert(false), 2000);
-                      }}
-                    >
-                      Copy
-                    </Button>
-                  </HStack>
-                  <Box whiteSpace="pre-wrap" p={4} bg="teal.50" borderRadius="md" minH="100px">
-                    {translatedContent}
-                    {isTranslating && <Spinner size="xs" ml={1} />}
-                  </Box>
-                </Box>
-              )}
-            </VStack>
-          </CardBody>
-        </Card>
-      )}
-
-      {showCopiedAlert && (
-        <Alert status="success" mt={4}>
-          <AlertIcon />
-          Copied to clipboard!
-        </Alert>
-      )}
+        <LetterOutput
+          status={streamStatus}
+          content={streamContent}
+          error={streamError}
+          onStop={resetStream}
+          translatedContent={translatedContent}
+          translateStatus={translateStatus}
+          translateError={translateError}
+          onTranslate={handleTranslate}
+          onResetTranslate={resetTranslate}
+        />
+      </Grid>
     </Box>
   );
-};
-
-export default LetterGenerator;
+}
