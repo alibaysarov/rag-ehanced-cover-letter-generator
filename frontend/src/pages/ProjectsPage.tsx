@@ -39,7 +39,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 import { authApi } from '@/api/client';
-import Navigation from '@/features/auth/components/Navigation';
 import ProjectFormCard, { emptyProject } from '@/components/ProjectFormCard';
 import type { ProjectInput } from '@/components/ProjectFormCard';
 
@@ -428,9 +427,8 @@ const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Navigation />
-      <Box maxW="1100px" mx="auto" mt={6} p={4}>
+    <Box>
+      <Box maxW="1100px" mx="auto" p={4}>
         <Flex justify="space-between" mb={6} flexWrap="wrap" gap={3}>
           <Button onClick={() => navigate('/')} variant="outline">
             Сгенерировать письмо
