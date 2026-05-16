@@ -2,7 +2,14 @@ import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../api/auth-client';
-import type { LoginRequest, RegisterRequest, TokenResponse } from '../types';
+import type {
+  LoginRequest,
+  RegisterRequest,
+  TokenResponse,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  User,
+} from '../types';
 
 // Query keys
 export const authKeys = {
@@ -69,6 +76,20 @@ export const useAuth = () => {
     },
   });
 
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: UpdateProfileRequest) => authService.updateProfile(data),
+    onSuccess: (updated: User) => {
+      queryClient.setQueryData(authKeys.user, updated);
+      queryClient.invalidateQueries({ queryKey: authKeys.user });
+    },
+  });
+
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: (data: ChangePasswordRequest) => authService.changePassword(data),
+  });
+
   const isAuthenticated = authService.isAuthenticated();
 
   return {
@@ -79,12 +100,18 @@ export const useAuth = () => {
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
+    updateProfile: updateProfileMutation.mutateAsync,
+    changePassword: changePasswordMutation.mutateAsync,
     isLoginLoading: loginMutation.isPending,
     isRegisterLoading: registerMutation.isPending,
     isLogoutLoading: logoutMutation.isPending,
+    isUpdateProfileLoading: updateProfileMutation.isPending,
+    isChangePasswordLoading: changePasswordMutation.isPending,
     loginError: loginMutation.error?.message || null,
     registerError: registerMutation.error?.message || null,
     logoutError: logoutMutation.error?.message || null,
+    updateProfileError: updateProfileMutation.error?.message || null,
+    changePasswordError: changePasswordMutation.error?.message || null,
     refetchUser,
   };
 };

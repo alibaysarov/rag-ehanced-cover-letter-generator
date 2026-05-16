@@ -8,12 +8,9 @@ import CVUploadPage from '@/pages/CVUploadPage';
 import LetterGenerator from '@/pages/LetterGenerator';
 import UserCVPage from '@/pages/UserCVPage';
 import ProjectsPage from '@/pages/ProjectsPage';
+import ProfilePage from '@/pages/ProfilePage';
 
 import AppShell from '@/layouts/AppShell';
-
-function ProfilePagePlaceholder() {
-  return <div>Profile (pending merge)</div>;
-}
 
 function App() {
   const handleUploadSuccess = (_uploadedSourceId: number) => {
@@ -70,7 +67,7 @@ function App() {
         element={
           <PrivateRoute>
             <AppShell>
-              <ProfilePagePlaceholder />
+              <ProfilePage />
             </AppShell>
           </PrivateRoute>
         }
