@@ -5,7 +5,6 @@ import { authService } from '../api/auth-client';
 import type {
   LoginRequest,
   RegisterRequest,
-  TokenResponse,
   UpdateProfileRequest,
   ChangePasswordRequest,
   User,
@@ -52,8 +51,7 @@ export const useAuth = () => {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: (data: LoginRequest) => authService.login(data),
-    onSuccess: (tokens: TokenResponse) => {
-      // Invalidate and refetch user data
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.all });
     },
   });
@@ -61,8 +59,7 @@ export const useAuth = () => {
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
-    onSuccess: (tokens: TokenResponse) => {
-      // Invalidate and refetch user data
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.all });
     },
   });
