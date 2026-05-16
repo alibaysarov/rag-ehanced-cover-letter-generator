@@ -38,3 +38,14 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface UpdateProfileRequest {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}

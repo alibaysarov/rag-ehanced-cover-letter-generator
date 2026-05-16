@@ -1,5 +1,12 @@
 import axios, { type AxiosInstance,type AxiosResponse,type InternalAxiosRequestConfig } from 'axios';
-import { type TokenResponse,type  LoginRequest,type  RegisterRequest,type  User } from '../types';
+import {
+  type TokenResponse,
+  type LoginRequest,
+  type RegisterRequest,
+  type User,
+  type UpdateProfileRequest,
+  type ChangePasswordRequest,
+} from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
@@ -114,6 +121,15 @@ export const authService = {
   async getCurrentUser(): Promise<User> {
     const response = await authApi.get<User>('/auth/me');
     return response.data;
+  },
+
+  async updateProfile(data: UpdateProfileRequest): Promise<User> {
+    const response = await authApi.put<User>('/auth/me', data);
+    return response.data;
+  },
+
+  async changePassword(data: ChangePasswordRequest): Promise<void> {
+    await authApi.post('/auth/change-password', data);
   },
 
   async logout(): Promise<void> {
