@@ -11,8 +11,6 @@ import {
   HStack,
   IconButton,
   Input,
-  NumberInput,
-  NumberInputField,
   Select,
   SimpleGrid,
   VStack,
@@ -20,6 +18,30 @@ import {
 import { CloseIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
 import AnimatedListInput from './AnimatedListInput';
+
+const currentYear = new Date().getFullYear();
+const YEARS = Array.from({ length: currentYear - 1950 + 3 }, (_, i) => currentYear + 2 - i);
+
+const yearSelectSx = {
+  bg: 'rgba(255,255,255,0.6)',
+  border: '1px solid',
+  borderColor: 'rgba(226,232,240,0.8)',
+  borderRadius: 'xl',
+  fontSize: 'sm',
+  color: 'slate.700',
+  cursor: 'pointer',
+  _focus: {
+    borderColor: 'rgba(99,102,241,0.5)',
+    boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+  },
+  _hover: {
+    borderColor: 'rgba(99,102,241,0.35)',
+  },
+  _disabled: {
+    opacity: 0.45,
+    cursor: 'not-allowed',
+  },
+};
 
 export interface ProjectInput {
   name: string;
@@ -135,15 +157,17 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
                       <option key={i + 1} value={i + 1}>{m}</option>
                     ))}
                   </Select>
-                  <NumberInput
+                  <Select
                     size="sm"
-                    min={1900}
-                    max={2100}
+                    placeholder="Год"
                     value={value.start_year}
-                    onChange={(_, v) => update('start_year', isNaN(v) ? '' : v)}
+                    onChange={(e) => update('start_year', e.target.value ? Number(e.target.value) : '')}
+                    sx={yearSelectSx}
                   >
-                    <NumberInputField placeholder="Год" />
-                  </NumberInput>
+                    {YEARS.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Select>
                 </HStack>
               </FormControl>
 
@@ -165,16 +189,18 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
                       <option key={i + 1} value={i + 1}>{m}</option>
                     ))}
                   </Select>
-                  <NumberInput
+                  <Select
                     size="sm"
-                    min={1900}
-                    max={2100}
+                    placeholder="Год"
                     isDisabled={value.currently_working}
                     value={value.end_year}
-                    onChange={(_, v) => update('end_year', isNaN(v) ? '' : v)}
+                    onChange={(e) => update('end_year', e.target.value ? Number(e.target.value) : '')}
+                    sx={yearSelectSx}
                   >
-                    <NumberInputField placeholder="Год" />
-                  </NumberInput>
+                    {YEARS.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Select>
                 </HStack>
               </FormControl>
             </SimpleGrid>

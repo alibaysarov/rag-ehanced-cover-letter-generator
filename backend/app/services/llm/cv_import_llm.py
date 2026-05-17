@@ -13,7 +13,8 @@ class CVImportPrompt(MistralClient):
         human = """
         У тебя есть Текст резюме: твоя задача вытащить из него проекты а в проекте должно быть
         - название (name)
-        -навыки skills
+        - язык на котором написана вакансия (прим. RU,EN)
+        - навыки skills
         - достижения achievements
         - используемые технологии (technologies) 
         {cv_text}
