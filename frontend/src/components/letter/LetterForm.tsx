@@ -11,6 +11,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { LANGUAGES } from '@/types/letter';
@@ -41,9 +42,11 @@ function ModeToggle({
   mode: LetterFormMode;
   onModeChange: (m: LetterFormMode) => void;
 }) {
+  const { t } = useTranslation();
+
   const options: { value: LetterFormMode; label: string }[] = [
-    { value: 'url', label: 'From URL' },
-    { value: 'text', label: 'From Text' },
+    { value: 'url', label: t('letterForm.fromUrl') },
+    { value: 'text', label: t('letterForm.fromText') },
   ];
 
   return (
@@ -113,6 +116,8 @@ export function LetterForm({
   isBusy,
   onSubmit,
 }: LetterFormProps) {
+  const { t } = useTranslation();
+
   // Preference: pick up the user's default generation language on first mount
   // unless they already chose one in this session.
   useEffect(() => {
@@ -145,7 +150,7 @@ export function LetterForm({
             letterSpacing="-0.01em"
             mb={3}
           >
-            Создать письмо
+            {t('letterForm.title')}
           </Text>
           <ModeToggle mode={mode} onModeChange={onModeChange} />
         </Box>
@@ -155,7 +160,7 @@ export function LetterForm({
             {mode === 'url' ? (
               <FormControl isRequired>
                 <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                  URL вакансии
+                  {t('letterForm.jobUrl')}
                 </FormLabel>
                 <Input
                   type="url"
@@ -170,20 +175,20 @@ export function LetterForm({
               <>
                 <FormControl isRequired>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Название позиции
+                    {t('letterForm.positionName')}
                   </FormLabel>
                   <Input
-                    placeholder="Senior Frontend Engineer"
+                    placeholder={t('letterForm.positionNamePlaceholder')}
                     value={name}
                     onChange={(e) => onNameChange(e.target.value)}
                   />
                 </FormControl>
                 <FormControl isRequired>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Описание вакансии
+                    {t('letterForm.jobDescription')}
                   </FormLabel>
                   <Textarea
-                    placeholder="Опишите требования и обязанности..."
+                    placeholder={t('letterForm.jobDescriptionPlaceholder')}
                     value={description}
                     onChange={(e) => onDescriptionChange(e.target.value)}
                     rows={10}
@@ -195,10 +200,10 @@ export function LetterForm({
 
             <FormControl>
               <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                Язык письма
+                {t('letterForm.language')}
               </FormLabel>
               <Select
-                placeholder="Авто (по тексту вакансии)"
+                placeholder={t('letterForm.languageAuto')}
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value)}
               >
@@ -215,11 +220,11 @@ export function LetterForm({
               size="lg"
               w="full"
               isLoading={isBusy}
-              loadingText="Генерируем..."
+              loadingText={t('letterForm.generating')}
               isDisabled={!canSubmit}
               mt={2}
             >
-              Сгенерировать
+              {t('letterForm.generate')}
             </GradientButton>
           </Stack>
         </form>

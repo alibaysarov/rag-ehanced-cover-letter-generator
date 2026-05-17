@@ -16,22 +16,23 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { AuroraBackground } from '@/components/ui/AuroraBackground';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 
-const loginSchema = z.object({
-  email: z.string().email('Неверный email адрес'),
-  password: z.string().min(1, 'Введите пароль'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const { login, isLoginLoading, isAuthenticated } = useAuth();
+
+  const loginSchema = z.object({
+    email: z.string().email(t('validation.invalidEmail')),
+    password: z.string().min(1, t('validation.enterPassword')),
+  });
+  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     register,
@@ -51,7 +52,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(data);
       toast({
-        title: 'Вход выполнен',
+        title: t('auth.login.successTitle'),
         status: 'success',
         duration: 2500,
         isClosable: true,
@@ -59,8 +60,8 @@ const LoginPage: React.FC = () => {
       navigate('/');
     } catch (error) {
       toast({
-        title: 'Ошибка при входе',
-        description: error instanceof Error ? error.message : 'Проверьте email и пароль',
+        title: t('auth.login.errorTitle'),
+        description: error instanceof Error ? error.message : t('auth.login.errorDesc'),
         status: 'error',
         duration: 3500,
         isClosable: true,
@@ -83,10 +84,10 @@ const LoginPage: React.FC = () => {
                 letterSpacing="-0.02em"
                 mb={2}
               >
-                С возвращением
+                {t('auth.login.title')}
               </Heading>
               <Text color="slate.500" fontSize="sm">
-                Войдите в свой аккаунт Coverly
+                {t('auth.login.subtitle')}
               </Text>
             </Box>
 
@@ -94,7 +95,7 @@ const LoginPage: React.FC = () => {
               <Stack spacing={5}>
                 <FormControl isInvalid={!!errors.email}>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Email
+                    {t('auth.login.email')}
                   </FormLabel>
                   <Input
                     type="email"
@@ -107,7 +108,7 @@ const LoginPage: React.FC = () => {
 
                 <FormControl isInvalid={!!errors.password}>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Пароль
+                    {t('auth.login.password')}
                   </FormLabel>
                   <Input
                     type="password"
@@ -123,17 +124,17 @@ const LoginPage: React.FC = () => {
                   size="lg"
                   w="full"
                   isLoading={isSubmitting || isLoginLoading}
-                  loadingText="Входим..."
+                  loadingText={t('auth.login.loading')}
                   mt={2}
                 >
-                  Войти
+                  {t('auth.login.submit')}
                 </GradientButton>
               </Stack>
             </form>
 
             <Box textAlign="center">
               <Text fontSize="sm" color="slate.500">
-                Нет аккаунта?{' '}
+                {t('auth.login.noAccount')}{' '}
                 <Link
                   as={RouterLink}
                   to="/register"
@@ -146,7 +147,7 @@ const LoginPage: React.FC = () => {
                     color: 'transparent',
                   }}
                 >
-                  Зарегистрироваться
+                  {t('auth.login.register')}
                 </Link>
               </Text>
             </Box>

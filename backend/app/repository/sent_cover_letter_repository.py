@@ -23,13 +23,14 @@ class SentCoverLetterRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create(self, user_id: int, url: Optional[str], job_name: Optional[str], letter_text: str) -> SentCoverLetter:
+    def create(self, user_id: int, url: Optional[str], job_name: Optional[str], letter_text: str, generation_time_ms: Optional[int] = None) -> SentCoverLetter:
         record = SentCoverLetter(
             user_id=user_id,
             url=url,
             job_name=job_name,
             letter_text=letter_text,
             type=_detect_type(url),
+            generation_time_ms=generation_time_ms,
         )
         self.session.add(record)
         self.session.commit()

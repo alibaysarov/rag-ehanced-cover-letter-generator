@@ -17,30 +17,31 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { AuroraBackground } from '@/components/ui/AuroraBackground';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 
-const registerSchema = z
-  .object({
-    first_name: z.string().trim().max(100).optional(),
-    last_name: z.string().trim().max(100).optional(),
-    email: z.string().email('Неверный email адрес'),
-    password: z.string().min(8, 'Минимум 8 символов'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Пароли не совпадают',
-    path: ['confirmPassword'],
-  });
-
-type RegisterFormData = z.infer<typeof registerSchema>;
-
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const { register: registerUser, isRegisterLoading, isAuthenticated } = useAuth();
+
+  const registerSchema = z
+    .object({
+      first_name: z.string().trim().max(100).optional(),
+      last_name: z.string().trim().max(100).optional(),
+      email: z.string().email(t('validation.invalidEmail')),
+      password: z.string().min(8, t('validation.min8chars')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('validation.passwordsMismatch'),
+      path: ['confirmPassword'],
+    });
+  type RegisterFormData = z.infer<typeof registerSchema>;
 
   const {
     register,
@@ -67,8 +68,8 @@ const RegisterPage: React.FC = () => {
         last_name: trimmedLast ? trimmedLast : undefined,
       });
       toast({
-        title: 'Аккаунт создан',
-        description: 'Теперь можно войти',
+        title: t('auth.register.successTitle'),
+        description: t('auth.register.successDesc'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -76,8 +77,8 @@ const RegisterPage: React.FC = () => {
       navigate('/login');
     } catch (error) {
       toast({
-        title: 'Ошибка регистрации',
-        description: error instanceof Error ? error.message : 'Попробуйте ещё раз',
+        title: t('auth.register.errorTitle'),
+        description: error instanceof Error ? error.message : t('auth.register.errorDesc'),
         status: 'error',
         duration: 3500,
         isClosable: true,
@@ -100,10 +101,10 @@ const RegisterPage: React.FC = () => {
                 letterSpacing="-0.02em"
                 mb={2}
               >
-                Создайте аккаунт
+                {t('auth.register.title')}
               </Heading>
               <Text color="slate.500" fontSize="sm">
-                Заполните форму, чтобы начать пользоваться Coverly
+                {t('auth.register.subtitle')}
               </Text>
             </Box>
 
@@ -112,24 +113,30 @@ const RegisterPage: React.FC = () => {
                 <SimpleGrid columns={2} spacing={4}>
                   <FormControl isInvalid={!!errors.first_name}>
                     <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                      Имя (необязательно)
+                      {t('auth.register.firstName')}
                     </FormLabel>
-                    <Input placeholder="Иван" {...register('first_name')} />
+                    <Input
+                      placeholder={t('auth.register.firstNamePlaceholder')}
+                      {...register('first_name')}
+                    />
                     <FormErrorMessage>{errors.first_name?.message}</FormErrorMessage>
                   </FormControl>
 
                   <FormControl isInvalid={!!errors.last_name}>
                     <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                      Фамилия (необязательно)
+                      {t('auth.register.lastName')}
                     </FormLabel>
-                    <Input placeholder="Иванов" {...register('last_name')} />
+                    <Input
+                      placeholder={t('auth.register.lastNamePlaceholder')}
+                      {...register('last_name')}
+                    />
                     <FormErrorMessage>{errors.last_name?.message}</FormErrorMessage>
                   </FormControl>
                 </SimpleGrid>
 
                 <FormControl isInvalid={!!errors.email}>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Email
+                    {t('auth.register.email')}
                   </FormLabel>
                   <Input
                     type="email"
@@ -142,11 +149,11 @@ const RegisterPage: React.FC = () => {
 
                 <FormControl isInvalid={!!errors.password}>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Пароль
+                    {t('auth.register.password')}
                   </FormLabel>
                   <Input
                     type="password"
-                    placeholder="Минимум 8 символов"
+                    placeholder={t('auth.register.passwordPlaceholder')}
                     autoComplete="new-password"
                     {...register('password')}
                   />
@@ -155,11 +162,11 @@ const RegisterPage: React.FC = () => {
 
                 <FormControl isInvalid={!!errors.confirmPassword}>
                   <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                    Подтверждение пароля
+                    {t('auth.register.confirmPassword')}
                   </FormLabel>
                   <Input
                     type="password"
-                    placeholder="Повторите пароль"
+                    placeholder={t('auth.register.confirmPasswordPlaceholder')}
                     autoComplete="new-password"
                     {...register('confirmPassword')}
                   />
@@ -171,17 +178,17 @@ const RegisterPage: React.FC = () => {
                   size="lg"
                   w="full"
                   isLoading={isSubmitting || isRegisterLoading}
-                  loadingText="Создаём аккаунт..."
+                  loadingText={t('auth.register.loading')}
                   mt={2}
                 >
-                  Зарегистрироваться
+                  {t('auth.register.submit')}
                 </GradientButton>
               </Stack>
             </form>
 
             <Box textAlign="center">
               <Text fontSize="sm" color="slate.500">
-                Уже есть аккаунт?{' '}
+                {t('auth.register.haveAccount')}{' '}
                 <Link
                   as={RouterLink}
                   to="/login"
@@ -194,7 +201,7 @@ const RegisterPage: React.FC = () => {
                     color: 'transparent',
                   }}
                 >
-                  Войти
+                  {t('auth.register.login')}
                 </Link>
               </Text>
             </Box>

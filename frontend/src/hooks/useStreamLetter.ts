@@ -11,6 +11,7 @@ interface UseStreamLetterReturn {
   content: string;
   status: StreamStatus;
   error: string | null;
+  generationTimeMs: number | null;
   streamFromUrl: (req: StreamLetterFromUrlRequest) => void;
   streamFromText: (req: StreamLetterFromTextRequest) => void;
   reset: () => void;
@@ -20,13 +21,17 @@ export function useStreamLetter(): UseStreamLetterReturn {
   const [content, setContent] = useState('');
   const [status, setStatus] = useState<StreamStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [generationTimeMs, setGenerationTimeMs] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const reset = useCallback(() => {
     abortRef.current?.abort();
     setContent('');
     setStatus('idle');
     setError(null);
+    setGenerationTimeMs(null);
+    startTimeRef.current = null;
   }, []);
 
   const _stream = useCallback(async (endpoint: string, body: FormData) => {
@@ -37,6 +42,8 @@ export function useStreamLetter(): UseStreamLetterReturn {
     setContent('');
     setError(null);
     setStatus('parsing');
+    setGenerationTimeMs(null);
+    startTimeRef.current = performance.now();
 
     const token = TokenManager.getAccessToken();
 
@@ -71,6 +78,9 @@ export function useStreamLetter(): UseStreamLetterReturn {
           if (!line.startsWith('data:')) continue;
           const raw = line.slice(5).trim();
           if (raw === '[DONE]') {
+            if (startTimeRef.current !== null) {
+              setGenerationTimeMs(Math.round(performance.now() - startTimeRef.current));
+            }
             setStatus('done');
             return;
           }
@@ -89,6 +99,9 @@ export function useStreamLetter(): UseStreamLetterReturn {
             setContent(prev => prev + chunk.delta);
           }
         }
+      }
+      if (startTimeRef.current !== null) {
+        setGenerationTimeMs(Math.round(performance.now() - startTimeRef.current));
       }
       setStatus('done');
     } catch (err: unknown) {
@@ -117,5 +130,5 @@ export function useStreamLetter(): UseStreamLetterReturn {
     [_stream],
   );
 
-  return { content, status, error, streamFromUrl, streamFromText, reset };
+  return { content, status, error, generationTimeMs, streamFromUrl, streamFromText, reset };
 }

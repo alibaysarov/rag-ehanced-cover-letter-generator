@@ -20,15 +20,9 @@ import {
   IconSparkles,
   IconX,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { SidebarItem } from '@/components/ui/SidebarItem';
 import { UserCard } from '@/components/ui/UserCard';
-
-const NAV_ITEMS = [
-  { to: '/', end: true, icon: IconSparkles, label: 'Generate' },
-  { to: '/projects', icon: IconBriefcase, label: 'Projects' },
-  { to: '/my-cvs', icon: IconFile, label: 'Resumes' },
-  { to: '/stats', icon: IconChartBar, label: 'Статистика' },
-] as const;
 
 function BrandMark() {
   return (
@@ -58,6 +52,15 @@ interface SidebarContentProps {
 }
 
 function SidebarContent({ onNavigate }: SidebarContentProps) {
+  const { t } = useTranslation();
+
+  const navItems = [
+    { to: '/', end: true, icon: IconSparkles, label: t('nav.generate') },
+    { to: '/projects', icon: IconBriefcase, label: t('nav.projects') },
+    { to: '/my-cvs', icon: IconFile, label: t('nav.resumes') },
+    { to: '/stats', icon: IconChartBar, label: t('nav.stats') },
+  ];
+
   return (
     <Flex direction="column" h="100%" w="100%">
       <Box px={6} py={6}>
@@ -65,7 +68,7 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
       </Box>
       <Box px={3} flex="1" overflowY="auto">
         <VStack spacing={1} align="stretch">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <SidebarItem
               key={item.to}
               to={item.to}

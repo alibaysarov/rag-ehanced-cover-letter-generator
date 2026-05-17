@@ -22,6 +22,7 @@ import {
 } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/api/client';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { LANGUAGES } from '@/types/letter';
@@ -48,6 +49,7 @@ interface LetterOutputProps {
   onResetTranslate: () => void;
   jobUrl?: string;
   jobName?: string;
+  generationTimeMs?: number | null;
 }
 
 type Tab = 'original' | 'translated';
@@ -69,6 +71,7 @@ function countWords(text: string): number {
 }
 
 function IdleState() {
+  const { t } = useTranslation();
   return (
     <Flex
       direction="column"
@@ -102,10 +105,10 @@ function IdleState() {
       </Box>
       <Box textAlign="center" maxW="320px">
         <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="slate.900" mb={1}>
-          Готовы создать письмо
+          {t('letterOutput.idleTitle')}
         </Text>
         <Text fontSize="sm" color="slate.500">
-          Заполните форму слева — результат появится здесь
+          {t('letterOutput.idleSubtitle')}
         </Text>
       </Box>
     </Flex>
@@ -146,6 +149,7 @@ function ParsingState() {
 }
 
 function ErrorState({ message }: { message: string }) {
+  const { t } = useTranslation();
   return (
     <Flex
       direction="column"
@@ -157,7 +161,7 @@ function ErrorState({ message }: { message: string }) {
       gap={3}
     >
       <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
-        Не получилось
+        {t('letterOutput.errorTitle')}
       </Text>
       <Text fontSize="sm" color="slate.500" maxW="360px">
         {message}
@@ -185,6 +189,8 @@ function FloatingToolbar({
   wordCount: number;
   readMinutes: number;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Flex
       align="center"
@@ -212,19 +218,19 @@ function FloatingToolbar({
         color="slate.700"
       >
         <Text fontWeight={600}>{wordCount}</Text>
-        <Text color="slate.500">words</Text>
+        <Text color="slate.500">{t('letterOutput.words')}</Text>
         <Text color="slate.300">•</Text>
         <Text fontWeight={600}>{readMinutes}</Text>
-        <Text color="slate.500">min</Text>
+        <Text color="slate.500">{t('letterOutput.min')}</Text>
       </Flex>
 
       <Box flex="1" />
 
       <Menu placement="bottom-end">
-        <Tooltip label="Перевести" hasArrow placement="top">
+        <Tooltip label={t('letterOutput.translate')} hasArrow placement="top">
           <MenuButton
             as={IconButton}
-            aria-label="Translate"
+            aria-label={t('letterOutput.translate')}
             icon={<IconLanguage size={18} stroke={1.75} />}
             size="sm"
             variant="ghost"
@@ -246,9 +252,9 @@ function FloatingToolbar({
         </MenuList>
       </Menu>
 
-      <Tooltip label={copied ? 'Скопировано' : 'Копировать'} hasArrow placement="top">
+      <Tooltip label={copied ? t('letterOutput.copied') : t('letterOutput.copy')} hasArrow placement="top">
         <IconButton
-          aria-label="Copy"
+          aria-label={t('letterOutput.copy')}
           icon={
             copied ? (
               <IconCheck size={18} stroke={2} color="#10B981" />
@@ -265,9 +271,9 @@ function FloatingToolbar({
       </Tooltip>
 
       {isStreaming && (
-        <Tooltip label="Остановить" hasArrow placement="top">
+        <Tooltip label={t('letterOutput.stop')} hasArrow placement="top">
           <IconButton
-            aria-label="Stop"
+            aria-label={t('letterOutput.stop')}
             icon={<IconPlayerStop size={18} stroke={1.75} />}
             size="sm"
             variant="ghost"
@@ -290,10 +296,11 @@ function TabSwitch({
   onChange: (t: Tab) => void;
   hasTranslation: boolean;
 }) {
+  const { t } = useTranslation();
   if (!hasTranslation) return null;
   const tabs: { value: Tab; label: string }[] = [
-    { value: 'original', label: 'Оригинал' },
-    { value: 'translated', label: 'Перевод' },
+    { value: 'original', label: t('letterOutput.original') },
+    { value: 'translated', label: t('letterOutput.translation') },
   ];
   return (
     <Flex
@@ -305,14 +312,14 @@ function TabSwitch({
       gap={1}
       w="fit-content"
     >
-      {tabs.map((t) => {
-        const active = t.value === tab;
+      {tabs.map((tb) => {
+        const active = tb.value === tab;
         return (
           <Box
-            key={t.value}
+            key={tb.value}
             as="button"
             type="button"
-            onClick={() => onChange(t.value)}
+            onClick={() => onChange(tb.value)}
             position="relative"
             px={5}
             py={1.5}
@@ -338,7 +345,7 @@ function TabSwitch({
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}
               />
             )}
-            {t.label}
+            {tb.label}
           </Box>
         );
       })}
@@ -379,12 +386,15 @@ function AppliedButton({
   jobUrl,
   jobName,
   letterText,
+  generationTimeMs,
 }: {
   jobUrl?: string;
   jobName?: string;
   letterText: string;
+  generationTimeMs?: number | null;
 }) {
   const toast = useToast();
+  const { t } = useTranslation();
   const [saved, setSaved] = useState(false);
 
   const mutation = useMutation<SentLetterResponse, Error, void>({
@@ -393,13 +403,14 @@ function AppliedButton({
         url: jobUrl || undefined,
         job_name: jobName || undefined,
         letter_text: letterText,
+        ...(generationTimeMs != null ? { generation_time_ms: generationTimeMs } : {}),
       });
       return res.data;
     },
     onSuccess: () => {
       setSaved(true);
       toast({
-        title: 'Отклик сохранён!',
+        title: t('letterOutput.applySuccessTitle'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -407,7 +418,7 @@ function AppliedButton({
     },
     onError: (err) => {
       toast({
-        title: 'Ошибка сохранения',
+        title: t('letterOutput.applyErrorTitle'),
         description: err.message,
         status: 'error',
         duration: 4000,
@@ -431,7 +442,7 @@ function AppliedButton({
         fontWeight={600}
       >
         <IconCheck size={16} stroke={2.5} />
-        Отклик сохранён
+        {t('letterOutput.appliedSuccess')}
       </Flex>
     );
   }
@@ -440,7 +451,7 @@ function AppliedButton({
     <Button
       onClick={() => mutation.mutate()}
       isLoading={mutation.isPending}
-      loadingText="Сохраняем..."
+      loadingText={t('letterOutput.applyLoading')}
       size="sm"
       borderRadius="xl"
       fontWeight={600}
@@ -462,7 +473,7 @@ function AppliedButton({
       }}
       leftIcon={<IconSend size={15} stroke={2} />}
     >
-      Откликнуться
+      {t('letterOutput.apply')}
     </Button>
   );
 }
@@ -479,8 +490,10 @@ export function LetterOutput({
   onResetTranslate: _onResetTranslate,
   jobUrl,
   jobName,
+  generationTimeMs,
 }: LetterOutputProps) {
   const toast = useToast();
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>('original');
   const [copied, setCopied] = useState(false);
 
@@ -506,7 +519,7 @@ export function LetterOutput({
       setTimeout(() => setCopied(false), 1800);
     } catch {
       toast({
-        title: 'Не удалось скопировать',
+        title: t('letterOutput.copyFailed'),
         status: 'error',
         duration: 2500,
         isClosable: true,
@@ -589,7 +602,7 @@ export function LetterOutput({
           <StreamingText text={displayText} isStreaming={showStreamingCaret} />
         ) : (
           <Text color="slate.500" fontSize="sm">
-            Загружаем...
+            {t('letterOutput.loading')}
           </Text>
         )}
       </Box>
@@ -600,6 +613,7 @@ export function LetterOutput({
             jobUrl={jobUrl}
             jobName={jobName}
             letterText={content}
+            generationTimeMs={generationTimeMs}
           />
         </Flex>
       )}

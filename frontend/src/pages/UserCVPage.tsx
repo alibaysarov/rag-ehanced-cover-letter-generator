@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef } from 'react';
 import {
   Box,
@@ -44,6 +42,7 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/api/client';
 import { useNavigate } from 'react-router-dom';
 import { useUploadCV } from '@/hooks/useLetter';
@@ -160,6 +159,7 @@ const EditCVModal: React.FC<EditModalProps> = ({
   onUpdate,
   isUpdating,
 }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ file?: string }>({});
 
@@ -174,11 +174,11 @@ const EditCVModal: React.FC<EditModalProps> = ({
     const newErrors: { file?: string } = {};
 
     if (!file) {
-      newErrors.file = 'PDF file is required';
+      newErrors.file = t('cvs.editModal.fileRequired');
     } else if (file.type !== 'application/pdf') {
-      newErrors.file = 'Only PDF files are allowed';
+      newErrors.file = t('cvs.editModal.onlyPdf');
     } else if (file.size > 10 * 1024 * 1024) {
-      newErrors.file = 'File size must be less than 10MB';
+      newErrors.file = t('cvs.editModal.maxSize');
     }
 
     setErrors(newErrors);
@@ -187,7 +187,6 @@ const EditCVModal: React.FC<EditModalProps> = ({
 
   const handleSubmit = () => {
     if (validate() && cv && file) {
-      // Generate source_id automatically like in CVUploadPage
       const sourceId = Date.now().toString();
       onUpdate({
         cv_id: cv.id,
@@ -201,12 +200,12 @@ const EditCVModal: React.FC<EditModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Edit CV</ModalHeader>
+        <ModalHeader>{t('cvs.editModal.title')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
             <FormControl isInvalid={!!errors.file}>
-              <FormLabel>New PDF File</FormLabel>
+              <FormLabel>{t('cvs.editModal.newFile')}</FormLabel>
               <Input
                 type="file"
                 accept=".pdf"
@@ -215,7 +214,7 @@ const EditCVModal: React.FC<EditModalProps> = ({
               <FormErrorMessage>{errors.file}</FormErrorMessage>
               {cv && (
                 <Text fontSize="sm" color="gray.500" mt={1}>
-                  Current file: {cv.original_filename}
+                  {t('cvs.editModal.currentFile')} {cv.original_filename}
                 </Text>
               )}
             </FormControl>
@@ -224,15 +223,15 @@ const EditCVModal: React.FC<EditModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" mr={3} onClick={onClose}>
-            Cancel
+            {t('cvs.editModal.cancel')}
           </Button>
           <Button
             colorScheme="blue"
             onClick={handleSubmit}
             isLoading={isUpdating}
-            loadingText="Updating..."
+            loadingText={t('cvs.editModal.updating')}
           >
-            Update CV
+            {t('cvs.editModal.update')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -252,6 +251,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ file?: string }>({});
   const toast = useToast();
@@ -268,11 +268,11 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
     const newErrors: { file?: string } = {};
 
     if (!file) {
-      newErrors.file = 'PDF file is required';
+      newErrors.file = t('cvs.uploadModal.fileRequired');
     } else if (file.type !== 'application/pdf') {
-      newErrors.file = 'Only PDF files are allowed';
+      newErrors.file = t('cvs.uploadModal.onlyPdf');
     } else if (file.size > 10 * 1024 * 1024) {
-      newErrors.file = 'File size must be less than 10MB';
+      newErrors.file = t('cvs.uploadModal.maxSize');
     }
 
     setErrors(newErrors);
@@ -285,8 +285,8 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         onSuccess: (data) => {
           if (data.success) {
             toast({
-              title: 'CV Uploaded',
-              description: data.message || 'CV has been uploaded successfully.',
+              title: t('cvs.toast.uploadedTitle'),
+              description: data.message || t('cvs.toast.uploadedDesc'),
               status: 'success',
               duration: 5000,
               isClosable: true,
@@ -297,8 +297,8 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         },
         onError: (error) => {
           toast({
-            title: 'Upload Failed',
-            description: error.message || 'Failed to upload CV. Please try again.',
+            title: t('cvs.toast.uploadFailTitle'),
+            description: error.message || t('cvs.toast.uploadFailDesc'),
             status: 'error',
             duration: 5000,
             isClosable: true,
@@ -312,15 +312,15 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Upload New Resume</ModalHeader>
+        <ModalHeader>{t('cvs.uploadModal.title')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
             <Text color="gray.600">
-              Upload your resume in PDF format to get started with cover letter generation.
+              {t('cvs.uploadModal.desc')}
             </Text>
             <FormControl isInvalid={!!errors.file}>
-              <FormLabel>Resume File (PDF)</FormLabel>
+              <FormLabel>{t('cvs.uploadModal.fileLabel')}</FormLabel>
               <Input
                 type="file"
                 accept=".pdf"
@@ -328,7 +328,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
               />
               <FormErrorMessage>{errors.file}</FormErrorMessage>
               <Text fontSize="sm" color="gray.500" mt={1}>
-                Only PDF files are supported. Maximum size: 10MB.
+                {t('cvs.uploadModal.helperText')}
               </Text>
             </FormControl>
           </VStack>
@@ -336,16 +336,16 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" mr={3} onClick={onClose}>
-            Cancel
+            {t('cvs.uploadModal.cancel')}
           </Button>
           <Button
             colorScheme="blue"
             onClick={handleSubmit}
             isLoading={uploadCV.isPending}
-            loadingText="Uploading..."
+            loadingText={t('cvs.uploadModal.uploading')}
             isDisabled={!file}
           >
-            Upload Resume
+            {t('cvs.uploadModal.upload')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -356,6 +356,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
 // Main Component
 const UserCVPage: React.FC = () => {
   const toast = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
@@ -363,7 +364,7 @@ const UserCVPage: React.FC = () => {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const [selectedCV, setSelectedCV] = useState<CV | null>(null);
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const { data, isLoading, isError, error } = useUserCVs();
   const updateCV = useUpdateCV();
   const deleteCV = useDeleteCV();
@@ -386,8 +387,8 @@ const UserCVPage: React.FC = () => {
     updateCV.mutate(data, {
       onSuccess: (response) => {
         toast({
-          title: 'CV Updated',
-          description: response.message || 'CV has been updated successfully.',
+          title: t('cvs.toast.updatedTitle'),
+          description: response.message || t('cvs.toast.updatedDesc'),
           status: 'success',
           duration: 5000,
           isClosable: true,
@@ -396,8 +397,8 @@ const UserCVPage: React.FC = () => {
       },
       onError: (error) => {
         toast({
-          title: 'Update Failed',
-          description: error.message || 'Failed to update CV. Please try again.',
+          title: t('cvs.toast.updateFailTitle'),
+          description: error.message || t('cvs.toast.updateFailDesc'),
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -411,8 +412,8 @@ const UserCVPage: React.FC = () => {
       deleteCV.mutate(selectedCV.id, {
         onSuccess: (response) => {
           toast({
-            title: 'CV Deleted',
-            description: response.message || 'CV has been deleted successfully.',
+            title: t('cvs.toast.deletedTitle'),
+            description: response.message || t('cvs.toast.deletedDesc'),
             status: 'success',
             duration: 5000,
             isClosable: true,
@@ -421,8 +422,8 @@ const UserCVPage: React.FC = () => {
         },
         onError: (error) => {
           toast({
-            title: 'Delete Failed',
-            description: error.message || 'Failed to delete CV. Please try again.',
+            title: t('cvs.toast.deleteFailTitle'),
+            description: error.message || t('cvs.toast.deleteFailDesc'),
             status: 'error',
             duration: 5000,
             isClosable: true,
@@ -448,7 +449,7 @@ const UserCVPage: React.FC = () => {
         <Card bg="red.50">
           <CardBody>
             <Text color="red.600">
-              Error loading CVs: {error?.message || 'Unknown error'}
+              {t('cvs.loadError')} {error?.message || t('cvs.unknownError')}
             </Text>
           </CardBody>
         </Card>
@@ -458,45 +459,45 @@ const UserCVPage: React.FC = () => {
 
   return (
     <Box maxW="1000px" mx="auto" mt={8} p={4}>
-        <Flex>
-            <Button onClick={() => navigate('/')}>Generate letter</Button>
-        </Flex>
+      <Flex>
+        <Button onClick={() => navigate('/')}>{t('cvs.generateLetter')}</Button>
+      </Flex>
       <Heading mb={6} textAlign="center">
-        My Resumes
+        {t('cvs.title')}
       </Heading>
 
       <Text mb={6} textAlign="center" color="gray.600">
-        Manage your uploaded resumes here.
+        {t('cvs.subtitle')}
       </Text>
-        <Flex my="4">
+      <Flex my="4">
         <Button colorScheme="blue" onClick={onUploadOpen}>
-          Upload New Resume
+          {t('cvs.uploadNew')}
         </Button>
-        </Flex>
+      </Flex>
       {cvs.length === 0 ? (
         <Card>
           <CardBody>
             <Text textAlign="center" color="gray.500">
-              No resumes uploaded yet. Upload your first resume to get started.
+              {t('cvs.noResumes')}
             </Text>
           </CardBody>
         </Card>
       ) : (
         <Card>
           <CardHeader>
-            <Heading size="md">Uploaded Resumes ({cvs.length})</Heading>
+            <Heading size="md">{t('cvs.uploadedCount', { count: cvs.length })}</Heading>
           </CardHeader>
           <CardBody>
             <TableContainer>
               <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>Filename</Th>
-                    <Th>Source ID</Th>
-                    <Th>Size</Th>
-                    <Th>Status</Th>
-                    <Th>Uploaded</Th>
-                    <Th>Actions</Th>
+                    <Th>{t('cvs.filename')}</Th>
+                    <Th>{t('cvs.sourceId')}</Th>
+                    <Th>{t('cvs.size')}</Th>
+                    <Th>{t('cvs.status')}</Th>
+                    <Th>{t('cvs.uploaded')}</Th>
+                    <Th>{t('cvs.actions')}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -534,7 +535,7 @@ const UserCVPage: React.FC = () => {
                       <Td>
                         <HStack spacing={2}>
                           <IconButton
-                            aria-label="Edit CV"
+                            aria-label={t('cvs.editAriaLabel')}
                             icon={<EditIcon />}
                             size="sm"
                             colorScheme="blue"
@@ -542,7 +543,7 @@ const UserCVPage: React.FC = () => {
                             onClick={() => handleEditClick(cv)}
                           />
                           <IconButton
-                            aria-label="Delete CV"
+                            aria-label={t('cvs.deleteAriaLabel')}
                             icon={<DeleteIcon />}
                             size="sm"
                             colorScheme="red"
@@ -578,26 +579,25 @@ const UserCVPage: React.FC = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete CV
+              {t('cvs.deleteModal.title')}
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to delete "{selectedCV?.original_filename}"? This
-              action cannot be undone.
+              {t('cvs.deleteModal.body', { name: selectedCV?.original_filename ?? '' })}
             </AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onDeleteClose}>
-                Cancel
+                {t('cvs.deleteModal.cancel')}
               </Button>
               <Button
                 colorScheme="red"
                 onClick={handleDelete}
                 ml={3}
                 isLoading={deleteCV.isPending}
-                loadingText="Deleting..."
+                loadingText={t('cvs.deleteModal.deleting')}
               >
-                Delete
+                {t('cvs.deleteModal.delete')}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

@@ -16,6 +16,7 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
@@ -25,25 +26,6 @@ const UI_LANG_KEY = 'aurora.uiLang';
 const DEFAULT_GEN_LANG_KEY = 'aurora.defaultGenLang';
 
 type UiLang = 'ru' | 'en';
-
-const profileSchema = z.object({
-  first_name: z.string().min(1, 'Введите имя'),
-  last_name: z.string().min(1, 'Введите фамилию'),
-  email: z.string().email('Неверный email адрес'),
-});
-type ProfileFormData = z.infer<typeof profileSchema>;
-
-const passwordSchema = z
-  .object({
-    current_password: z.string().min(8, 'Минимум 8 символов'),
-    new_password: z.string().min(8, 'Минимум 8 символов'),
-    confirm_password: z.string().min(8, 'Минимум 8 символов'),
-  })
-  .refine((d) => d.new_password === d.confirm_password, {
-    message: 'Пароли не совпадают',
-    path: ['confirm_password'],
-  });
-type PasswordFormData = z.infer<typeof passwordSchema>;
 
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
@@ -118,8 +100,17 @@ function UiLangToggle({ value, onChange }: { value: UiLang; onChange: (v: UiLang
 }
 
 function PersonalInfoCard() {
+  const { t } = useTranslation();
   const { user, updateProfile, isUpdateProfileLoading } = useAuth();
   const toast = useToast();
+
+  const profileSchema = z.object({
+    first_name: z.string().min(1, t('validation.enterFirstName')),
+    last_name: z.string().min(1, t('validation.enterLastName')),
+    email: z.string().email(t('validation.invalidEmail')),
+  });
+  type ProfileFormData = z.infer<typeof profileSchema>;
+
   const {
     register,
     handleSubmit,
@@ -148,15 +139,15 @@ function PersonalInfoCard() {
     try {
       await updateProfile(data);
       toast({
-        title: 'Профиль обновлён',
+        title: t('profile.updateSuccessTitle'),
         status: 'success',
         duration: 2500,
         isClosable: true,
       });
     } catch (err) {
       toast({
-        title: 'Не удалось обновить профиль',
-        description: err instanceof Error ? err.message : 'Попробуйте ещё раз',
+        title: t('profile.updateErrorTitle'),
+        description: err instanceof Error ? err.message : t('profile.tryAgain'),
         status: 'error',
         duration: 3500,
         isClosable: true,
@@ -167,22 +158,22 @@ function PersonalInfoCard() {
   return (
     <GlassCard padding={{ base: 6, md: 8 }}>
       <SectionHeading
-        title="Личная информация"
-        subtitle="Имя и email, которые видит система"
+        title={t('profile.personalInfo')}
+        subtitle={t('profile.personalInfoSubtitle')}
       />
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={5}>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <FormControl isInvalid={!!errors.first_name}>
               <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                Имя
+                {t('profile.firstName')}
               </FormLabel>
               <Input {...register('first_name')} />
               <FormErrorMessage>{errors.first_name?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.last_name}>
               <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                Фамилия
+                {t('profile.lastName')}
               </FormLabel>
               <Input {...register('last_name')} />
               <FormErrorMessage>{errors.last_name?.message}</FormErrorMessage>
@@ -190,7 +181,7 @@ function PersonalInfoCard() {
           </SimpleGrid>
           <FormControl isInvalid={!!errors.email}>
             <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-              Email
+              {t('profile.email')}
             </FormLabel>
             <Input type="email" autoComplete="email" {...register('email')} />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
@@ -199,10 +190,10 @@ function PersonalInfoCard() {
             <GradientButton
               type="submit"
               isLoading={isSubmitting || isUpdateProfileLoading}
-              loadingText="Сохраняем..."
+              loadingText={t('profile.saving')}
               isDisabled={!isDirty}
             >
-              Сохранить изменения
+              {t('profile.saveChanges')}
             </GradientButton>
           </Flex>
         </Stack>
@@ -212,8 +203,22 @@ function PersonalInfoCard() {
 }
 
 function PasswordCard() {
+  const { t } = useTranslation();
   const { changePassword, isChangePasswordLoading } = useAuth();
   const toast = useToast();
+
+  const passwordSchema = z
+    .object({
+      current_password: z.string().min(8, t('validation.min8chars')),
+      new_password: z.string().min(8, t('validation.min8chars')),
+      confirm_password: z.string().min(8, t('validation.min8chars')),
+    })
+    .refine((d) => d.new_password === d.confirm_password, {
+      message: t('validation.passwordsMismatch'),
+      path: ['confirm_password'],
+    });
+  type PasswordFormData = z.infer<typeof passwordSchema>;
+
   const {
     register,
     handleSubmit,
@@ -230,7 +235,7 @@ function PasswordCard() {
         new_password: data.new_password,
       });
       toast({
-        title: 'Пароль обновлён',
+        title: t('profile.passwordUpdatedTitle'),
         status: 'success',
         duration: 2500,
         isClosable: true,
@@ -238,8 +243,8 @@ function PasswordCard() {
       reset();
     } catch (err) {
       toast({
-        title: 'Не удалось сменить пароль',
-        description: err instanceof Error ? err.message : 'Проверьте текущий пароль',
+        title: t('profile.passwordErrorTitle'),
+        description: err instanceof Error ? err.message : t('profile.checkCurrentPassword'),
         status: 'error',
         duration: 3500,
         isClosable: true,
@@ -250,14 +255,14 @@ function PasswordCard() {
   return (
     <GlassCard padding={{ base: 6, md: 8 }}>
       <SectionHeading
-        title="Пароль"
-        subtitle="Минимум 8 символов. Используйте уникальную фразу"
+        title={t('profile.passwordSection')}
+        subtitle={t('profile.passwordSubtitle')}
       />
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={5}>
           <FormControl isInvalid={!!errors.current_password}>
             <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-              Текущий пароль
+              {t('profile.currentPassword')}
             </FormLabel>
             <Input
               type="password"
@@ -269,7 +274,7 @@ function PasswordCard() {
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <FormControl isInvalid={!!errors.new_password}>
               <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                Новый пароль
+                {t('profile.newPassword')}
               </FormLabel>
               <Input
                 type="password"
@@ -280,7 +285,7 @@ function PasswordCard() {
             </FormControl>
             <FormControl isInvalid={!!errors.confirm_password}>
               <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                Подтверждение
+                {t('profile.confirmPassword')}
               </FormLabel>
               <Input
                 type="password"
@@ -294,9 +299,9 @@ function PasswordCard() {
             <GradientButton
               type="submit"
               isLoading={isSubmitting || isChangePasswordLoading}
-              loadingText="Обновляем..."
+              loadingText={t('profile.updating')}
             >
-              Обновить пароль
+              {t('profile.updatePassword')}
             </GradientButton>
           </Flex>
         </Stack>
@@ -306,6 +311,7 @@ function PasswordCard() {
 }
 
 function PreferencesCard() {
+  const { t, i18n } = useTranslation();
   const [uiLang, setUiLang] = useState<UiLang>('ru');
   const [defaultGenLang, setDefaultGenLang] = useState<string>(LANGUAGES[0].code);
 
@@ -321,6 +327,7 @@ function PreferencesCard() {
   const onUiLangChange = (v: UiLang) => {
     setUiLang(v);
     localStorage.setItem(UI_LANG_KEY, v);
+    i18n.changeLanguage(v);
   };
 
   const onGenLangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -332,19 +339,19 @@ function PreferencesCard() {
   return (
     <GlassCard padding={{ base: 6, md: 8 }}>
       <SectionHeading
-        title="Предпочтения"
-        subtitle="Сохраняются локально на этом устройстве"
+        title={t('profile.preferences')}
+        subtitle={t('profile.preferencesSubtitle')}
       />
       <Stack spacing={6}>
         <Box>
           <Text fontSize="sm" color="slate.700" fontWeight={500} mb={3}>
-            Язык интерфейса
+            {t('profile.uiLanguage')}
           </Text>
           <UiLangToggle value={uiLang} onChange={onUiLangChange} />
         </Box>
         <Box maxW="320px">
           <Text fontSize="sm" color="slate.700" fontWeight={500} mb={3}>
-            Язык генерации по умолчанию
+            {t('profile.defaultGenLanguage')}
           </Text>
           <Select value={defaultGenLang} onChange={onGenLangChange}>
             {LANGUAGES.map((l) => (
@@ -360,6 +367,7 @@ function PreferencesCard() {
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   return (
     <Box>
       <Heading
@@ -370,7 +378,7 @@ export default function ProfilePage() {
         letterSpacing="-0.02em"
         mb={8}
       >
-        Профиль
+        {t('profile.title')}
       </Heading>
       <Stack spacing={6}>
         <PersonalInfoCard />

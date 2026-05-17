@@ -39,6 +39,7 @@ import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { authApi } from '@/api/client';
 import ProjectFormCard, { emptyProject } from '@/components/ProjectFormCard';
@@ -138,24 +139,26 @@ const useDeleteProject = () => {
   });
 };
 
-const MONTH_NAMES = [
-  'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
-  'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек',
-];
+interface DateStrings {
+  monthNames: string[];
+  currently: string;
+  dateFrom: string;
+  dateTo: string;
+}
 
-const formatDateRange = (p: ProjectResponse): string | null => {
+const formatDateRange = (p: ProjectResponse, s: DateStrings): string | null => {
   if (!p.start_year && !p.end_year && !p.currently_working) return null;
   const start = p.start_year
-    ? `${p.start_month ? MONTH_NAMES[p.start_month - 1] + ' ' : ''}${p.start_year}`
+    ? `${p.start_month ? s.monthNames[p.start_month - 1] + ' ' : ''}${p.start_year}`
     : null;
   const end = p.currently_working
-    ? 'настоящее время'
+    ? s.currently
     : p.end_year
-      ? `${p.end_month ? MONTH_NAMES[p.end_month - 1] + ' ' : ''}${p.end_year}`
+      ? `${p.end_month ? s.monthNames[p.end_month - 1] + ' ' : ''}${p.end_year}`
       : null;
   if (start && end) return `${start} — ${end}`;
-  if (start) return `с ${start}`;
-  if (end) return `до ${end}`;
+  if (start) return `${s.dateFrom} ${start}`;
+  if (end) return `${s.dateTo} ${end}`;
   return null;
 };
 
@@ -192,6 +195,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const saveProjects = useSaveProjects();
   const [drafts, setDrafts] = useState<{ id: string; data: ProjectInput }[]>([
@@ -225,7 +229,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
     const newErrors: Record<string, string> = {};
     drafts.forEach((d) => {
       if (!d.data.name.trim()) {
-        newErrors[d.id] = 'Название обязательно';
+        newErrors[d.id] = t('projects.nameRequired');
       }
     });
     setErrors(newErrors);
@@ -234,8 +238,8 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
     }
     if (drafts.length === 0) {
       toast({
-        title: 'Нет проектов',
-        description: 'Добавьте хотя бы один проект',
+        title: t('projects.noProjectsWarning'),
+        description: t('projects.addAtLeastOne'),
         status: 'warning',
         duration: 3000,
         isClosable: true,
@@ -251,8 +255,8 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
     saveProjects.mutate(payload, {
       onSuccess: (data) => {
         toast({
-          title: 'Проекты сохранены',
-          description: `Сохранено: ${data.saved}`,
+          title: t('projects.saveSuccess'),
+          description: t('projects.savedCount', { count: data.saved }),
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -262,7 +266,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
       },
       onError: (error) => {
         toast({
-          title: 'Ошибка сохранения',
+          title: t('projects.saveError'),
           description: error.message,
           status: 'error',
           duration: 4000,
@@ -276,7 +280,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Добавить проекты</ModalHeader>
+        <ModalHeader>{t('projects.addProjectsTitle')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4} align="stretch">
@@ -309,21 +313,21 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
               colorScheme="blue"
               alignSelf="flex-start"
             >
-              Ещё проект
+              {t('projects.addAnother')}
             </Button>
           </VStack>
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" mr={3} onClick={onClose}>
-            Отмена
+            {t('projects.cancel')}
           </Button>
           <Button
             colorScheme="blue"
             onClick={handleSubmit}
             isLoading={saveProjects.isPending}
-            loadingText="Сохраняем..."
+            loadingText={t('projects.saving')}
           >
-            Сохранить
+            {t('projects.save')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -342,6 +346,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
   onClose,
   project,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const updateProject = useUpdateProject();
   const [draft, setDraft] = useState<ProjectInput>(emptyProject());
@@ -367,7 +372,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
 
   const handleSubmit = () => {
     if (!draft.name.trim()) {
-      setNameError('Название обязательно');
+      setNameError(t('projects.nameRequired'));
       return;
     }
     if (!project) return;
@@ -376,7 +381,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
       {
         onSuccess: () => {
           toast({
-            title: 'Проект обновлён',
+            title: t('projects.updateSuccess'),
             status: 'success',
             duration: 3000,
             isClosable: true,
@@ -385,7 +390,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
         },
         onError: (error) => {
           toast({
-            title: 'Ошибка обновления',
+            title: t('projects.updateError'),
             description: error.message,
             status: 'error',
             duration: 4000,
@@ -400,7 +405,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Редактировать проект</ModalHeader>
+        <ModalHeader>{t('projects.editTitle')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <ProjectFormCard
@@ -411,15 +416,15 @@ const EditProjectModal: React.FC<EditModalProps> = ({
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" mr={3} onClick={onClose}>
-            Отмена
+            {t('projects.cancel')}
           </Button>
           <Button
             colorScheme="blue"
             onClick={handleSubmit}
             isLoading={updateProject.isPending}
-            loadingText="Сохраняем..."
+            loadingText={t('projects.saving')}
           >
-            Сохранить
+            {t('projects.save')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -430,8 +435,17 @@ const EditProjectModal: React.FC<EditModalProps> = ({
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const deleteProject = useDeleteProject();
+
+  const monthNames = t('datePicker.monthsShort', { returnObjects: true }) as string[];
+  const dateStrings: DateStrings = {
+    monthNames,
+    currently: t('projects.currently'),
+    dateFrom: t('projects.dateFrom'),
+    dateTo: t('projects.dateTo'),
+  };
 
   const { data, isLoading, isError, error } = useProjects();
   const projects = data?.projects ?? [];
@@ -470,7 +484,7 @@ const ProjectsPage: React.FC = () => {
     deleteProject.mutate(selected.id, {
       onSuccess: () => {
         toast({
-          title: 'Проект удалён',
+          title: t('projects.deleteSuccess'),
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -479,7 +493,7 @@ const ProjectsPage: React.FC = () => {
       },
       onError: (err) => {
         toast({
-          title: 'Ошибка удаления',
+          title: t('projects.deleteError'),
           description: err.message,
           status: 'error',
           duration: 4000,
@@ -494,7 +508,7 @@ const ProjectsPage: React.FC = () => {
       <Box maxW="1100px" mx="auto" p={4}>
         <Flex justify="space-between" mb={6} flexWrap="wrap" gap={3}>
           <Button onClick={() => navigate('/')} variant="outline">
-            Сгенерировать письмо
+            {t('projects.generateLetter')}
           </Button>
           <Button
             colorScheme="blue"
@@ -504,16 +518,15 @@ const ProjectsPage: React.FC = () => {
               onAddOpen();
             }}
           >
-            Добавить проекты
+            {t('projects.addProjects')}
           </Button>
         </Flex>
 
         <Heading mb={2} textAlign="center">
-          Мои проекты
+          {t('projects.title')}
         </Heading>
         <Text textAlign="center" color="gray.600" mb={6}>
-          Управляйте проектами вручную. Они используются для подбора релевантного
-          опыта при генерации сопроводительных писем.
+          {t('projects.subtitle')}
         </Text>
 
         {isLoading && (
@@ -526,7 +539,7 @@ const ProjectsPage: React.FC = () => {
           <Card bg="red.50">
             <CardBody>
               <Text color="red.600">
-                Ошибка загрузки: {error?.message || 'Неизвестная ошибка'}
+                {t('projects.loadError')} {error?.message || t('projects.unknownError')}
               </Text>
             </CardBody>
           </Card>
@@ -536,7 +549,7 @@ const ProjectsPage: React.FC = () => {
           <Card>
             <CardBody>
               <Text textAlign="center" color="gray.500">
-                Проектов пока нет. Добавьте первый проект через кнопку выше.
+                {t('projects.noProjects')}
               </Text>
             </CardBody>
           </Card>
@@ -557,11 +570,11 @@ const ProjectsPage: React.FC = () => {
                     <CardHeader pb={2}>
                       <Flex justify="space-between" align="start" gap={2}>
                         <Heading size="md" noOfLines={2}>
-                          {p.name || '(без названия)'}
+                          {p.name || t('projects.noName')}
                         </Heading>
                         <HStack spacing={1}>
                           <IconButton
-                            aria-label="Редактировать"
+                            aria-label={t('projects.editAriaLabel')}
                             icon={<EditIcon />}
                             size="sm"
                             colorScheme="blue"
@@ -569,7 +582,7 @@ const ProjectsPage: React.FC = () => {
                             onClick={() => handleEdit(p)}
                           />
                           <IconButton
-                            aria-label="Удалить"
+                            aria-label={t('projects.deleteAriaLabel')}
                             icon={<DeleteIcon />}
                             size="sm"
                             colorScheme="red"
@@ -581,11 +594,11 @@ const ProjectsPage: React.FC = () => {
                     </CardHeader>
                     <CardBody pt={0}>
                       <Stack spacing={3}>
-                        {(p.website || formatDateRange(p)) && (
+                        {(p.website || formatDateRange(p, dateStrings)) && (
                           <Box>
-                            {formatDateRange(p) && (
+                            {formatDateRange(p, dateStrings) && (
                               <Text fontSize="sm" color="gray.500">
-                                {formatDateRange(p)}
+                                {formatDateRange(p, dateStrings)}
                               </Text>
                             )}
                             {p.website && (
@@ -604,14 +617,14 @@ const ProjectsPage: React.FC = () => {
                         {p.technologies.length > 0 && (
                           <Box>
                             <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                              Технологии
+                              {t('projects.technologies')}
                             </Text>
                             <Wrap>
-                              {p.technologies.map((t, i) => (
+                              {p.technologies.map((tech, i) => (
                                 <WrapItem key={i} maxW="100%">
                                   <Tooltip
-                                    label={t}
-                                    isDisabled={t.length <= 30}
+                                    label={tech}
+                                    isDisabled={tech.length <= 30}
                                     hasArrow
                                     placement="top"
                                     openDelay={200}
@@ -622,7 +635,7 @@ const ProjectsPage: React.FC = () => {
                                       isTruncated
                                       display="block"
                                     >
-                                      {t}
+                                      {tech}
                                     </Badge>
                                   </Tooltip>
                                 </WrapItem>
@@ -633,7 +646,7 @@ const ProjectsPage: React.FC = () => {
                         {p.skills.length > 0 && (
                           <Box>
                             <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                              Навыки
+                              {t('projects.skills')}
                             </Text>
                             <Wrap>
                               {p.skills.map((s, i) => (
@@ -662,7 +675,7 @@ const ProjectsPage: React.FC = () => {
                         {p.achievements.length > 0 && (
                           <Box>
                             <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                              Достижения
+                              {t('projects.achievements')}
                             </Text>
                             <VStack align="stretch" spacing={1}>
                               {p.achievements.map((a, i) => (
@@ -704,23 +717,23 @@ const ProjectsPage: React.FC = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Удалить проект
+              {t('projects.deleteTitle')}
             </AlertDialogHeader>
             <AlertDialogBody>
-              Удалить "{selected?.name}"? Действие нельзя отменить.
+              {t('projects.deleteConfirmBody', { name: selected?.name ?? '' })}
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onDeleteClose}>
-                Отмена
+                {t('projects.cancel')}
               </Button>
               <Button
                 colorScheme="red"
                 onClick={confirmDelete}
                 ml={3}
                 isLoading={deleteProject.isPending}
-                loadingText="Удаляем..."
+                loadingText={t('projects.deleting')}
               >
-                Удалить
+                {t('projects.delete')}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
