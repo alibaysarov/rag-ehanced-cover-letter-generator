@@ -39,6 +39,8 @@ const AnimatedListInput: React.FC<AnimatedListInputProps> = ({
 }) => {
   const [rows, setRows] = useState<Row[]>(() => toRows(values));
   const lastEmitted = useRef<string[]>(values);
+  const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+  const pendingFocusId = useRef<string | null>(null);
 
   useEffect(() => {
     const same =
@@ -57,8 +59,20 @@ const AnimatedListInput: React.FC<AnimatedListInputProps> = ({
     onChange(plain);
   };
 
+  useEffect(() => {
+    if (pendingFocusId.current) {
+      const el = inputRefs.current.get(pendingFocusId.current);
+      if (el) {
+        el.focus();
+        pendingFocusId.current = null;
+      }
+    }
+  });
+
   const handleAdd = () => {
-    emit([...rows, { id: makeId(), value: '' }]);
+    const newId = makeId();
+    pendingFocusId.current = newId;
+    emit([...rows, { id: newId, value: '' }]);
   };
 
   const handleRemove = (id: string) => {
@@ -96,6 +110,10 @@ const AnimatedListInput: React.FC<AnimatedListInputProps> = ({
             >
               <HStack>
                 <Input
+                  ref={(el) => {
+                    if (el) inputRefs.current.set(row.id, el);
+                    else inputRefs.current.delete(row.id);
+                  }}
                   value={row.value}
                   onChange={(e) => handleChange(row.id, e.target.value)}
                   placeholder={placeholder}

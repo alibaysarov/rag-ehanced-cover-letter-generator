@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   Box,
+  Button,
   Flex,
   IconButton,
   Menu,
@@ -17,11 +18,23 @@ import {
   IconCopy,
   IconLanguage,
   IconPlayerStop,
+  IconSend,
 } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { authApi } from '@/api/client';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { LANGUAGES } from '@/types/letter';
 import type { StreamStatus } from '@/types/letter';
+
+interface SentLetterResponse {
+  id: number;
+  url: string | null;
+  job_name: string | null;
+  type: string;
+  is_accepted: boolean;
+  created_at: string;
+}
 
 interface LetterOutputProps {
   status: StreamStatus;
@@ -33,6 +46,8 @@ interface LetterOutputProps {
   translateError: string | null;
   onTranslate: (targetLanguage: string) => void;
   onResetTranslate: () => void;
+  jobUrl?: string;
+  jobName?: string;
 }
 
 type Tab = 'original' | 'translated';
@@ -360,6 +375,98 @@ function StreamingText({ text, isStreaming }: { text: string; isStreaming: boole
   );
 }
 
+function AppliedButton({
+  jobUrl,
+  jobName,
+  letterText,
+}: {
+  jobUrl?: string;
+  jobName?: string;
+  letterText: string;
+}) {
+  const toast = useToast();
+  const [saved, setSaved] = useState(false);
+
+  const mutation = useMutation<SentLetterResponse, Error, void>({
+    mutationFn: async () => {
+      const res = await authApi.post<SentLetterResponse>('/stats/sent-letters', {
+        url: jobUrl || undefined,
+        job_name: jobName || undefined,
+        letter_text: letterText,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      setSaved(true);
+      toast({
+        title: 'Отклик сохранён!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'Ошибка сохранения',
+        description: err.message,
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+    },
+  });
+
+  if (saved) {
+    return (
+      <Flex
+        align="center"
+        gap={2}
+        px={5}
+        py={2.5}
+        borderRadius="xl"
+        bg="rgba(16,185,129,0.1)"
+        border="1px solid rgba(16,185,129,0.3)"
+        color="green.600"
+        fontSize="sm"
+        fontWeight={600}
+      >
+        <IconCheck size={16} stroke={2.5} />
+        Отклик сохранён
+      </Flex>
+    );
+  }
+
+  return (
+    <Button
+      onClick={() => mutation.mutate()}
+      isLoading={mutation.isPending}
+      loadingText="Сохраняем..."
+      size="sm"
+      borderRadius="xl"
+      fontWeight={600}
+      fontSize="sm"
+      px={5}
+      sx={{
+        color: 'white',
+        backgroundImage:
+          'linear-gradient(135deg, #10B981 0%, #059669 50%, #0D9488 100%)',
+        backgroundSize: '200% 200%',
+        backgroundPosition: '0% 0%',
+        boxShadow: '0 4px 14px rgba(16,185,129,0.35)',
+        transition:
+          'background-position 400ms ease, box-shadow 200ms ease, transform 200ms ease',
+        _hover: {
+          backgroundPosition: '100% 100%',
+          boxShadow: '0 6px 20px rgba(16,185,129,0.45)',
+        },
+      }}
+      leftIcon={<IconSend size={15} stroke={2} />}
+    >
+      Откликнуться
+    </Button>
+  );
+}
+
 export function LetterOutput({
   status,
   content,
@@ -370,6 +477,8 @@ export function LetterOutput({
   translateError,
   onTranslate,
   onResetTranslate: _onResetTranslate,
+  jobUrl,
+  jobName,
 }: LetterOutputProps) {
   const toast = useToast();
   const [tab, setTab] = useState<Tab>('original');
@@ -468,7 +577,7 @@ export function LetterOutput({
       <Box
         mt={8}
         mx={6}
-        mb={6}
+        mb={isDone ? 4 : 6}
         minH="640px"
         p={10}
         borderRadius="2xl"
@@ -484,6 +593,16 @@ export function LetterOutput({
           </Text>
         )}
       </Box>
+
+      {isDone && (
+        <Flex mx={6} mb={6} justify="flex-end">
+          <AppliedButton
+            jobUrl={jobUrl}
+            jobName={jobName}
+            letterText={content}
+          />
+        </Flex>
+      )}
 
       {translateError && (
         <Box mx={6} mb={6}>

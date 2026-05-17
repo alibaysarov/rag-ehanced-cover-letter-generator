@@ -92,6 +92,8 @@ export default function LetterGenerator() {
           translateError={translateError}
           onTranslate={handleTranslate}
           onResetTranslate={resetTranslate}
+          jobUrl={mode === 'url' ? url : undefined}
+          jobName={mode === 'text' ? name : undefined}
         />
       </Grid>
     </Box>

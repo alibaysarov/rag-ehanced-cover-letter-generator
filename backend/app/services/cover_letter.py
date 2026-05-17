@@ -1,5 +1,5 @@
 from app.services.projects import ProjectStorageService, get_projects_service
-from app.helper.user import get_user_repository
+from app.repository.user_repository import UserRepository
 from ..services.llm.job_requirements import JobParsePrompt
 from ..schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.llm.job_items import CoverLetterPrompt
@@ -11,11 +11,11 @@ def get_projects_storage_service() -> ProjectStorageService:
     return get_projects_service()
 
 class CoverLetterService:
-    
-    def __init__(self):
+
+    def __init__(self, user_repo: UserRepository):
         self.llm = CoverLetterPrompt()
         self.projects_service = get_projects_service()
-        self.user_repo = get_user_repository()
+        self.user_repo = user_repo
     
     async def sync_by_url(self,url:str,user_id:int):
         chain = self.llm.prompt_template | self.llm.get_model
@@ -50,20 +50,23 @@ class CoverLetterService:
         job_parse = JobParsePrompt()
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
-        
+
         ranked = self.projects_service.rank_projects_overlap(
             user_id=user_id,
             vacancy=vacancy,
             top_k=5,
         )
-        
+
+        user = self.user_repo.get_user_by_id(user_id)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name":vacancy.name,
             "lang":vacancy.lang,
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
-            "requirements":vacancy.requirements
+            "requirements":vacancy.requirements,
+            "user_first_name": (user.first_name or "") if user else "",
+            "user_last_name": (user.last_name or "") if user else "",
         }
         return body
     
@@ -89,13 +92,16 @@ class CoverLetterService:
             "technologies": item["payload"]["technologies"],
             }for item in ranked]
         print("ranked ",printed_ranked)
+        user = self.user_repo.get_user_by_id(user_id)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name":vacancy.name,
             "lang":vacancy.lang,
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
-            "requirements":vacancy.requirements
+            "requirements":vacancy.requirements,
+            "user_first_name": (user.first_name or "") if user else "",
+            "user_last_name": (user.last_name or "") if user else "",
         }
         return body
     

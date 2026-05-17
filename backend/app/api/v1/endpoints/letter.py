@@ -26,8 +26,10 @@ def get_letter_service(db: AsyncSession = Depends(get_db)) -> LetterService:
     return LetterService(db)
 
 
-def get_cover_letter_service() -> CoverLetterService:
-    return CoverLetterService()
+def get_cover_letter_service(
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> CoverLetterService:
+    return CoverLetterService(user_repo=user_repo)
 
 
 async def _sse_wrap(
