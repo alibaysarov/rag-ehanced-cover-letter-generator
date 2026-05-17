@@ -24,15 +24,17 @@ class CoverLetterService:
         return result.content
     
     
-    async def stream_by_text(self,vacancy_name:str,vacancy_text:str,user_id:int):
-        
+    async def stream_by_text(self,vacancy_name:str,vacancy_text:str,user_id:int, lang:str|None=None):
+
         text = f"""
         {vacancy_name}\n
         {vacancy_text}
         """
-        
+
         body = await self.__get_data_from_text(text=text,user_id=user_id)
-        
+        if lang:
+            body["lang"] = lang
+
         async for delta in self.llm.get_stream_response(body):
             yield delta
     

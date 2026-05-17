@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
+import { TodayStatsCard } from '@/components/ui/TodayStatsCard';
 import {
   useAutoParse,
   VacancyCard,
@@ -209,6 +210,9 @@ export default function AutoParsePage() {
             {t('autoParse.subtitle')}
           </Text>
         </Box>
+
+        {/* Today stats */}
+        <TodayStatsCard />
 
         {/* Search bar */}
         <Box mb={4}>
