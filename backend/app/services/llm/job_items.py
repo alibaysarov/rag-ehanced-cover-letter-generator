@@ -10,7 +10,7 @@ class CoverLetterPrompt(GeneralLLMClient):
 
     def __init__(self):
         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        model = ChatOllama(model="mistral:7b", temperature=0.1, base_url=base_url)
+        model = ChatOllama(model="mistral:7b", temperature=0.2, base_url=base_url)
         super().__init__(model=model)
 
     def get_schema(self):

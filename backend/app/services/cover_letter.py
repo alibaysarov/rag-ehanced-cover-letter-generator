@@ -40,7 +40,8 @@ class CoverLetterService:
         try:
             body = await self.__get_data_from_url(url,user_id)
         except Exception as e:
-            print(f"Error {e}")
+            print(f"URL parse error: {e}")
+            yield "__URL_PARSE_ERROR__"
             return
 
         async for delta in self.llm.get_stream_response(body):
