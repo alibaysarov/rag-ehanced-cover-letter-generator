@@ -9,6 +9,7 @@ import LetterGenerator from '@/pages/LetterGenerator';
 import UserCVPage from '@/pages/UserCVPage';
 import ProjectsPage from '@/pages/ProjectsPage';
 import ProfilePage from '@/pages/ProfilePage';
+import StatsPage from '@/pages/StatsPage';
 
 import AppShell from '@/layouts/AppShell';
 
@@ -68,6 +69,16 @@ function App() {
           <PrivateRoute>
             <AppShell>
               <ProfilePage />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/stats"
+        element={
+          <PrivateRoute>
+            <AppShell>
+              <StatsPage />
             </AppShell>
           </PrivateRoute>
         }

@@ -1,7 +1,7 @@
 # api/v1/auth.py
 from fastapi import APIRouter, HTTPException, Depends, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from sqlmodel import Session
 from typing import Annotated
 
@@ -18,10 +18,19 @@ class LoginRequest(BaseModel):
     password: str
 
 class RegisterRequest(BaseModel):
-    first_name: str
-    last_name: str
+    first_name: str | None = None
+    last_name: str | None = None
     email: EmailStr
     password: str
+
+class UpdateProfileRequest(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -181,6 +190,72 @@ def get_current_user_info(
         is_verified=current_user.is_verified,
         created_at=current_user.created_at.isoformat()
     )
+
+@router.put("/me", response_model=UserResponse)
+def update_current_user_info(
+    request: Request,
+    update_data: UpdateProfileRequest,
+    user_repo: UserRepo,
+):
+    """Update current user profile"""
+    user_email = request.state.user_email
+    current_user = _get_user_by_mail(user_email, user_repo)
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    fields = update_data.model_dump(exclude_unset=True)
+
+    new_email = fields.get("email")
+    if new_email and new_email != current_user.email:
+        existing = user_repo.get_user_by_email(new_email)
+        if existing and existing.id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email is already taken",
+            )
+
+    updated_user = user_repo.update_user(current_user.id, **fields) if fields else current_user
+
+    return UserResponse(
+        id=updated_user.id,
+        email=updated_user.email,
+        first_name=updated_user.first_name,
+        last_name=updated_user.last_name,
+        is_active=updated_user.is_active,
+        is_verified=updated_user.is_verified,
+        created_at=updated_user.created_at.isoformat(),
+    )
+
+@router.post("/change-password")
+def change_password(
+    request: Request,
+    payload: ChangePasswordRequest,
+    user_repo: UserRepo,
+):
+    """Change current user password"""
+    user_email = request.state.user_email
+    current_user = _get_user_by_mail(user_email, user_repo)
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not password_service.verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid current password",
+        )
+
+    new_hash = password_service.hash_password(payload.new_password)
+    user_repo.update_user(current_user.id, password_hash=new_hash)
+
+    return {"message": "Password updated successfully"}
 
 @router.post("/logout")
 def logout(current_user: CurrentUser):

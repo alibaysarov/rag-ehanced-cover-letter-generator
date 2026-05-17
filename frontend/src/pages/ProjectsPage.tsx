@@ -16,6 +16,7 @@ import {
   Heading,
   HStack,
   IconButton,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -47,6 +48,12 @@ interface ProjectResponse {
   id: string;
   source_id: string;
   name: string;
+  website?: string;
+  start_month?: number;
+  start_year?: number;
+  end_month?: number;
+  end_year?: number;
+  currently_working: boolean;
   skills: string[];
   achievements: string[];
   technologies: string[];
@@ -54,6 +61,19 @@ interface ProjectResponse {
 
 interface ListProjectsResponse {
   projects: ProjectResponse[];
+}
+
+interface ApiProjectPayload {
+  name: string;
+  website: string | null;
+  start_month: number | null;
+  start_year: number | null;
+  end_month: number | null;
+  end_year: number | null;
+  currently_working: boolean;
+  skills: string[];
+  achievements: string[];
+  technologies: string[];
 }
 
 const PROJECTS_QUERY_KEY = ['projects'] as const;
@@ -72,7 +92,7 @@ const useSaveProjects = () => {
   return useMutation<
     { saved: number },
     Error,
-    { source_id: string; projects: ProjectInput[] }
+    { source_id: string; projects: ApiProjectPayload[] }
   >({
     mutationFn: async (payload) => {
       const response = await authApi.post('/projects/save', payload);
@@ -89,7 +109,7 @@ const useUpdateProject = () => {
   return useMutation<
     ProjectResponse,
     Error,
-    { id: string; data: ProjectInput }
+    { id: string; data: ApiProjectPayload }
   >({
     mutationFn: async ({ id, data }) => {
       const response = await authApi.put(`/projects/${id}`, data);
@@ -118,11 +138,47 @@ const useDeleteProject = () => {
   });
 };
 
+const MONTH_NAMES = [
+  'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+  'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек',
+];
+
+const formatDateRange = (p: ProjectResponse): string | null => {
+  if (!p.start_year && !p.end_year && !p.currently_working) return null;
+  const start = p.start_year
+    ? `${p.start_month ? MONTH_NAMES[p.start_month - 1] + ' ' : ''}${p.start_year}`
+    : null;
+  const end = p.currently_working
+    ? 'настоящее время'
+    : p.end_year
+      ? `${p.end_month ? MONTH_NAMES[p.end_month - 1] + ' ' : ''}${p.end_year}`
+      : null;
+  if (start && end) return `${start} — ${end}`;
+  if (start) return `с ${start}`;
+  if (end) return `до ${end}`;
+  return null;
+};
+
 const cleanProject = (p: ProjectInput): ProjectInput => ({
   name: p.name.trim(),
+  website: p.website.trim() || '',
+  start_month: p.start_month || '',
+  start_year: p.start_year || '',
+  end_month: p.currently_working ? '' : (p.end_month || ''),
+  end_year: p.currently_working ? '' : (p.end_year || ''),
+  currently_working: p.currently_working,
   skills: p.skills.map((s) => s.trim()).filter(Boolean),
   achievements: p.achievements.map((s) => s.trim()).filter(Boolean),
   technologies: p.technologies.map((s) => s.trim()).filter(Boolean),
+});
+
+const toApiProject = (p: ProjectInput) => ({
+  ...cleanProject(p),
+  start_month: p.start_month || null,
+  start_year: p.start_year || null,
+  end_month: p.currently_working ? null : (p.end_month || null),
+  end_year: p.currently_working ? null : (p.end_year || null),
+  website: p.website.trim() || null,
 });
 
 interface BatchAddModalProps {
@@ -189,7 +245,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
 
     const payload = {
       source_id: `manual-${Date.now()}`,
-      projects: drafts.map((d) => cleanProject(d.data)),
+      projects: drafts.map((d) => toApiProject(d.data)),
     };
 
     saveProjects.mutate(payload, {
@@ -295,6 +351,12 @@ const EditProjectModal: React.FC<EditModalProps> = ({
     if (project) {
       setDraft({
         name: project.name,
+        website: project.website ?? '',
+        start_month: project.start_month ?? '',
+        start_year: project.start_year ?? '',
+        end_month: project.end_month ?? '',
+        end_year: project.end_year ?? '',
+        currently_working: project.currently_working ?? false,
         skills: [...project.skills],
         achievements: [...project.achievements],
         technologies: [...project.technologies],
@@ -310,7 +372,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
     }
     if (!project) return;
     updateProject.mutate(
-      { id: project.id, data: cleanProject(draft) },
+      { id: project.id, data: toApiProject(draft) },
       {
         onSuccess: () => {
           toast({
@@ -519,6 +581,26 @@ const ProjectsPage: React.FC = () => {
                     </CardHeader>
                     <CardBody pt={0}>
                       <Stack spacing={3}>
+                        {(p.website || formatDateRange(p)) && (
+                          <Box>
+                            {formatDateRange(p) && (
+                              <Text fontSize="sm" color="gray.500">
+                                {formatDateRange(p)}
+                              </Text>
+                            )}
+                            {p.website && (
+                              <Link
+                                href={p.website}
+                                isExternal
+                                fontSize="sm"
+                                color="blue.500"
+                                noOfLines={1}
+                              >
+                                {p.website}
+                              </Link>
+                            )}
+                          </Box>
+                        )}
                         {p.technologies.length > 0 && (
                           <Box>
                             <Text fontSize="sm" fontWeight="semibold" mb={1}>

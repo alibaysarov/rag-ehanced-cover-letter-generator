@@ -3,6 +3,7 @@ import {
   Box,
   Card,
   CardBody,
+  Checkbox,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -10,6 +11,10 @@ import {
   HStack,
   IconButton,
   Input,
+  NumberInput,
+  NumberInputField,
+  Select,
+  SimpleGrid,
   VStack,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
@@ -17,6 +22,12 @@ import AnimatedListInput from './AnimatedListInput';
 
 export interface ProjectInput {
   name: string;
+  website: string;
+  start_month: number | '';
+  start_year: number | '';
+  end_month: number | '';
+  end_year: number | '';
+  currently_working: boolean;
   skills: string[];
   achievements: string[];
   technologies: string[];
@@ -24,10 +35,21 @@ export interface ProjectInput {
 
 export const emptyProject = (): ProjectInput => ({
   name: '',
+  website: '',
+  start_month: '',
+  start_year: '',
+  end_month: '',
+  end_year: '',
+  currently_working: false,
   skills: [],
   achievements: [],
   technologies: [],
 });
+
+const MONTHS = [
+  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
+];
 
 interface ProjectFormCardProps {
   value: ProjectInput;
@@ -46,6 +68,10 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
 }) => {
   const update = <K extends keyof ProjectInput>(key: K, v: ProjectInput[K]) => {
     onChange({ ...value, [key]: v });
+  };
+
+  const handleCurrentlyWorking = (checked: boolean) => {
+    onChange({ ...value, currently_working: checked, end_month: '', end_year: '' });
   };
 
   return (
@@ -76,6 +102,85 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
             />
             <FormErrorMessage>{nameError}</FormErrorMessage>
           </FormControl>
+
+          <FormControl>
+            <FormLabel>Сайт (опционально)</FormLabel>
+            <Input
+              value={value.website}
+              onChange={(e) => update('website', e.target.value)}
+              placeholder="https://example.com"
+              type="url"
+            />
+          </FormControl>
+
+          <Box>
+            <FormLabel mb={2}>Период работы</FormLabel>
+            <SimpleGrid columns={2} spacing={3} mb={2}>
+              <FormControl>
+                <FormLabel fontSize="xs" color="gray.500" mb={1}>Начало</FormLabel>
+                <HStack spacing={2}>
+                  <Select
+                    placeholder="Месяц"
+                    size="sm"
+                    value={value.start_month}
+                    onChange={(e) =>
+                      update('start_month', e.target.value ? Number(e.target.value) : '')
+                    }
+                  >
+                    {MONTHS.map((m, i) => (
+                      <option key={i + 1} value={i + 1}>{m}</option>
+                    ))}
+                  </Select>
+                  <NumberInput
+                    size="sm"
+                    min={1900}
+                    max={2100}
+                    value={value.start_year}
+                    onChange={(_, v) => update('start_year', isNaN(v) ? '' : v)}
+                  >
+                    <NumberInputField placeholder="Год" />
+                  </NumberInput>
+                </HStack>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize="xs" color="gray.500" mb={1}>Конец</FormLabel>
+                <HStack spacing={2}>
+                  <Select
+                    placeholder="Месяц"
+                    size="sm"
+                    isDisabled={value.currently_working}
+                    value={value.end_month}
+                    onChange={(e) =>
+                      update('end_month', e.target.value ? Number(e.target.value) : '')
+                    }
+                  >
+                    {MONTHS.map((m, i) => (
+                      <option key={i + 1} value={i + 1}>{m}</option>
+                    ))}
+                  </Select>
+                  <NumberInput
+                    size="sm"
+                    min={1900}
+                    max={2100}
+                    isDisabled={value.currently_working}
+                    value={value.end_year}
+                    onChange={(_, v) => update('end_year', isNaN(v) ? '' : v)}
+                  >
+                    <NumberInputField placeholder="Год" />
+                  </NumberInput>
+                </HStack>
+              </FormControl>
+            </SimpleGrid>
+
+            <Checkbox
+              isChecked={value.currently_working}
+              onChange={(e) => handleCurrentlyWorking(e.target.checked)}
+              size="sm"
+            >
+              Работаю сейчас
+            </Checkbox>
+          </Box>
 
           <Box>
             <AnimatedListInput

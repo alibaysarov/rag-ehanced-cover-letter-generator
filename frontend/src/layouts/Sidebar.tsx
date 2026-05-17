@@ -14,10 +14,10 @@ import {
 } from '@chakra-ui/react';
 import {
   IconBriefcase,
+  IconChartBar,
   IconFile,
   IconMenu2,
   IconSparkles,
-  IconUserCircle,
   IconX,
 } from '@tabler/icons-react';
 import { SidebarItem } from '@/components/ui/SidebarItem';
@@ -27,7 +27,7 @@ const NAV_ITEMS = [
   { to: '/', end: true, icon: IconSparkles, label: 'Generate' },
   { to: '/projects', icon: IconBriefcase, label: 'Projects' },
   { to: '/my-cvs', icon: IconFile, label: 'Resumes' },
-  { to: '/profile', icon: IconUserCircle, label: 'Profile' },
+  { to: '/stats', icon: IconChartBar, label: 'Статистика' },
 ] as const;
 
 function BrandMark() {

@@ -24,8 +24,8 @@ import { GradientButton } from '@/components/ui/GradientButton';
 
 const registerSchema = z
   .object({
-    first_name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-    last_name: z.string().min(2, 'Фамилия должна содержать минимум 2 символа'),
+    first_name: z.string().trim().max(100).optional(),
+    last_name: z.string().trim().max(100).optional(),
     email: z.string().email('Неверный email адрес'),
     password: z.string().min(8, 'Минимум 8 символов'),
     confirmPassword: z.string(),
@@ -58,8 +58,14 @@ const RegisterPage: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const { confirmPassword: _confirm, ...registerData } = data;
-      await registerUser(registerData);
+      const { confirmPassword: _confirm, first_name, last_name, ...rest } = data;
+      const trimmedFirst = first_name?.trim();
+      const trimmedLast = last_name?.trim();
+      await registerUser({
+        ...rest,
+        first_name: trimmedFirst ? trimmedFirst : undefined,
+        last_name: trimmedLast ? trimmedLast : undefined,
+      });
       toast({
         title: 'Аккаунт создан',
         description: 'Теперь можно войти',
@@ -106,7 +112,7 @@ const RegisterPage: React.FC = () => {
                 <SimpleGrid columns={2} spacing={4}>
                   <FormControl isInvalid={!!errors.first_name}>
                     <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                      Имя
+                      Имя (необязательно)
                     </FormLabel>
                     <Input placeholder="Иван" {...register('first_name')} />
                     <FormErrorMessage>{errors.first_name?.message}</FormErrorMessage>
@@ -114,7 +120,7 @@ const RegisterPage: React.FC = () => {
 
                   <FormControl isInvalid={!!errors.last_name}>
                     <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
-                      Фамилия
+                      Фамилия (необязательно)
                     </FormLabel>
                     <Input placeholder="Иванов" {...register('last_name')} />
                     <FormErrorMessage>{errors.last_name?.message}</FormErrorMessage>

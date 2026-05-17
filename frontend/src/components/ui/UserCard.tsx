@@ -7,6 +7,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { IconLogout } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 
 function getInitials(firstName?: string | null, lastName?: string | null, email?: string): string {
@@ -29,6 +30,7 @@ function getDisplayName(firstName?: string | null, lastName?: string | null, ema
 export function UserCard() {
   const { user, logout, isLogoutLoading } = useAuth();
   const toast = useToast();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -45,7 +47,6 @@ export function UserCard() {
         isClosable: true,
       });
     } catch (err) {
-      // useAuth removes auth state regardless; surface error softly
       toast({
         title: 'Logout failed',
         description: err instanceof Error ? err.message : 'Unknown error',
@@ -53,6 +54,15 @@ export function UserCard() {
         duration: 3000,
         isClosable: true,
       });
+    }
+  };
+
+  const goToProfile = () => navigate('/profile');
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToProfile();
     }
   };
 
@@ -65,6 +75,19 @@ export function UserCard() {
       borderRadius="2xl"
       bg="surface.glass"
       border="1px solid rgba(255,255,255,0.6)"
+      cursor="pointer"
+      role="button"
+      tabIndex={0}
+      aria-label="Открыть профиль"
+      onClick={goToProfile}
+      onKeyDown={handleKeyDown}
+      transition="background 0.15s ease"
+      _hover={{ bg: 'surface.glassStrong' }}
+      _focusVisible={{
+        outline: '2px solid',
+        outlineColor: 'accent.500',
+        outlineOffset: '2px',
+      }}
     >
       <Flex
         align="center"
@@ -103,7 +126,11 @@ export function UserCard() {
           size="sm"
           variant="ghost"
           isLoading={isLogoutLoading}
-          onClick={handleLogout}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLogout();
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
           color="slate.500"
           _hover={{ color: 'danger.500', bg: 'surface.glassStrong' }}
         />
