@@ -10,6 +10,7 @@ import UserCVPage from '@/pages/UserCVPage';
 import ProjectsPage from '@/pages/ProjectsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import StatsPage from '@/pages/StatsPage';
+import AutoParsePage from '@/pages/AutoParsePage';
 
 import AppShell from '@/layouts/AppShell';
 
@@ -79,6 +80,17 @@ function App() {
           <PrivateRoute>
             <AppShell>
               <StatsPage />
+            </AppShell>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/auto-parse"
+        element={
+          <PrivateRoute>
+            <AppShell>
+              <AutoParsePage />
             </AppShell>
           </PrivateRoute>
         }

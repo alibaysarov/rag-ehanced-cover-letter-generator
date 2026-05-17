@@ -3,7 +3,8 @@
     "generate": "Generate",
     "projects": "Projects",
     "resumes": "Resumes",
-    "stats": "Statistics"
+    "stats": "Statistics",
+    "autoParse": "Auto Parse"
   },
   "auth": {
     "login": {
@@ -265,6 +266,19 @@
     "signOutFailed": "Sign out failed",
     "unknownError": "Unknown error",
     "openProfile": "Open profile"
+  },
+  "autoParse": {
+    "title": "Auto Parse",
+    "subtitle": "Search and scrape vacancies from hh.ru automatically",
+    "parse": "Parse",
+    "parsing": "Parsing...",
+    "saved": "saved",
+    "status": "Status",
+    "open": "Open",
+    "close": "Close",
+    "history": "History",
+    "noVacancies": "No vacancies yet",
+    "vacancyLink": "View on hh.ru"
   },
   "datePicker": {
     "weekDays": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],

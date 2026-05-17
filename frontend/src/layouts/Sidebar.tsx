@@ -17,6 +17,7 @@ import {
   IconChartBar,
   IconFile,
   IconMenu2,
+  IconSearch,
   IconSparkles,
   IconX,
 } from '@tabler/icons-react';
@@ -59,6 +60,7 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
     { to: '/projects', icon: IconBriefcase, label: t('nav.projects') },
     { to: '/my-cvs', icon: IconFile, label: t('nav.resumes') },
     { to: '/stats', icon: IconChartBar, label: t('nav.stats') },
+    { to: '/auto-parse', icon: IconSearch, label: t('nav.autoParse') },
   ];
 
   return (
