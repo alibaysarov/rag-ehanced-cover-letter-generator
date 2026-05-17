@@ -51,6 +51,8 @@ interface LetterOutputProps {
   jobUrl?: string;
   jobName?: string;
   generationTimeMs?: number | null;
+  onSaved?: () => void;
+  onSwitchToText?: () => void;
 }
 
 type Tab = 'original' | 'translated';
@@ -167,6 +169,33 @@ function ErrorState({ message }: { message: string }) {
       <Text fontSize="sm" color="slate.500" maxW="360px">
         {message}
       </Text>
+    </Flex>
+  );
+}
+
+function UrlParseErrorState({ onSwitchToText }: { onSwitchToText?: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      minH="640px"
+      px={10}
+      textAlign="center"
+      gap={4}
+    >
+      <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
+        {t('letterOutput.urlParseErrorTitle')}
+      </Text>
+      <Text fontSize="sm" color="slate.500" maxW="360px">
+        {t('letterOutput.urlParseErrorHint')}
+      </Text>
+      {onSwitchToText && (
+        <Button onClick={onSwitchToText} size="sm" variant="outline" mt={2}>
+          {t('letterOutput.switchToText')}
+        </Button>
+      )}
     </Flex>
   );
 }
@@ -388,11 +417,13 @@ function AppliedButton({
   jobName,
   letterText,
   generationTimeMs,
+  onSaved,
 }: {
   jobUrl?: string;
   jobName?: string;
   letterText: string;
   generationTimeMs?: number | null;
+  onSaved?: () => void;
 }) {
   const toast = useToast();
   const { t } = useTranslation();
@@ -411,6 +442,7 @@ function AppliedButton({
     },
     onSuccess: () => {
       setSaved(true);
+      onSaved?.();
       queryClient.invalidateQueries({ queryKey: TODAY_SUMMARY_QUERY_KEY });
       toast({
         title: t('letterOutput.applySuccessTitle'),
@@ -494,6 +526,8 @@ export function LetterOutput({
   jobUrl,
   jobName,
   generationTimeMs,
+  onSaved,
+  onSwitchToText,
 }: LetterOutputProps) {
   const toast = useToast();
   const { t } = useTranslation();
@@ -560,7 +594,9 @@ export function LetterOutput({
   if (status === 'error' && error) {
     return (
       <GlassCard padding={0}>
-        <ErrorState message={error} />
+        {error === 'URL_PARSE_ERROR'
+          ? <UrlParseErrorState onSwitchToText={onSwitchToText} />
+          : <ErrorState message={error} />}
       </GlassCard>
     );
   }
@@ -585,6 +621,7 @@ export function LetterOutput({
               jobName={jobName}
               letterText={content}
               generationTimeMs={generationTimeMs}
+              onSaved={onSaved}
             />
           )}
           <FloatingToolbar

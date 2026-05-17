@@ -101,6 +101,12 @@ export default function LetterGenerator() {
           jobUrl={mode === 'url' ? url : undefined}
           jobName={mode === 'text' ? name : undefined}
           generationTimeMs={generationTimeMs}
+          onSaved={() => {
+            setUrl('');
+            setName('');
+            setDescription('');
+          }}
+          onSwitchToText={() => setMode('text')}
         />
       </Grid>
     </Box>

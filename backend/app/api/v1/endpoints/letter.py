@@ -37,7 +37,10 @@ async def _sse_wrap(
 ) -> AsyncGenerator[str, None]:
     try:
         async for delta in generator:
-            if delta in ("__PARSING__", "__READY__"):
+            if delta == "__URL_PARSE_ERROR__":
+                yield f"data: {json.dumps({'error': 'URL_PARSE_ERROR'})}\n\n"
+                return
+            elif delta in ("__PARSING__", "__READY__"):
                 yield f"data: {json.dumps({'status': delta})}\n\n"
             else:
                 yield f"data: {json.dumps({'delta': delta})}\n\n"

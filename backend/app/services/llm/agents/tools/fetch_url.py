@@ -21,7 +21,7 @@ async def parse_hh(url: str):
             return html
 
     except Exception as e:
-        print(f"Ошибка при парсинге {url}: {e}")
+        raise RuntimeError(f"Ошибка при парсинге {url}: {e}") from e
 @tool
 def fetch_webpage(url: str) -> str:
     """
