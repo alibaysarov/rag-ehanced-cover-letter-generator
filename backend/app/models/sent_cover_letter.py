@@ -13,4 +13,5 @@ class SentCoverLetter(SQLModel, table=True):
     type: str = Field(default="other")  # "hh.ru" | "linkedin" | "other"
     letter_text: str = Field(nullable=False)
     is_accepted: bool = Field(default=False)
+    generation_time_ms: Optional[int] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)

@@ -11,13 +11,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { IconCalendar, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-
-const WEEK_DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-
-const MONTHS_RU = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
-];
+import { useTranslation } from 'react-i18next';
 
 function toYMD(date: Date): string {
   const y = date.getFullYear();
@@ -61,9 +55,13 @@ interface CalendarProps {
 }
 
 function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
+  const { t } = useTranslation();
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const weekDays = t('datePicker.weekDays', { returnObjects: true }) as string[];
+  const months = t('datePicker.months', { returnObjects: true }) as string[];
 
   const days = daysInMonth(viewYear, viewMonth);
   const offset = firstDayOffset(viewYear, viewMonth);
@@ -116,7 +114,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
       {/* Month navigation */}
       <Flex align="center" justify="space-between" mb={3}>
         <IconButton
-          aria-label="Предыдущий месяц"
+          aria-label={t('datePicker.prevMonth')}
           icon={<IconChevronLeft size={16} stroke={2} />}
           size="xs"
           variant="ghost"
@@ -126,10 +124,10 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           borderRadius="lg"
         />
         <Text fontSize="sm" fontWeight={600} color="slate.800">
-          {MONTHS_RU[viewMonth]} {viewYear}
+          {months[viewMonth]} {viewYear}
         </Text>
         <IconButton
-          aria-label="Следующий месяц"
+          aria-label={t('datePicker.nextMonth')}
           icon={<IconChevronRight size={16} stroke={2} />}
           size="xs"
           variant="ghost"
@@ -142,7 +140,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
 
       {/* Weekday headers */}
       <Grid templateColumns="repeat(7, 1fr)" mb={1}>
-        {WEEK_DAYS.map((d) => (
+        {weekDays.map((d) => (
           <Flex key={d} justify="center" align="center" h="28px">
             <Text fontSize="xs" fontWeight={600} color="slate.400">
               {d}
@@ -211,7 +209,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
 
       {/* Hint */}
       <Text mt={3} fontSize="xs" color="slate.400" textAlign="center">
-        {activeInput === 'from' ? 'Выберите дату начала' : 'Выберите дату окончания'}
+        {activeInput === 'from' ? t('datePicker.selectFrom') : t('datePicker.selectTo')}
       </Text>
     </Box>
   );
@@ -228,6 +226,7 @@ interface DateRangePickerProps {
 }
 
 export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
+  const { t } = useTranslation();
   const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null);
   const [fromInput, setFromInput] = useState(value.from);
   const [toInput, setToInput] = useState(value.to);
@@ -310,7 +309,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
       <Flex gap={3} align="center" flexWrap="wrap">
         <Box>
           <Text fontSize="xs" fontWeight={500} color="slate.500" mb={1}>
-            С
+            {t('datePicker.from')}
           </Text>
           <InputGroup size="sm" w="160px">
             <InputLeftElement pointerEvents="none" color="slate.400" h="full">
@@ -320,7 +319,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
               value={fromInput}
               onChange={(e) => handleFromInput(e.target.value)}
               onFocus={() => openCalendar('from')}
-              placeholder="ГГГГ-ММ-ДД"
+              placeholder={t('datePicker.placeholder')}
               sx={inputSx}
               pl={8}
             />
@@ -331,7 +330,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
         <Box>
           <Text fontSize="xs" fontWeight={500} color="slate.500" mb={1}>
-            По
+            {t('datePicker.to')}
           </Text>
           <InputGroup size="sm" w="160px">
             <InputLeftElement pointerEvents="none" color="slate.400" h="full">
@@ -341,7 +340,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
               value={toInput}
               onChange={(e) => handleToInput(e.target.value)}
               onFocus={() => openCalendar('to')}
-              placeholder="ГГГГ-ММ-ДД"
+              placeholder={t('datePicker.placeholder')}
               sx={inputSx}
               pl={8}
             />

@@ -23,6 +23,7 @@ import {
 } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/api/client';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { DateRangePicker } from '@/components/ui/DateRangePicker';
@@ -87,12 +88,6 @@ function formatDateRu(isoDate: string): string {
   return `${match[3]}.${match[2]}.${match[1]}`;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  hh_ru: 'hh.ru',
-  linkedin: 'LinkedIn',
-  other: 'Другие',
-};
-
 const TYPE_COLORS: Record<string, string> = {
   hh_ru: 'orange',
   linkedin: 'blue',
@@ -104,6 +99,14 @@ const PAGE_SIZE = 10;
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function TypeBadge({ type }: { type: string }) {
+  const { t } = useTranslation();
+
+  const TYPE_LABELS: Record<string, string> = {
+    hh_ru: 'hh.ru',
+    linkedin: 'LinkedIn',
+    other: t('stats.others'),
+  };
+
   return (
     <Badge
       colorScheme={TYPE_COLORS[type] ?? 'gray'}
@@ -125,11 +128,13 @@ interface TypeTabsProps {
 }
 
 function TypeTabs({ value, onChange }: TypeTabsProps) {
+  const { t } = useTranslation();
+
   const options: { value: TypeFilter; label: string }[] = [
-    { value: '', label: 'Все' },
+    { value: '', label: t('stats.all') },
     { value: 'hh_ru', label: 'hh.ru' },
     { value: 'linkedin', label: 'LinkedIn' },
-    { value: 'other', label: 'Другие' },
+    { value: 'other', label: t('stats.others') },
   ];
 
   return (
@@ -192,6 +197,7 @@ function SummaryTable({
   dateFrom: string;
   dateTo: string;
 }) {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useQuery<SummaryRow[], Error>({
     queryKey: SUMMARY_KEY(dateFrom, dateTo),
     queryFn: async () => {
@@ -214,7 +220,7 @@ function SummaryTable({
         letterSpacing="-0.01em"
         mb={4}
       >
-        Сводка по дням
+        {t('stats.summaryTitle')}
       </Text>
 
       {isLoading && (
@@ -225,13 +231,13 @@ function SummaryTable({
 
       {isError && (
         <Text fontSize="sm" color="danger.500">
-          Не удалось загрузить сводку
+          {t('stats.summaryError')}
         </Text>
       )}
 
       {data && data.length === 0 && (
         <Text fontSize="sm" color="slate.500">
-          Нет данных за выбранный период
+          {t('stats.noSummaryData')}
         </Text>
       )}
 
@@ -249,7 +255,7 @@ function SummaryTable({
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Дата
+                  {t('stats.date')}
                 </Th>
                 <Th
                   color="slate.500"
@@ -285,7 +291,7 @@ function SummaryTable({
                   isNumeric
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Другие
+                  {t('stats.others')}
                 </Th>
                 <Th
                   color="slate.800"
@@ -297,7 +303,7 @@ function SummaryTable({
                   isNumeric
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Итого
+                  {t('stats.total')}
                 </Th>
               </Tr>
             </Thead>
@@ -375,6 +381,7 @@ function ApplicationsList({
   onPageChange: (p: number) => void;
 }) {
   const toast = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery<SentLettersPage, Error>({
@@ -412,7 +419,7 @@ function ApplicationsList({
     },
     onError: (err) => {
       toast({
-        title: 'Ошибка обновления',
+        title: t('stats.updateError'),
         description: err.message,
         status: 'error',
         duration: 3000,
@@ -433,7 +440,7 @@ function ApplicationsList({
         letterSpacing="-0.01em"
         mb={4}
       >
-        Отклики
+        {t('stats.applicationsTitle')}
       </Text>
 
       {isLoading && (
@@ -444,13 +451,13 @@ function ApplicationsList({
 
       {isError && (
         <Text fontSize="sm" color="danger.500">
-          Не удалось загрузить отклики
+          {t('stats.applicationsError')}
         </Text>
       )}
 
       {data && data.items.length === 0 && (
         <Text fontSize="sm" color="slate.500" py={4}>
-          Откликов за выбранный период нет
+          {t('stats.noApplications')}
         </Text>
       )}
 
@@ -468,7 +475,7 @@ function ApplicationsList({
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Дата
+                  {t('stats.date')}
                 </Th>
                 <Th
                   color="slate.500"
@@ -479,7 +486,7 @@ function ApplicationsList({
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Тип
+                  {t('stats.type')}
                 </Th>
                 <Th
                   color="slate.500"
@@ -490,7 +497,7 @@ function ApplicationsList({
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Вакансия
+                  {t('stats.vacancy')}
                 </Th>
                 <Th
                   color="slate.500"
@@ -501,7 +508,7 @@ function ApplicationsList({
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
                 >
-                  Статус
+                  {t('stats.status')}
                 </Th>
               </Tr>
             </Thead>
@@ -576,7 +583,7 @@ function ApplicationsList({
                         fontWeight={600}
                         color={item.is_accepted ? 'green.600' : 'slate.400'}
                       >
-                        {item.is_accepted ? 'Принято' : 'Ожидает'}
+                        {item.is_accepted ? t('stats.accepted') : t('stats.pending')}
                       </Text>
                     </Flex>
                   </Td>
@@ -591,11 +598,11 @@ function ApplicationsList({
       {data && data.total > PAGE_SIZE && (
         <Flex align="center" justify="space-between" mt={5} flexWrap="wrap" gap={3}>
           <Text fontSize="sm" color="slate.500">
-            Страница{' '}
+            {t('stats.page')}{' '}
             <Text as="span" fontWeight={600} color="slate.700">
               {page}
             </Text>{' '}
-            из{' '}
+            {t('stats.of')}{' '}
             <Text as="span" fontWeight={600} color="slate.700">
               {totalPages}
             </Text>
@@ -611,7 +618,7 @@ function ApplicationsList({
               color="slate.600"
               _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
             >
-              Назад
+              {t('stats.prev')}
             </Button>
             <Button
               size="sm"
@@ -623,7 +630,7 @@ function ApplicationsList({
               color="slate.600"
               _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
             >
-              Вперёд
+              {t('stats.next')}
             </Button>
           </Flex>
         </Flex>
@@ -636,6 +643,7 @@ function ApplicationsList({
 
 export default function StatsPage() {
   const toast = useToast();
+  const { t } = useTranslation();
   const [dateRange, setDateRange] = useState<DateRange>({
     from: thirtyDaysAgoYMD(),
     to: todayYMD(),
@@ -650,8 +658,8 @@ export default function StatsPage() {
     setPage(1);
   };
 
-  const handleTypeChange = (t: TypeFilter) => {
-    setTypeFilter(t);
+  const handleTypeChange = (tp: TypeFilter) => {
+    setTypeFilter(tp);
     setPage(1);
   };
 
@@ -673,8 +681,8 @@ export default function StatsPage() {
       URL.revokeObjectURL(url);
     } catch {
       toast({
-        title: 'Ошибка экспорта',
-        description: 'Не удалось скачать CSV',
+        title: t('stats.exportErrorTitle'),
+        description: t('stats.exportErrorDesc'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -701,10 +709,10 @@ export default function StatsPage() {
             letterSpacing="-0.02em"
             mb={1}
           >
-            Статистика откликов
+            {t('stats.title')}
           </Heading>
           <Text color="slate.500" fontSize="sm">
-            Отслеживайте свои отклики на вакансии и результаты
+            {t('stats.subtitle')}
           </Text>
         </Box>
 
@@ -728,7 +736,7 @@ export default function StatsPage() {
               fontWeight={600}
               leftIcon={<IconDownload size={15} stroke={2} />}
               isLoading={isExporting}
-              loadingText="Экспорт..."
+              loadingText={t('stats.exporting')}
               onClick={handleExportCsv}
               sx={{
                 color: 'white',
@@ -744,7 +752,7 @@ export default function StatsPage() {
                 },
               }}
             >
-              Экспорт CSV
+              {t('stats.exportCsv')}
             </Button>
           </Flex>
         </GlassCard>

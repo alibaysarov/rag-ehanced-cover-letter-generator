@@ -26,6 +26,7 @@ class SentCoverLetterCreate(BaseModel):
     url: Optional[str] = None
     job_name: Optional[str] = None
     letter_text: str
+    generation_time_ms: Optional[int] = None
 
 
 class SentCoverLetterRead(BaseModel):
@@ -91,6 +92,7 @@ def create_sent_letter(
         url=body.url,
         job_name=body.job_name,
         letter_text=body.letter_text,
+        generation_time_ms=body.generation_time_ms,
     )
     return SentCoverLetterRead.model_validate(record)
 

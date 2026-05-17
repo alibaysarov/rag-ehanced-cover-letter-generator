@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Box, Grid, Heading, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { useStreamLetter, useStreamTranslate } from '@/hooks/useLetter';
 import LetterForm, { type LetterFormMode } from '@/components/letter/LetterForm';
 import LetterOutput from '@/components/letter/LetterOutput';
 
 export default function LetterGenerator() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<LetterFormMode>('url');
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
@@ -15,6 +17,7 @@ export default function LetterGenerator() {
     content: streamContent,
     status: streamStatus,
     error: streamError,
+    generationTimeMs,
     streamFromUrl,
     streamFromText,
     reset: resetStream,
@@ -55,10 +58,10 @@ export default function LetterGenerator() {
           letterSpacing="-0.02em"
           mb={1}
         >
-          Cover Letter Generator
+          {t('letterGenerator.title')}
         </Heading>
         <Text color="slate.500" fontSize="sm">
-          Сгенерируйте сопроводительное письмо под конкретную вакансию
+          {t('letterGenerator.subtitle')}
         </Text>
       </Box>
 
@@ -94,6 +97,7 @@ export default function LetterGenerator() {
           onResetTranslate={resetTranslate}
           jobUrl={mode === 'url' ? url : undefined}
           jobName={mode === 'text' ? name : undefined}
+          generationTimeMs={generationTimeMs}
         />
       </Grid>
     </Box>

@@ -18,6 +18,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
+import { useTranslation } from 'react-i18next';
 import AnimatedListInput from './AnimatedListInput';
 
 export interface ProjectInput {
@@ -46,11 +47,6 @@ export const emptyProject = (): ProjectInput => ({
   technologies: [],
 });
 
-const MONTHS = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
-];
-
 interface ProjectFormCardProps {
   value: ProjectInput;
   onChange: (next: ProjectInput) => void;
@@ -66,6 +62,9 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
   index,
   nameError,
 }) => {
+  const { t } = useTranslation();
+  const months = t('projectForm.months', { returnObjects: true }) as string[];
+
   const update = <K extends keyof ProjectInput>(key: K, v: ProjectInput[K]) => {
     onChange({ ...value, [key]: v });
   };
@@ -74,16 +73,19 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
     onChange({ ...value, currently_working: checked, end_month: '', end_year: '' });
   };
 
+  const heading =
+    typeof index === 'number'
+      ? t('projectForm.projectN', { n: index + 1 })
+      : t('projectForm.project');
+
   return (
     <Card variant="outline">
       <CardBody>
         <HStack justify="space-between" mb={3} align="start">
-          <Heading size="sm">
-            {typeof index === 'number' ? `Проект #${index + 1}` : 'Проект'}
-          </Heading>
+          <Heading size="sm">{heading}</Heading>
           {onRemove && (
             <IconButton
-              aria-label="Удалить проект"
+              aria-label={t('projectForm.deleteAriaLabel')}
               icon={<CloseIcon boxSize={3} />}
               size="sm"
               variant="ghost"
@@ -94,7 +96,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
         </HStack>
         <VStack spacing={4} align="stretch">
           <FormControl isInvalid={!!nameError} isRequired>
-            <FormLabel>Название</FormLabel>
+            <FormLabel>{t('projectForm.name')}</FormLabel>
             <Input
               value={value.name}
               onChange={(e) => update('name', e.target.value)}
@@ -104,7 +106,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
           </FormControl>
 
           <FormControl>
-            <FormLabel>Сайт (опционально)</FormLabel>
+            <FormLabel>{t('projectForm.website')}</FormLabel>
             <Input
               value={value.website}
               onChange={(e) => update('website', e.target.value)}
@@ -114,10 +116,12 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
           </FormControl>
 
           <Box>
-            <FormLabel mb={2}>Период работы</FormLabel>
+            <FormLabel mb={2}>{t('projectForm.startDate')}</FormLabel>
             <SimpleGrid columns={2} spacing={3} mb={2}>
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>Начало</FormLabel>
+                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                  {t('projectForm.startDate')}
+                </FormLabel>
                 <HStack spacing={2}>
                   <Select
                     placeholder="Месяц"
@@ -127,7 +131,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
                       update('start_month', e.target.value ? Number(e.target.value) : '')
                     }
                   >
-                    {MONTHS.map((m, i) => (
+                    {months.map((m, i) => (
                       <option key={i + 1} value={i + 1}>{m}</option>
                     ))}
                   </Select>
@@ -144,7 +148,9 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>Конец</FormLabel>
+                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                  {t('projectForm.endDate')}
+                </FormLabel>
                 <HStack spacing={2}>
                   <Select
                     placeholder="Месяц"
@@ -155,7 +161,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
                       update('end_month', e.target.value ? Number(e.target.value) : '')
                     }
                   >
-                    {MONTHS.map((m, i) => (
+                    {months.map((m, i) => (
                       <option key={i + 1} value={i + 1}>{m}</option>
                     ))}
                   </Select>
@@ -178,13 +184,13 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               onChange={(e) => handleCurrentlyWorking(e.target.checked)}
               size="sm"
             >
-              Работаю сейчас
+              {t('projectForm.currentlyWorking')}
             </Checkbox>
           </Box>
 
           <Box>
             <AnimatedListInput
-              label="Навыки (skills)"
+              label={t('projectForm.skills')}
               values={value.skills}
               onChange={(v) => update('skills', v)}
               placeholder="проектирование REST API"
@@ -193,7 +199,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
 
           <Box>
             <AnimatedListInput
-              label="Достижения (achievements)"
+              label={t('projectForm.achievements')}
               values={value.achievements}
               onChange={(v) => update('achievements', v)}
               placeholder="Создал REST API для мобильного приложения"
@@ -202,7 +208,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
 
           <Box>
             <AnimatedListInput
-              label="Технологии (technologies)"
+              label={t('projectForm.technologies')}
               values={value.technologies}
               onChange={(v) => update('technologies', v)}
               placeholder="Node.js"

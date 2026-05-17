@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { IconLogout } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
 
 function getInitials(firstName?: string | null, lastName?: string | null, email?: string): string {
@@ -31,6 +32,7 @@ export function UserCard() {
   const { user, logout, isLogoutLoading } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (!user) return null;
 
@@ -41,15 +43,15 @@ export function UserCard() {
     try {
       await logout();
       toast({
-        title: 'Logged out',
+        title: t('userCard.signOutTitle'),
         status: 'success',
         duration: 2500,
         isClosable: true,
       });
     } catch (err) {
       toast({
-        title: 'Logout failed',
-        description: err instanceof Error ? err.message : 'Unknown error',
+        title: t('userCard.signOutFailed'),
+        description: err instanceof Error ? err.message : t('userCard.unknownError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -78,7 +80,7 @@ export function UserCard() {
       cursor="pointer"
       role="button"
       tabIndex={0}
-      aria-label="Открыть профиль"
+      aria-label={t('userCard.openProfile')}
       onClick={goToProfile}
       onKeyDown={handleKeyDown}
       transition="background 0.15s ease"
@@ -119,9 +121,9 @@ export function UserCard() {
           {user.email}
         </Text>
       </Box>
-      <Tooltip label="Sign out" hasArrow placement="top">
+      <Tooltip label={t('userCard.signOut')} hasArrow placement="top">
         <IconButton
-          aria-label="Sign out"
+          aria-label={t('userCard.signOut')}
           icon={<IconLogout size={18} stroke={1.75} />}
           size="sm"
           variant="ghost"
