@@ -135,7 +135,7 @@ interface VacancyModalProps {
 export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied }: VacancyModalProps) {
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const { content, status, streamFromText, reset } = useStreamLetter();
+  const { content, status, streamFromText, reset, preload } = useStreamLetter();
   const { hasCopied, onCopy } = useClipboard(content);
   const [selectedLang, setSelectedLang] = useState(() => resolveDefaultLang(i18n.language));
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
@@ -143,9 +143,14 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
   const didAutoGenerate = useRef(false);
 
   useEffect(() => {
-    if (isOpen && autoGenerate && !didAutoGenerate.current) {
-      didAutoGenerate.current = true;
-      streamFromText({ name: vacancy.job_title, description: vacancy.job_text, lang: selectedLang });
+    if (isOpen) {
+      if (vacancy.cover_letter_text) {
+        // Letter was pre-generated via batch — show it immediately
+        preload(vacancy.cover_letter_text);
+      } else if (autoGenerate && !didAutoGenerate.current) {
+        didAutoGenerate.current = true;
+        streamFromText({ name: vacancy.job_title, description: vacancy.job_text, lang: selectedLang });
+      }
     }
     if (!isOpen) {
       didAutoGenerate.current = false;

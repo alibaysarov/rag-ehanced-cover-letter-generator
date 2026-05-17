@@ -15,6 +15,7 @@ interface UseStreamLetterReturn {
   streamFromUrl: (req: StreamLetterFromUrlRequest) => void;
   streamFromText: (req: StreamLetterFromTextRequest) => void;
   reset: () => void;
+  preload: (text: string) => void;
 }
 
 export function useStreamLetter(): UseStreamLetterReturn {
@@ -131,5 +132,13 @@ export function useStreamLetter(): UseStreamLetterReturn {
     [_stream],
   );
 
-  return { content, status, error, generationTimeMs, streamFromUrl, streamFromText, reset };
+  const preload = useCallback((text: string) => {
+    abortRef.current?.abort();
+    setContent(text);
+    setStatus('done');
+    setError(null);
+    setGenerationTimeMs(null);
+  }, []);
+
+  return { content, status, error, generationTimeMs, streamFromUrl, streamFromText, reset, preload };
 }

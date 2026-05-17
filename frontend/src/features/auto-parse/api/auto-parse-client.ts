@@ -36,11 +36,31 @@ export const autoParseApi = {
     return res.data;
   },
 
+  async generateLetters(jobId: number): Promise<{ status: string }> {
+    const res = await authApi.post<{ status: string }>(
+      `/auto-parse/jobs/${jobId}/generate`,
+    );
+    return res.data;
+  },
+
+  async getGenerationStatus(jobId: number): Promise<{ is_running: boolean; generated: number; total: number }> {
+    const res = await authApi.get<{ is_running: boolean; generated: number; total: number }>(
+      `/auto-parse/jobs/${jobId}/generate-status`,
+    );
+    return res.data;
+  },
+
   // EventSource cannot set Authorization headers, so the JWT is passed as a
   // query parameter. The backend must accept ?token=<jwt> for this endpoint.
   createEventSource(jobId: number): EventSource {
     const token = TokenManager.getAccessToken() ?? '';
     const url = `${API_BASE_URL}/auto-parse/stream/${jobId}?token=${encodeURIComponent(token)}`;
+    return new EventSource(url);
+  },
+
+  createGenerateEventSource(jobId: number): EventSource {
+    const token = TokenManager.getAccessToken() ?? '';
+    const url = `${API_BASE_URL}/auto-parse/jobs/${jobId}/generate-stream?token=${encodeURIComponent(token)}`;
     return new EventSource(url);
   },
 };
