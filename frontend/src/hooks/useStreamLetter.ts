@@ -125,6 +125,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
       const fd = new FormData();
       fd.append('name', req.name);
       fd.append('description', req.description);
+      if (req.lang) fd.append('lang', req.lang);
       _stream('text/stream', fd);
     },
     [_stream],

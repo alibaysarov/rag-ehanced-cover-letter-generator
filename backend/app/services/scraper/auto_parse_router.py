@@ -12,6 +12,7 @@ from app.database import get_db
 from app.helper.user import get_user_repository
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
+from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 from app.repository.user_repository import UserRepository
 from app.services.jwt import JwtService
 from app.services.scraper.hh_scraper import get_or_create_queue, remove_queue, run_parse_job
@@ -31,6 +32,10 @@ def _get_user_from_request(request: Request, user_repo: UserRepository) -> int:
 
 class StartParseRequest(BaseModel):
     query: str
+
+
+class MarkAppliedRequest(BaseModel):
+    letter_text: str = ""
 
 
 @router.post("/start")
@@ -84,6 +89,35 @@ def get_vacancies(
         .order_by(AutoParsedJob.id)
     ).all()
     return vacancies
+
+
+@router.patch("/vacancies/{vacancy_id}/applied")
+def mark_applied(
+    vacancy_id: int,
+    body: MarkAppliedRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repository),
+):
+    user_id = _get_user_from_request(request, user_repo)
+    vacancy = db.get(AutoParsedJob, vacancy_id)
+    if not vacancy or vacancy.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+
+    vacancy.is_applied = True
+    db.add(vacancy)
+
+    sent_repo = SentCoverLetterRepository(db)
+    sent_repo.create(
+        user_id=user_id,
+        url=vacancy.url,
+        job_name=vacancy.job_title,
+        letter_text=body.letter_text or vacancy.job_title,
+    )
+
+    db.commit()
+    db.refresh(vacancy)
+    return vacancy
 
 
 @router.get("/history")

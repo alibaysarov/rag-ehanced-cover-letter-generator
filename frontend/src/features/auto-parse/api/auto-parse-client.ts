@@ -29,6 +29,13 @@ export const autoParseApi = {
     return res.data;
   },
 
+  async markApplied(vacancyId: number, letterText?: string): Promise<AutoParsedJob> {
+    const res = await authApi.patch<AutoParsedJob>(`/auto-parse/vacancies/${vacancyId}/applied`, {
+      letter_text: letterText ?? '',
+    });
+    return res.data;
+  },
+
   // EventSource cannot set Authorization headers, so the JWT is passed as a
   // query parameter. The backend must accept ?token=<jwt> for this endpoint.
   createEventSource(jobId: number): EventSource {

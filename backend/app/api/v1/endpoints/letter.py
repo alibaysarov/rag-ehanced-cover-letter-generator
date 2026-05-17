@@ -260,6 +260,7 @@ async def stream_letter_from_text(
     request: Request,
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form(..., min_length=1),
+    lang: Optional[str] = Form(None, max_length=50),
     user_repo: UserRepository = Depends(get_user_repository),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
@@ -269,7 +270,7 @@ async def stream_letter_from_text(
         raise HTTPException(status_code=404, detail="User not found")
 
     return StreamingResponse(
-        _sse_wrap(cover_letter_service.stream_by_text(name, description, current_user.id)),
+        _sse_wrap(cover_letter_service.stream_by_text(name, description, current_user.id, lang=lang)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

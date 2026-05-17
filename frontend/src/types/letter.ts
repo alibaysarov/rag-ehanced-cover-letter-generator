@@ -45,6 +45,7 @@ export interface StreamLetterFromUrlRequest {
 export interface StreamLetterFromTextRequest {
   name: string;
   description: string;
+  lang?: string;
 }
 
 export type StreamStatus = 'idle' | 'parsing' | 'streaming' | 'done' | 'error';

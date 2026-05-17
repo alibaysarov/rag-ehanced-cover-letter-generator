@@ -156,6 +156,15 @@ async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], j
         if result is None:
             return
         with Session(engine) as session:
+            existing = session.exec(
+                select(AutoParsedJob).where(
+                    AutoParsedJob.user_id == user_id,
+                    AutoParsedJob.vacancy_id == result["vacancy_id"],
+                )
+            ).first()
+            if existing:
+                return
+
             job_row = AutoParsedJob(
                 user_id=user_id,
                 parsing_job_id=job_id,

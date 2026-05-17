@@ -16,5 +16,6 @@ export interface AutoParsedJob {
   url: string;
   job_title: string;
   job_text: string;
+  is_applied: boolean;
   created_at: string;
 }
