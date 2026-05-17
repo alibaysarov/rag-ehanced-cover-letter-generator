@@ -29,6 +29,11 @@ export const autoParseApi = {
     return res.data;
   },
 
+  async markViewed(vacancyId: number): Promise<AutoParsedJob> {
+    const res = await authApi.patch<AutoParsedJob>(`/auto-parse/vacancies/${vacancyId}/viewed`);
+    return res.data;
+  },
+
   async markApplied(vacancyId: number, letterText?: string): Promise<AutoParsedJob> {
     const res = await authApi.patch<AutoParsedJob>(`/auto-parse/vacancies/${vacancyId}/applied`, {
       letter_text: letterText ?? '',

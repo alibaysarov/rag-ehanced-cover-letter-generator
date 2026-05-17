@@ -15,6 +15,7 @@ class AutoParsedJob(SQLModel, table=True):
     job_title: str = Field(nullable=False)
     job_text: str = Field(nullable=False)
     is_applied: bool = Field(default=False)
+    is_viewed: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_generated: bool = Field(default=False)
     cover_letter_text: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))

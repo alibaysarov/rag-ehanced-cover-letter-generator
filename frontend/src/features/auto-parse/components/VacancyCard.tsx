@@ -6,10 +6,11 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { IconCheck, IconExternalLink, IconSparkles } from '@tabler/icons-react';
+import { IconCheck, IconEye, IconExternalLink, IconSparkles } from '@tabler/icons-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { VacancyModal } from './VacancyModal';
+import { autoParseApi } from '../api/auto-parse-client';
 import type { AutoParsedJob } from '../types';
 
 interface VacancyCardProps {
@@ -20,18 +21,27 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
+  const [isViewed, setIsViewed] = useState(vacancy.is_viewed);
   // is_generated is updated by the parent via SSE so we read it from the prop
   const isGenerated = vacancy.is_generated;
 
+  const openCard = () => {
+    onOpen();
+    if (!isViewed) {
+      setIsViewed(true);
+      autoParseApi.markViewed(vacancy.id).catch(() => setIsViewed(false));
+    }
+  };
+
   const handleCardClick = () => {
     setAutoGenerate(false);
-    onOpen();
+    openCard();
   };
 
   const handleGenerate = (e: React.MouseEvent) => {
     e.stopPropagation();
     setAutoGenerate(true);
-    onOpen();
+    openCard();
   };
 
   return (
@@ -46,19 +56,46 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
         <GlassCard hover padding={5}>
           <Flex direction="column" gap={3} h="100%">
             {/* Title row */}
-            <Flex align="flex-start" justify="space-between" gap={2}>
-              <Text
-                fontFamily="heading"
-                fontSize="md"
+            <Text
+              fontFamily="heading"
+              fontSize="md"
+              fontWeight={600}
+              color="slate.900"
+              letterSpacing="-0.01em"
+              noOfLines={2}
+            >
+              {vacancy.job_title}
+            </Text>
+
+            {/* Truncated description */}
+            <Text fontSize="sm" color="slate.600" lineHeight={1.65} noOfLines={3} flex="1">
+              {vacancy.job_text}
+            </Text>
+
+            {/* External link */}
+            <Box>
+              <Link
+                href={vacancy.url}
+                isExternal
+                display="inline-flex"
+                alignItems="center"
+                gap={1}
+                fontSize="xs"
                 fontWeight={600}
-                color="slate.900"
-                letterSpacing="-0.01em"
-                noOfLines={2}
-                flex="1"
+                color="aurora.indigo"
+                _hover={{ textDecoration: 'underline' }}
+                onClick={(e) => e.stopPropagation()}
               >
-                {vacancy.job_title}
-              </Text>
-              <Flex gap={1} flexShrink={0} flexWrap="wrap" justify="flex-end">
+                Открыть на hh.ru
+                <Box as="span" display="inline-flex" alignItems="center">
+                  <IconExternalLink size={12} stroke={2} />
+                </Box>
+              </Link>
+            </Box>
+
+            {/* Status badges */}
+            {(isGenerated || isApplied || isViewed) && (
+              <Flex gap={1} flexWrap="wrap">
                 {isGenerated && (
                   <Flex
                     align="center"
@@ -93,34 +130,25 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
                     </Text>
                   </Flex>
                 )}
+                {isViewed && (
+                  <Flex
+                    align="center"
+                    gap={1}
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    borderRadius="lg"
+                    px={2}
+                    py={0.5}
+                  >
+                    <IconEye size={11} stroke={2.5} color="var(--chakra-colors-gray-500)" />
+                    <Text fontSize="xs" fontWeight={600} color="gray.500" whiteSpace="nowrap">
+                      Просмотрено
+                    </Text>
+                  </Flex>
+                )}
               </Flex>
-            </Flex>
-
-            {/* Truncated description */}
-            <Text fontSize="sm" color="slate.600" lineHeight={1.65} noOfLines={3} flex="1">
-              {vacancy.job_text}
-            </Text>
-
-            {/* External link */}
-            <Box>
-              <Link
-                href={vacancy.url}
-                isExternal
-                display="inline-flex"
-                alignItems="center"
-                gap={1}
-                fontSize="xs"
-                fontWeight={600}
-                color="aurora.indigo"
-                _hover={{ textDecoration: 'underline' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                Открыть на hh.ru
-                <Box as="span" display="inline-flex" alignItems="center">
-                  <IconExternalLink size={12} stroke={2} />
-                </Box>
-              </Link>
-            </Box>
+            )}
 
             {/* Generate button */}
             <Box pt={1}>

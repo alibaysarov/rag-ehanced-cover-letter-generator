@@ -10,6 +10,7 @@ interface SummaryRow {
   linkedin: number;
   other: number;
   total: number;
+  time_spent: string;
 }
 
 function todayYMD(): string {
@@ -19,12 +20,13 @@ function todayYMD(): string {
 
 export const TODAY_SUMMARY_QUERY_KEY = ['stats', 'summary'] as const;
 
-export function TodayStatsCard() {
+export function TodayStatsCard({ disableSticky = false }: { disableSticky?: boolean }) {
   const today = todayYMD();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isFixed, setIsFixed] = useState(false);
 
   useEffect(() => {
+    if (disableSticky) return;
     const card = cardRef.current;
     if (!card) return;
     const observer = new IntersectionObserver(
@@ -33,7 +35,7 @@ export function TodayStatsCard() {
     );
     observer.observe(card);
     return () => observer.disconnect();
-  }, []);
+  }, [disableSticky]);
 
   const { data, isLoading } = useQuery<SummaryRow[], Error>({
     queryKey: [...TODAY_SUMMARY_QUERY_KEY, today, today],
@@ -101,6 +103,20 @@ export function TodayStatsCard() {
               {row?.total ?? 0}
             </Text>
           </Flex>
+
+          {row?.time_spent && row.time_spent !== '—' && (
+            <>
+              <Box w="1px" h="20px" bg="rgba(148,163,184,0.4)" flexShrink={0} />
+              <Flex align="center" gap={2}>
+                <Text fontSize="xs" color="slate.500" fontWeight={500}>
+                  Потрачено
+                </Text>
+                <Text fontSize="sm" fontWeight={700} color="slate.800" fontFamily="mono">
+                  {row.time_spent}
+                </Text>
+              </Flex>
+            </>
+          )}
         </Flex>
       )}
     </Flex>

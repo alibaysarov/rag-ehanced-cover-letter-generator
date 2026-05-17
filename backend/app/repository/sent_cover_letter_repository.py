@@ -97,7 +97,20 @@ class SentCoverLetterRepository:
         for r in records:
             day = r.created_at.date().isoformat()
             if day not in aggregated:
-                aggregated[day] = {"date": day, "hh_ru": 0, "linkedin": 0, "other": 0, "total": 0}
+                aggregated[day] = {
+                    "date": day,
+                    "hh_ru": 0,
+                    "linkedin": 0,
+                    "other": 0,
+                    "total": 0,
+                    "_earliest": r.created_at,
+                    "_latest": r.created_at,
+                }
+            else:
+                if r.created_at < aggregated[day]["_earliest"]:
+                    aggregated[day]["_earliest"] = r.created_at
+                if r.created_at > aggregated[day]["_latest"]:
+                    aggregated[day]["_latest"] = r.created_at
             if r.type == "hh_ru":
                 aggregated[day]["hh_ru"] += 1
             elif r.type == "linkedin":
@@ -106,7 +119,19 @@ class SentCoverLetterRepository:
                 aggregated[day]["other"] += 1
             aggregated[day]["total"] += 1
 
-        return sorted(aggregated.values(), key=lambda x: x["date"])
+        rows = []
+        for day_data in sorted(aggregated.values(), key=lambda x: x["date"]):
+            earliest = day_data.pop("_earliest")
+            latest = day_data.pop("_latest")
+            delta_sec = int((latest - earliest).total_seconds())
+            if delta_sec > 0:
+                hours, rem = divmod(delta_sec // 60, 60)
+                day_data["time_spent"] = f"{hours}ч {rem}м" if hours else f"{rem}м"
+            else:
+                day_data["time_spent"] = "—"
+            rows.append(day_data)
+
+        return rows
 
     # ------------------------------------------------------------------
     # Internal helpers
