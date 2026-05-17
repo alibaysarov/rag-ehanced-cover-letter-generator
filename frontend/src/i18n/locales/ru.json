@@ -3,7 +3,8 @@
     "generate": "Сгенерировать",
     "projects": "Проекты",
     "resumes": "Резюме",
-    "stats": "Статистика"
+    "stats": "Статистика",
+    "autoParse": "Авто Парсинг"
   },
   "auth": {
     "login": {
@@ -265,6 +266,19 @@
     "signOutFailed": "Ошибка выхода",
     "unknownError": "Неизвестная ошибка",
     "openProfile": "Открыть профиль"
+  },
+  "autoParse": {
+    "title": "Авто Парсинг",
+    "subtitle": "Автоматический поиск и парсинг вакансий с hh.ru",
+    "parse": "Парсить",
+    "parsing": "Парсинг...",
+    "saved": "сохранено",
+    "status": "Статус",
+    "open": "Открыть",
+    "close": "Закрыть",
+    "history": "История",
+    "noVacancies": "Вакансий пока нет",
+    "vacancyLink": "Открыть на hh.ru"
   },
   "datePicker": {
     "weekDays": ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],
