@@ -42,7 +42,7 @@ async def _block_resources(route, request):
         await route.continue_()
 
 
-async def _scrape_list_page(browser, query: str, page_num: int, semaphore: asyncio.Semaphore) -> list[str]:
+async def _scrape_list_page(browser, query: str, page_num: int, semaphore: asyncio.Semaphore) -> list[tuple[str, str]]:
     async with semaphore:
         page = await browser.new_page()
         try:
@@ -51,7 +51,7 @@ async def _scrape_list_page(browser, query: str, page_num: int, semaphore: async
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
             cards = await page.query_selector_all('[data-qa="vacancy-serp__vacancy"]')
-            ids = []
+            results = []
             for card in cards:
                 text = await card.inner_text()
                 if "Вы уже откликнулись" in text:
@@ -61,9 +61,13 @@ async def _scrape_list_page(browser, query: str, page_num: int, semaphore: async
                     continue
                 href = await btn.get_attribute("href") or ""
                 match = re.search(r'vacancyId=(\d+)', href)
-                if match:
-                    ids.append(match.group(1))
-            return ids
+                if not match:
+                    continue
+                vacancy_id = match.group(1)
+                title_el = await card.query_selector('[data-qa="serp-item__title-text"]')
+                title = (await title_el.inner_text()).strip() if title_el else ""
+                results.append((vacancy_id, title))
+            return results
         except Exception as e:
             logger.warning(f"Error scraping list page {page_num}: {e}")
             return []
@@ -94,7 +98,7 @@ async def _get_total_pages(browser, query: str) -> int:
         await page.close()
 
 
-async def _phase1_collect_ids(browser, query: str, job_id: int) -> list[str]:
+async def _phase1_collect_ids(browser, query: str, job_id: int) -> list[tuple[str, str]]:
     total_pages = await _get_total_pages(browser, query)
     total_pages = min(total_pages, HH_MAX_PAGES)
     logger.info(f"[job={job_id}] Total pages to scrape: {total_pages}")
@@ -105,17 +109,17 @@ async def _phase1_collect_ids(browser, query: str, job_id: int) -> list[str]:
         for page_num in range(0, total_pages)
     ]
     results = await asyncio.gather(*tasks)
-    all_ids = []
-    seen = set()
-    for page_ids in results:
-        for vid in page_ids:
-            if vid not in seen:
-                seen.add(vid)
-                all_ids.append(vid)
-    return all_ids
+    seen: set[str] = set()
+    all_items: list[tuple[str, str]] = []
+    for page_items in results:
+        for vacancy_id, title in page_items:
+            if vacancy_id not in seen:
+                seen.add(vacancy_id)
+                all_items.append((vacancy_id, title))
+    return all_items
 
 
-async def _scrape_vacancy(browser, vacancy_id: str, job_id: int, user_id: int, semaphore: asyncio.Semaphore) -> Optional[dict]:
+async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semaphore: asyncio.Semaphore) -> Optional[dict]:
     async with semaphore:
         page = await browser.new_page()
         try:
@@ -126,7 +130,8 @@ async def _scrape_vacancy(browser, vacancy_id: str, job_id: int, user_id: int, s
             title_el = await page.query_selector('[data-qa="vacancy-title"]')
             body_el = await page.query_selector('[data-qa="vacancy-description"]')
 
-            title = (await title_el.inner_text()).strip() if title_el else "Unknown"
+            detail_title = (await title_el.inner_text()).strip() if title_el else ""
+            title = detail_title or prefetched_title or "Unknown"
             body = (await body_el.inner_text()).strip() if body_el else ""
 
             return {
@@ -142,12 +147,12 @@ async def _scrape_vacancy(browser, vacancy_id: str, job_id: int, user_id: int, s
             await page.close()
 
 
-async def _phase2_fetch_details(browser, vacancy_ids: list[str], job_id: int, user_id: int) -> None:
+async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], job_id: int, user_id: int) -> None:
     semaphore = asyncio.Semaphore(4)
     queue = get_or_create_queue(job_id)
 
-    async def process_one(vacancy_id: str):
-        result = await _scrape_vacancy(browser, vacancy_id, job_id, user_id, semaphore)
+    async def process_one(vacancy_id: str, prefetched_title: str):
+        result = await _scrape_vacancy(browser, vacancy_id, prefetched_title, semaphore)
         if result is None:
             return
         with Session(engine) as session:
@@ -168,7 +173,7 @@ async def _phase2_fetch_details(browser, vacancy_ids: list[str], job_id: int, us
             session.commit()
 
             saved = parsing_job.saved_count if parsing_job else 0
-            total = parsing_job.total_found if parsing_job else len(vacancy_ids)
+            total = parsing_job.total_found if parsing_job else len(vacancy_items)
 
         await queue.put(json.dumps({
             "saved_count": saved,
@@ -176,7 +181,7 @@ async def _phase2_fetch_details(browser, vacancy_ids: list[str], job_id: int, us
             "status": "running",
         }))
 
-    await asyncio.gather(*[process_one(vid) for vid in vacancy_ids])
+    await asyncio.gather(*[process_one(vid, title) for vid, title in vacancy_items])
 
 
 async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
@@ -193,22 +198,22 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             try:
-                vacancy_ids = await _phase1_collect_ids(browser, query, job_id)
+                vacancy_items = await _phase1_collect_ids(browser, query, job_id)
 
                 with Session(engine) as session:
                     parsing_job = session.get(ParsingJob, job_id)
                     if parsing_job:
-                        parsing_job.total_found = len(vacancy_ids)
+                        parsing_job.total_found = len(vacancy_items)
                         session.add(parsing_job)
                         session.commit()
 
                 await queue.put(json.dumps({
                     "saved_count": 0,
-                    "total_found": len(vacancy_ids),
+                    "total_found": len(vacancy_items),
                     "status": "running",
                 }))
 
-                await _phase2_fetch_details(browser, vacancy_ids, job_id, user_id)
+                await _phase2_fetch_details(browser, vacancy_items, job_id, user_id)
             finally:
                 await browser.close()
 
