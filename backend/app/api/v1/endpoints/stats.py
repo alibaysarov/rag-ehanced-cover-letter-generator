@@ -57,6 +57,7 @@ class SummaryRow(BaseModel):
     linkedin: int
     other: int
     total: int
+    time_spent: str = "—"
 
 
 # ---------------------------------------------------------------------------
@@ -153,9 +154,9 @@ def export_sent_letters_csv(
 
     buffer = io.StringIO()
     writer = csv.writer(buffer)
-    writer.writerow(["Дата", "LinkedIn", "hh.ru", "Другие", "Итого"])
+    writer.writerow(["Дата", "LinkedIn", "hh.ru", "Другие", "Итого", "Потрачено времени"])
     for row in rows:
-        writer.writerow([row["date"], row["linkedin"], row["hh_ru"], row["other"], row["total"]])
+        writer.writerow([row["date"], row["linkedin"], row["hh_ru"], row["other"], row["total"], row.get("time_spent", "—")])
 
     buffer.seek(0)
     return StreamingResponse(

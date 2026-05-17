@@ -53,6 +53,7 @@ interface SummaryRow {
   linkedin: number;
   other: number;
   total: number;
+  time_spent: string;
 }
 
 type TypeFilter = '' | 'hh_ru' | 'linkedin' | 'other';
@@ -305,6 +306,17 @@ function SummaryTable({
                 >
                   {t('stats.total')}
                 </Th>
+                <Th
+                  color="slate.500"
+                  fontFamily="body"
+                  fontSize="xs"
+                  fontWeight={600}
+                  textTransform="none"
+                  letterSpacing="normal"
+                  borderColor="rgba(226,232,240,0.5)"
+                >
+                  Потрачено времени
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -354,6 +366,14 @@ function SummaryTable({
                     borderColor="rgba(226,232,240,0.4)"
                   >
                     {row.total}
+                  </Td>
+                  <Td
+                    fontSize="sm"
+                    color="slate.500"
+                    fontFamily="mono"
+                    borderColor="rgba(226,232,240,0.4)"
+                  >
+                    {row.time_spent}
                   </Td>
                 </Tr>
               ))}

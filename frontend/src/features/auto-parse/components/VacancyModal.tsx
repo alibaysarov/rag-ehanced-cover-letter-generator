@@ -15,7 +15,6 @@ import {
   ModalOverlay,
   Select,
   Text,
-  Tooltip,
   useClipboard,
 } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
@@ -206,7 +205,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
           pb={2}
           pr={12}
         >
-          <Flex align="center" gap={3} flexWrap="wrap">
+          <Flex align="center" gap={3} flexWrap="wrap" mb={3}>
             <Text>{vacancy.job_title}</Text>
             {isApplied && (
               <Flex
@@ -226,12 +225,12 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               </Flex>
             )}
           </Flex>
+          <TodayStatsCard disableSticky />
         </ModalHeader>
         <ModalCloseButton color="slate.500" top={4} right={4} />
 
         {/* ── Body ── */}
         <ModalBody pb={2}>
-          <TodayStatsCard />
 
           {/* Job description */}
           <Text
@@ -304,24 +303,26 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
 
               {/* Copy — only when content is ready */}
               {hasContent && !isGenerating && (
-                <Tooltip label={hasCopied ? 'Скопировано!' : 'Копировать'} placement="top" hasArrow>
-                  <Button
-                    size="xs"
-                    height={7}
-                    px={2.5}
-                    borderRadius="lg"
-                    variant="ghost"
-                    color={hasCopied ? 'green.500' : 'slate.500'}
-                    _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
-                    onClick={onCopy}
-                    aria-label="Копировать письмо"
-                  >
-                    {hasCopied ? <IconCheck size={14} stroke={2.5} /> : <IconCopy size={14} stroke={1.8} />}
-                  </Button>
-                </Tooltip>
+                <Button
+                  size="xs"
+                  height={7}
+                  px={3}
+                  borderRadius="lg"
+                  variant="outline"
+                  borderColor={hasCopied ? 'green.300' : 'rgba(226,232,240,0.8)'}
+                  color={hasCopied ? 'green.600' : 'slate.600'}
+                  bg="rgba(255,255,255,0.7)"
+                  fontWeight={500}
+                  fontSize="xs"
+                  leftIcon={hasCopied ? <IconCheck size={13} stroke={2.5} /> : <IconCopy size={13} stroke={1.8} />}
+                  _hover={{ borderColor: 'aurora.indigo', color: 'aurora.indigo', bg: 'rgba(99,102,241,0.06)' }}
+                  onClick={onCopy}
+                >
+                  {hasCopied ? 'Скопировано' : 'Скопировать'}
+                </Button>
               )}
 
-              {/* Generate / Regenerate */}
+              {/* Generate / Regenerate — separated with margin */}
               {!isGenerating && (
                 <GradientButton
                   size="xs"
@@ -329,6 +330,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                   leftIcon={hasContent ? <IconRefresh size={12} stroke={2} /> : <IconSparkles size={12} stroke={2} />}
                   height={7}
                   px={3}
+                  ml={2}
                 >
                   {hasContent ? 'Перегенерировать' : 'Сгенерировать'}
                 </GradientButton>

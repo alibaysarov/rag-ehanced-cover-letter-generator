@@ -120,6 +120,26 @@ def mark_applied(
     return vacancy
 
 
+@router.patch("/vacancies/{vacancy_id}/viewed")
+def mark_viewed(
+    vacancy_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repository),
+):
+    user_id = _get_user_from_request(request, user_repo)
+    vacancy = db.get(AutoParsedJob, vacancy_id)
+    if not vacancy or vacancy.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+
+    if not vacancy.is_viewed:
+        vacancy.is_viewed = True
+        db.add(vacancy)
+        db.commit()
+        db.refresh(vacancy)
+    return vacancy
+
+
 @router.get("/history")
 def get_history(
     request: Request,

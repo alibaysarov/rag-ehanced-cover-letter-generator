@@ -17,6 +17,7 @@ export interface AutoParsedJob {
   job_title: string;
   job_text: string;
   is_applied: boolean;
+  is_viewed: boolean;
   is_generated: boolean;
   cover_letter_text: string | null;
   created_at: string;
