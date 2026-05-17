@@ -20,6 +20,8 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
+  // is_generated is updated by the parent via SSE so we read it from the prop
+  const isGenerated = vacancy.is_generated;
 
   const handleCardClick = () => {
     setAutoGenerate(false);
@@ -56,24 +58,42 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
               >
                 {vacancy.job_title}
               </Text>
-              {isApplied && (
-                <Flex
-                  align="center"
-                  gap={1}
-                  bg="green.50"
-                  border="1px solid"
-                  borderColor="green.200"
-                  borderRadius="lg"
-                  px={2}
-                  py={0.5}
-                  flexShrink={0}
-                >
-                  <IconCheck size={11} stroke={2.5} color="var(--chakra-colors-green-600)" />
-                  <Text fontSize="xs" fontWeight={600} color="green.600" whiteSpace="nowrap">
-                    Откликнулись
-                  </Text>
-                </Flex>
-              )}
+              <Flex gap={1} flexShrink={0} flexWrap="wrap" justify="flex-end">
+                {isGenerated && (
+                  <Flex
+                    align="center"
+                    gap={1}
+                    bg="purple.50"
+                    border="1px solid"
+                    borderColor="purple.200"
+                    borderRadius="lg"
+                    px={2}
+                    py={0.5}
+                  >
+                    <IconSparkles size={11} stroke={2.5} color="var(--chakra-colors-purple-600)" />
+                    <Text fontSize="xs" fontWeight={600} color="purple.600" whiteSpace="nowrap">
+                      Письмо готово
+                    </Text>
+                  </Flex>
+                )}
+                {isApplied && (
+                  <Flex
+                    align="center"
+                    gap={1}
+                    bg="green.50"
+                    border="1px solid"
+                    borderColor="green.200"
+                    borderRadius="lg"
+                    px={2}
+                    py={0.5}
+                  >
+                    <IconCheck size={11} stroke={2.5} color="var(--chakra-colors-green-600)" />
+                    <Text fontSize="xs" fontWeight={600} color="green.600" whiteSpace="nowrap">
+                      Откликнулись
+                    </Text>
+                  </Flex>
+                )}
+              </Flex>
             </Flex>
 
             {/* Truncated description */}
@@ -112,7 +132,7 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
                 height={8}
                 fontSize="xs"
               >
-                Сгенерировать
+                {isGenerated ? 'Посмотреть письмо' : 'Сгенерировать'}
               </GradientButton>
             </Box>
           </Flex>
@@ -123,7 +143,7 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
         vacancy={vacancy}
         isOpen={isOpen}
         onClose={onClose}
-        autoGenerate={autoGenerate}
+        autoGenerate={autoGenerate && !isGenerated}
         onApplied={() => setIsApplied(true)}
       />
     </>

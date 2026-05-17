@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from sqlalchemy import Column, Text
 from sqlmodel import Field, SQLModel
 
 
@@ -15,3 +16,5 @@ class AutoParsedJob(SQLModel, table=True):
     job_text: str = Field(nullable=False)
     is_applied: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_generated: bool = Field(default=False)
+    cover_letter_text: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))

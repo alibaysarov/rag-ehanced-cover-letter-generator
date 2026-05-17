@@ -20,7 +20,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Проверяем авторизацию для API эндпоинтов
         if request.url.path.startswith("/api/v1/"):
             token = None
-            if request.url.path.startswith("/api/v1/auto-parse/stream/"):
+            if (request.url.path.startswith("/api/v1/auto-parse/stream/") or
+                    "/generate-stream" in request.url.path):
                 token = request.query_params.get("token")
                 if not token:
                     return JSONResponse(

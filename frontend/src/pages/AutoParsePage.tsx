@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { IconSparkles } from '@tabler/icons-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { TodayStatsCard } from '@/components/ui/TodayStatsCard';
@@ -20,9 +21,8 @@ import {
   VacancyCard,
   ParseHistory,
 } from '@/features/auto-parse';
-import type { ParsingJobStatus } from '@/features/auto-parse';
-
-// ─── Status badge ─────────────────────────────────────────────────────────────
+import type { ParsingJobStatus, AutoParsedJob } from '@/features/auto-parse';
+import type { GenerationState } from '@/features/auto-parse/hooks/useAutoParse';
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
   pending: 'yellow',
@@ -43,12 +43,10 @@ function StatusBadge({ status }: { status: ParsingJobStatus }) {
       fontWeight={600}
       textTransform="none"
     >
-      {t(`autoParse.status`)}: {status}
+      {t('autoParse.status')}: {status}
     </Badge>
   );
 }
-
-// ─── Search bar ───────────────────────────────────────────────────────────────
 
 interface ParseSearchBarProps {
   isDisabled: boolean;
@@ -107,8 +105,6 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
   );
 }
 
-// ─── Progress bar ─────────────────────────────────────────────────────────────
-
 interface ParseProgressBarProps {
   savedCount: number;
   totalFound: number;
@@ -148,10 +144,87 @@ function ParseProgressBar({ savedCount, totalFound, status }: ParseProgressBarPr
   );
 }
 
-// ─── Vacancy list ─────────────────────────────────────────────────────────────
+interface GenerationPanelProps {
+  genState: GenerationState;
+  isStartingGen: boolean;
+  onGenerate: () => void;
+}
+
+function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPanelProps) {
+  const isDisabled =
+    genState.status === 'running' ||
+    isStartingGen ||
+    genState.status === 'done';
+
+  const percent =
+    genState.total > 0
+      ? Math.round((genState.generated / genState.total) * 100)
+      : 0;
+
+  return (
+    <GlassCard padding={5}>
+      <Flex
+        align="center"
+        justify="space-between"
+        mb={genState.status !== 'idle' ? 3 : 0}
+        flexWrap="wrap"
+        gap={3}
+      >
+        <Flex align="center" gap={2}>
+          {genState.status === 'running' && <Spinner size="xs" color="purple.500" />}
+          {genState.status === 'done' && (
+            <Badge
+              colorScheme="purple"
+              borderRadius="lg"
+              px={2.5}
+              py={0.5}
+              fontSize="xs"
+              fontWeight={600}
+              textTransform="none"
+            >
+              Письма готовы
+            </Badge>
+          )}
+          {genState.status === 'running' && (
+            <Text fontSize="sm" color="slate.600">
+              Генерация: {genState.generated} / {genState.total}
+            </Text>
+          )}
+        </Flex>
+        <GradientButton
+          size="sm"
+          leftIcon={<IconSparkles size={14} stroke={2} />}
+          onClick={onGenerate}
+          isDisabled={isDisabled}
+          isLoading={isStartingGen}
+          loadingText="Запуск..."
+          flexShrink={0}
+        >
+          Сгенерировать сопроводительные
+        </GradientButton>
+      </Flex>
+      {genState.status === 'running' && (
+        <Progress
+          value={percent}
+          size="sm"
+          borderRadius="full"
+          sx={{
+            '& > div': {
+              backgroundImage:
+                'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
+            },
+          }}
+          bg="rgba(226,232,240,0.5)"
+          hasStripe
+          isAnimated
+        />
+      )}
+    </GlassCard>
+  );
+}
 
 interface VacancyListProps {
-  vacancies: { id: number; vacancy_id: string; url: string; job_title: string; job_text: string; created_at: string }[];
+  vacancies: AutoParsedJob[];
 }
 
 function VacancyList({ vacancies }: VacancyListProps) {
@@ -176,16 +249,22 @@ function VacancyList({ vacancies }: VacancyListProps) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function AutoParsePage() {
   const { t } = useTranslation();
-  const { job, vacancies, isStarting, startParse, loadVacanciesForJob } =
-    useAutoParse();
+  const {
+    job,
+    vacancies,
+    isStarting,
+    startParse,
+    loadVacanciesForJob,
+    genState,
+    isStartingGen,
+    startGeneration,
+  } = useAutoParse();
 
   const isRunning = job?.status === 'running' || job?.status === 'pending';
-  const showProgress =
-    job !== null && job.status !== 'pending';
+  const showProgress = job !== null && job.status !== 'pending';
+  const showGeneration = job?.status === 'done' && vacancies.length > 0;
 
   return (
     <motion.div
@@ -194,7 +273,6 @@ export default function AutoParsePage() {
       transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
     >
       <Box>
-        {/* Page header */}
         <Box mb={8}>
           <Heading
             fontFamily="heading"
@@ -211,10 +289,8 @@ export default function AutoParsePage() {
           </Text>
         </Box>
 
-        {/* Today stats */}
         <TodayStatsCard />
 
-        {/* Search bar */}
         <Box mb={4}>
           <ParseSearchBar
             isDisabled={isRunning}
@@ -223,9 +299,8 @@ export default function AutoParsePage() {
           />
         </Box>
 
-        {/* Progress bar — visible when running or done */}
         {showProgress && job && (
-          <Box mb={6}>
+          <Box mb={4}>
             <ParseProgressBar
               savedCount={job.saved_count}
               totalFound={job.total_found}
@@ -234,14 +309,22 @@ export default function AutoParsePage() {
           </Box>
         )}
 
-        {/* Vacancy list */}
+        {showGeneration && (
+          <Box mb={6}>
+            <GenerationPanel
+              genState={genState}
+              isStartingGen={isStartingGen}
+              onGenerate={startGeneration}
+            />
+          </Box>
+        )}
+
         {(vacancies.length > 0 || job?.status === 'done') && (
           <Box mb={8}>
             <VacancyList vacancies={vacancies} />
           </Box>
         )}
 
-        {/* History */}
         <ParseHistory onSelectJob={loadVacanciesForJob} />
       </Box>
     </motion.div>
