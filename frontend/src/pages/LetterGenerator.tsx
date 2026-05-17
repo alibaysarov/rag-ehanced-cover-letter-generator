@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useStreamLetter, useStreamTranslate } from '@/hooks/useLetter';
 import LetterForm, { type LetterFormMode } from '@/components/letter/LetterForm';
 import LetterOutput from '@/components/letter/LetterOutput';
+import { TodayStatsCard } from '@/components/ui/TodayStatsCard';
 
 export default function LetterGenerator() {
   const { t } = useTranslation();
@@ -49,6 +50,8 @@ export default function LetterGenerator() {
 
   return (
     <Box>
+      <TodayStatsCard />
+
       <Box mb={8}>
         <Heading
           fontFamily="heading"

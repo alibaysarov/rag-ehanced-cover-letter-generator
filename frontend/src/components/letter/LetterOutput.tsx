@@ -20,11 +20,12 @@ import {
   IconPlayerStop,
   IconSend,
 } from '@tabler/icons-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '@/api/client';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { TODAY_SUMMARY_QUERY_KEY } from '@/components/ui/TodayStatsCard';
 import { LANGUAGES } from '@/types/letter';
 import type { StreamStatus } from '@/types/letter';
 
@@ -395,6 +396,7 @@ function AppliedButton({
 }) {
   const toast = useToast();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
 
   const mutation = useMutation<SentLetterResponse, Error, void>({
@@ -409,6 +411,7 @@ function AppliedButton({
     },
     onSuccess: () => {
       setSaved(true);
+      queryClient.invalidateQueries({ queryKey: TODAY_SUMMARY_QUERY_KEY });
       toast({
         title: t('letterOutput.applySuccessTitle'),
         status: 'success',
@@ -575,16 +578,26 @@ export function LetterOutput({
         gap={4}
       >
         <TabSwitch tab={tab} onChange={setTab} hasTranslation={hasTranslation} />
-        <FloatingToolbar
-          isStreaming={isStreaming || translateStatus === 'streaming'}
-          isDone={isDone}
-          onStop={onStop}
-          onCopy={handleCopy}
-          copied={copied}
-          onTranslate={handleTranslate}
-          wordCount={wordCount}
-          readMinutes={readMinutes}
-        />
+        <Flex align="center" gap={3}>
+          {isDone && (
+            <AppliedButton
+              jobUrl={jobUrl}
+              jobName={jobName}
+              letterText={content}
+              generationTimeMs={generationTimeMs}
+            />
+          )}
+          <FloatingToolbar
+            isStreaming={isStreaming || translateStatus === 'streaming'}
+            isDone={isDone}
+            onStop={onStop}
+            onCopy={handleCopy}
+            copied={copied}
+            onTranslate={handleTranslate}
+            wordCount={wordCount}
+            readMinutes={readMinutes}
+          />
+        </Flex>
       </Flex>
 
       <Box
@@ -606,17 +619,6 @@ export function LetterOutput({
           </Text>
         )}
       </Box>
-
-      {isDone && (
-        <Flex mx={6} mb={6} justify="flex-end">
-          <AppliedButton
-            jobUrl={jobUrl}
-            jobName={jobName}
-            letterText={content}
-            generationTimeMs={generationTimeMs}
-          />
-        </Flex>
-      )}
 
       {translateError && (
         <Box mx={6} mb={6}>
