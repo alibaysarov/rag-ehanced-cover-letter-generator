@@ -8,14 +8,14 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel import Session, select, desc
 
-from app.database import get_db
+from app.database import engine, get_db
 from app.helper.user import get_user_repository
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 from app.repository.user_repository import UserRepository
 from app.services.jwt import JwtService
-from app.services.scraper.hh_scraper import get_or_create_queue, remove_queue, run_parse_job
+from app.services.scraper.hh_scraper import launch_parse_job
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -52,7 +52,7 @@ async def start_parse(
     db.commit()
     db.refresh(parsing_job)
 
-    asyncio.create_task(run_parse_job(parsing_job.id, body.query, user_id))
+    launch_parse_job(parsing_job.id, body.query, user_id)
 
     return {"parsing_job_id": parsing_job.id}
 
@@ -163,7 +163,7 @@ async def start_generate(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     from app.services.scraper.batch_cover_letter import (
-        mark_generating, get_or_create_gen_progress, run_batch_generation
+        mark_generating, get_or_create_gen_progress, launch_batch_generation
     )
 
     user_id = _get_user_from_request(request, user_repo)
@@ -177,7 +177,7 @@ async def start_generate(
         raise HTTPException(status_code=409, detail="Generation already in progress")
 
     get_or_create_gen_progress(parsing_job_id)
-    asyncio.create_task(run_batch_generation(parsing_job_id, user_id))
+    launch_batch_generation(parsing_job_id, user_id)
 
     return {"status": "started"}
 
@@ -260,7 +260,6 @@ async def stream_generation(
 async def stream_progress(
     parsing_job_id: int,
     token: str = Query(...),
-    db: Session = Depends(get_db),
 ):
     # Auth via query param (EventSource can't set headers)
     try:
@@ -269,32 +268,50 @@ async def stream_progress(
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    from app.repository.user_repository import UserRepository as UR
-    user_repo = UR(db)
-    user = user_repo.get_user_by_email(email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    # Short-lived session for auth only — the stream itself must not hold a
+    # DB connection open for its whole (possibly minutes-long) lifetime.
+    with Session(engine) as session:
+        user = UserRepository(session).get_user_by_email(email)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        job = session.get(ParsingJob, parsing_job_id)
+        if not job or job.user_id != user.id:
+            raise HTTPException(status_code=404, detail="Parsing job not found")
 
-    job = db.get(ParsingJob, parsing_job_id)
-    if not job or job.user_id != user.id:
-        raise HTTPException(status_code=404, detail="Parsing job not found")
-
-    queue = get_or_create_queue(parsing_job_id)
+    def _serialize(job: ParsingJob) -> str:
+        return json.dumps({
+            "id": job.id,
+            "query": job.query,
+            "status": job.status,
+            "saved_count": job.saved_count,
+            "total_found": job.total_found,
+            "created_at": job.created_at.isoformat() if job.created_at else None,
+            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+        })
 
     async def event_generator() -> AsyncIterator[str]:
-        try:
-            while True:
-                item = await asyncio.wait_for(queue.get(), timeout=60)
-                if item is None:
+        # Poll the DB row, which the background worker keeps up to date. This
+        # is stateless, so a reconnecting client (e.g. after a page reload)
+        # always re-syncs to the true job state and still receives the final
+        # status once the background parse finishes.
+        last_payload: str | None = None
+        while True:
+            with Session(engine) as session:
+                job = session.get(ParsingJob, parsing_job_id)
+                if job is None:
                     break
-                yield f"data: {item}\n\n"
-                data = json.loads(item)
-                if data.get("status") in ("done", "failed"):
-                    break
-        except asyncio.TimeoutError:
-            pass
-        finally:
-            remove_queue(parsing_job_id)
+                payload = _serialize(job)
+                terminal = job.status in ("done", "failed")
+            if payload != last_payload:
+                yield f"data: {payload}\n\n"
+                last_payload = payload
+            else:
+                # Heartbeat (SSE comment) keeps idle connections alive through
+                # proxies without triggering a client-side update.
+                yield ": ping\n\n"
+            if terminal:
+                break
+            await asyncio.sleep(1.5)
 
     return StreamingResponse(
         event_generator(),

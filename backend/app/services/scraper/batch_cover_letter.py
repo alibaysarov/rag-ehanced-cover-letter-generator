@@ -16,6 +16,17 @@ logger = logging.getLogger(__name__)
 _running_generations: set[int] = set()
 _GPU_SEMAPHORE: asyncio.Semaphore | None = None
 
+# Strong references to in-flight generation tasks — asyncio only keeps weak
+# refs, so without this a running generation can be garbage-collected mid-run.
+_background_tasks: set[asyncio.Task] = set()
+
+
+def launch_batch_generation(parsing_job_id: int, user_id: int) -> None:
+    """Start batch generation in the background, keeping a strong reference."""
+    task = asyncio.create_task(run_batch_generation(parsing_job_id, user_id))
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+
 
 @dataclass
 class GenProgress:

@@ -6,6 +6,7 @@ from app.services.llm.job_items import CoverLetterPrompt
 from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.cache import redis as redis_db
 import json
+import re
 
 def get_projects_storage_service() -> ProjectStorageService:
     return get_projects_service()
@@ -35,9 +36,9 @@ class CoverLetterService:
         if lang:
             body["lang"] = lang
 
-        async for delta in self.llm.get_stream_response(body):
+        async for delta in self._clean_stream(body):
             yield delta
-    
+
     async def stream_by_url(self,url:str,user_id:int ):
         try:
             body = await self.__get_data_from_url(url,user_id)
@@ -46,8 +47,36 @@ class CoverLetterService:
             yield "__URL_PARSE_ERROR__"
             return
 
-        async for delta in self.llm.get_stream_response(body):
+        async for delta in self._clean_stream(body):
             yield delta
+
+    # Patterns stripped from the very start of LLM output
+    _STRIP_LABEL = re.compile(
+        r'^\s*(сообщение|письмо|текст\s+письма|ответ|вот\s+письмо)[:\-]?\s*\n*',
+        re.IGNORECASE,
+    )
+
+    async def _clean_stream(self, body: dict):
+        """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
+        buffer = ""
+        cleaned = False
+
+        async for chunk in self.llm.get_stream_response(body):
+            if cleaned:
+                yield chunk
+                continue
+
+            buffer += chunk
+            # Flush once we have enough context (double newline or 300 chars)
+            if len(buffer) >= 300 or "\n\n" in buffer:
+                cleaned = True
+                buffer = self._STRIP_LABEL.sub("", buffer)
+                yield buffer.lstrip("\n ")
+
+        # Stream ended while still buffering (very short output)
+        if not cleaned and buffer:
+            buffer = self._STRIP_LABEL.sub("", buffer)
+            yield buffer.lstrip("\n ")
     
     async def __get_data_from_text(self,text:str,user_id:int):
         job_parse = JobParsePrompt()
@@ -59,7 +88,11 @@ class CoverLetterService:
             vacancy=vacancy,
             top_k=5,
         )
-
+        printed_ranked = [{
+            "project_name": item["payload"]["project_name"],
+            "technologies": item["payload"]["technologies"],
+            }for item in ranked]
+        print("ranked",printed_ranked)
         user = self.user_repo.get_user_by_id(user_id)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
@@ -67,12 +100,13 @@ class CoverLetterService:
             "lang":vacancy.lang,
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
-            "requirements":vacancy.requirements,
+            "vacancy_requirements":vacancy.requirements,
+            "vacancy_technologies":vacancy.technologies,
             "user_first_name": (user.first_name or "") if user else "",
             "user_last_name": (user.last_name or "") if user else "",
         }
         return body
-    
+
     async def __get_data_from_url(self,url:str,user_id:int):
         text = None
         if await redis_db.redis_client.get(url) is None:
@@ -102,7 +136,8 @@ class CoverLetterService:
             "lang":vacancy.lang,
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
-            "requirements":vacancy.requirements,
+            "vacancy_requirements":vacancy.requirements,
+            "vacancy_technologies":vacancy.technologies,
             "user_first_name": (user.first_name or "") if user else "",
             "user_last_name": (user.last_name or "") if user else "",
         }

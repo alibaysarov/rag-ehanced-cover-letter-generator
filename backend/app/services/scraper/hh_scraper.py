@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import os
 import random
@@ -21,18 +20,17 @@ HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
 LIST_URL = "https://hh.ru/search/vacancy?text={query}&area=1&page={page}"
 VACANCY_URL = "https://hh.ru/vacancy/{vacancy_id}"
 
-# In-memory SSE queues: job_id -> asyncio.Queue
-_progress_queues: dict[int, asyncio.Queue] = {}
+# Strong references to in-flight parse tasks. asyncio only keeps weak refs to
+# tasks, so without this set a running parse can be garbage-collected mid-run.
+_background_tasks: set[asyncio.Task] = set()
 
 
-def get_or_create_queue(job_id: int) -> asyncio.Queue:
-    if job_id not in _progress_queues:
-        _progress_queues[job_id] = asyncio.Queue()
-    return _progress_queues[job_id]
-
-
-def remove_queue(job_id: int) -> None:
-    _progress_queues.pop(job_id, None)
+def launch_parse_job(job_id: int, query: str, user_id: int) -> None:
+    """Start a parse in the background and keep a strong reference to it so it
+    survives garbage collection and page reloads."""
+    task = asyncio.create_task(run_parse_job(job_id, query, user_id))
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
 
 async def _block_resources(route, request):
@@ -149,7 +147,6 @@ async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semap
 
 async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], job_id: int, user_id: int) -> None:
     semaphore = asyncio.Semaphore(4)
-    queue = get_or_create_queue(job_id)
 
     async def process_one(vacancy_id: str, prefetched_title: str):
         result = await _scrape_vacancy(browser, vacancy_id, prefetched_title, semaphore)
@@ -181,21 +178,20 @@ async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], j
                 session.add(parsing_job)
             session.commit()
 
-            saved = parsing_job.saved_count if parsing_job else 0
-            total = parsing_job.total_found if parsing_job else len(vacancy_items)
-
-        await queue.put(json.dumps({
-            "saved_count": saved,
-            "total_found": total,
-            "status": "running",
-        }))
-
-    await asyncio.gather(*[process_one(vid, title) for vid, title in vacancy_items])
+    # return_exceptions=True so one failed vacancy never aborts the whole parse.
+    results = await asyncio.gather(
+        *[process_one(vid, title) for vid, title in vacancy_items],
+        return_exceptions=True,
+    )
+    for res in results:
+        if isinstance(res, Exception):
+            logger.warning(f"[job={job_id}] Vacancy processing error: {res}")
 
 
 async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
-    queue = get_or_create_queue(job_id)
-
+    """Run a full parse in the background. Progress is persisted to the
+    ParsingJob row in the DB; SSE clients read it from there, so the parse is
+    fully decoupled from any connected browser and survives page reloads."""
     with Session(engine) as session:
         parsing_job = session.get(ParsingJob, job_id)
         if parsing_job:
@@ -216,12 +212,6 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
                         session.add(parsing_job)
                         session.commit()
 
-                await queue.put(json.dumps({
-                    "saved_count": 0,
-                    "total_found": len(vacancy_items),
-                    "status": "running",
-                }))
-
                 await _phase2_fetch_details(browser, vacancy_items, job_id, user_id)
             finally:
                 await browser.close()
@@ -233,14 +223,6 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
                 parsing_job.finished_at = datetime.utcnow()
                 session.add(parsing_job)
                 session.commit()
-                saved = parsing_job.saved_count
-                total = parsing_job.total_found
-
-        await queue.put(json.dumps({
-            "saved_count": saved,
-            "total_found": total,
-            "status": "done",
-        }))
 
     except Exception as e:
         logger.error(f"[job={job_id}] Parse failed: {e}")
@@ -252,11 +234,3 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
                 parsing_job.finished_at = datetime.utcnow()
                 session.add(parsing_job)
                 session.commit()
-        await queue.put(json.dumps({
-            "saved_count": 0,
-            "total_found": 0,
-            "status": "failed",
-        }))
-    finally:
-        # Signal SSE stream to close
-        await queue.put(None)
