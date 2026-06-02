@@ -3,6 +3,7 @@ import logging
 import os
 import random
 import re
+import time
 from datetime import datetime
 from typing import Optional
 from urllib.parse import quote_plus
@@ -13,11 +14,15 @@ from sqlmodel import Session, select
 from app.database import engine
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
+from app.decorators.time_perf import time_performance,with_timer
+
+from app.pw_instances import chromium as chromium_module
+
 
 logger = logging.getLogger(__name__)
 
 HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
-LIST_URL = "https://hh.ru/search/vacancy?text={query}&area=1&page={page}"
+LIST_URL = "https://hh.ru/search/vacancy?text={query}&area=1&page={page}&items_on_page=100"
 VACANCY_URL = "https://hh.ru/vacancy/{vacancy_id}"
 
 # Strong references to in-flight parse tasks. asyncio only keeps weak refs to
@@ -39,6 +44,17 @@ async def _block_resources(route, request):
     else:
         await route.continue_()
 
+async def _scroll_to_bottom(page):
+    
+    prev_height = None
+    while True:
+        curr_height = await page.evaluate("document.body.scrollHeight")
+        if curr_height == prev_height:
+            break # Страница не изменилась — дно достигнуто
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        time.sleep(1) # Ждём подгрузки контента
+        prev_height = curr_height
+
 
 async def _scrape_list_page(browser, query: str, page_num: int, semaphore: asyncio.Semaphore) -> list[tuple[str, str]]:
     async with semaphore:
@@ -47,8 +63,10 @@ async def _scrape_list_page(browser, query: str, page_num: int, semaphore: async
             await page.route("**/*", _block_resources)
             url = LIST_URL.format(query=quote_plus(query), page=page_num)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-
-            cards = await page.query_selector_all('[data-qa="vacancy-serp__vacancy"]')
+            # _scroll_to_bottom(page)
+            await page.mouse.wheel(0, 10000)
+            cards = await page.query_selector_all('[data-qa^="vacancy-serp__vacancy"]')
+            print("cards ",len(cards))
             results = []
             for card in cards:
                 text = await card.inner_text()
@@ -96,12 +114,29 @@ async def _get_total_pages(browser, query: str) -> int:
         await page.close()
 
 
+from app.job_parser.hh_parser import AutoParserHH
+
+
+hh_parser = AutoParserHH()
+
+async def _get_list(browser, query: str, job_id: int)-> list[tuple[str, str]]:
+    results = await hh_parser.get_vacancies_by_name(browser,query,job_id=job_id)
+    seen: set[str] = set()
+    all_items: list[tuple[str, str]] = []
+    for item in results:
+        if item.vacancy_id not in seen:
+            seen.add(item.vacancy_id)
+            all_items.append((item.vacancy_id,item.name))
+        
+    return all_items
+
 async def _phase1_collect_ids(browser, query: str, job_id: int) -> list[tuple[str, str]]:
     total_pages = await _get_total_pages(browser, query)
     total_pages = min(total_pages, HH_MAX_PAGES)
     logger.info(f"[job={job_id}] Total pages to scrape: {total_pages}")
 
     semaphore = asyncio.Semaphore(3)
+    
     tasks = [
         _scrape_list_page(browser, query, page_num, semaphore)
         for page_num in range(0, total_pages)
@@ -136,7 +171,7 @@ async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semap
                 "vacancy_id": vacancy_id,
                 "url": url,
                 "job_title": title,
-                "job_text": body,
+                "job_text": body.strip(),
             }
         except Exception as e:
             logger.warning(f"Error scraping vacancy {vacancy_id}: {e}")
@@ -200,21 +235,22 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
             session.commit()
 
     try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            try:
-                vacancy_items = await _phase1_collect_ids(browser, query, job_id)
+        
+        async with with_timer("browser"):
+            # browser = await p.chromium.launch(headless=True,executable_path="./browsers/chromium-1187/chrome-linux/chrome")
+            # try:
+            # vacancy_items = await _phase1_collect_ids(chromium_module.chromium, query, job_id)
+            vacancy_items = await _get_list(chromium_module.chromium,query,job_id)
+            with Session(engine) as session:
+                parsing_job = session.get(ParsingJob, job_id)
+                if parsing_job:
+                    parsing_job.total_found = len(vacancy_items)
+                    session.add(parsing_job)
+                    session.commit()
 
-                with Session(engine) as session:
-                    parsing_job = session.get(ParsingJob, job_id)
-                    if parsing_job:
-                        parsing_job.total_found = len(vacancy_items)
-                        session.add(parsing_job)
-                        session.commit()
-
-                await _phase2_fetch_details(browser, vacancy_items, job_id, user_id)
-            finally:
-                await browser.close()
+            await _phase2_fetch_details(chromium_module.chromium, vacancy_items, job_id, user_id)
+            # finally:
+            #     await browser.close()
 
         with Session(engine) as session:
             parsing_job = session.get(ParsingJob, job_id)

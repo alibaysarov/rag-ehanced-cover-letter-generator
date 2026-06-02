@@ -47,6 +47,25 @@ class GeneralLLMClient(ABC):
         """Для настройки structured output"""
         ...
     
+    
+    def count_prompt_tokens(self, body: dict) -> int:
+        messages = self.get_prompt(body)
+
+        full_prompt = ""
+
+        for msg in messages:
+            full_prompt += f"{msg.type}: {msg.content}\n"
+
+        tokens = self.model.get_num_tokens(full_prompt)
+
+        print("=" * 50)
+        print(full_prompt)
+        print("=" * 50)
+        print(f"TOKENS: {tokens}")
+
+        return tokens
+    
+    
     def get_prompt(self, body: dict) -> list[BaseMessage]:
         # Подставляем переменные из body в шаблон
         return self.prompt_template.format_messages(**body)
@@ -58,6 +77,7 @@ class GeneralLLMClient(ABC):
     
     async def get_stream_response(self,body:dict={})-> AsyncIterator[str]:
         messages = self.get_prompt(body)
+        self.count_prompt_tokens(body)
         async for chunk in self.model.astream(messages):
                 if chunk.content:
                     yield chunk.content

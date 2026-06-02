@@ -37,4 +37,6 @@ dependencies = [
     "playwright>=1.59.0",
     "aioredis>=2.0.1",
     "redis>=7.4.0",
+    "transformers>=5.9.0",
+    "debugpy>=1.8.20",
 ]

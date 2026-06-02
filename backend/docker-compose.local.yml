@@ -6,10 +6,12 @@ services:
       dockerfile: Dockerfile
     container_name: app-backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # command: python -m debugpy --listen 0.0.0.0:5680 --wait-for-client -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000"
+      - "5680:5680"
     restart: unless-stopped
     depends_on:
       postgres:
