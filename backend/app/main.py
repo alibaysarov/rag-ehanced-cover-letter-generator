@@ -5,8 +5,9 @@ from app.api.v1.api import api_router
 from app.core.config import settings
 from app.middleware.auth import AuthMiddleware
 from app.database import init_db, check_db_connection
+
+from app.pw_instances.chromium import start_browser,close_browser
 import logging
-import aioredis
 
 
 
@@ -21,6 +22,9 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting application...")
     await redis_db.connect_redis()
+    
+    await start_browser()
+    
     # Check database connection
     if not check_db_connection():
         logger.error("Failed to connect to database on startup")
@@ -37,7 +41,7 @@ async def lifespan(app: FastAPI):
     yield
     
     await redis_db.close_conn()
-    
+    await close_browser()
     # Shutdown
     logger.info("Shutting down application...")
 
@@ -54,7 +58,11 @@ app = FastAPI(
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    a=1
+    b=2
+    c=a*b
+    
+    return {"message": "Hello World","data":c}
 
 @app.get("/redis-test")
 async def redis_test():

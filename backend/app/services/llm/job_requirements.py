@@ -4,12 +4,12 @@ from langchain_ollama import ChatOllama
 
 import os
 
-from .mistral import MistralClient
+from .qwen import QwenClient
 
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from ...schemas.llm_outputs.cv_parse import CVImportModel
 
-class JobParsePrompt(MistralClient):
+class JobParsePrompt(QwenClient):
     def get_schema(self):
         return JobRequirement
 
@@ -66,7 +66,7 @@ Backend-разработчик (Node.js)
         
 
 
-class CVImportPrompt(MistralClient):
+class CVImportPrompt(QwenClient):
     
     # def __init__(self):
     #     base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
