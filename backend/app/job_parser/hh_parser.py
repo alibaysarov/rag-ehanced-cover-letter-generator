@@ -41,6 +41,7 @@ class AutoParserHH:
         
         return results
 
+
     async def get_list_items(self, browser,query:str, page_num:int = 0)->list[Vacancy]:
         result:list[Vacancy] = []
         try:
@@ -49,7 +50,8 @@ class AutoParserHH:
             url = VACANCIES_URL.format(query=quote_plus(query), page=page_num)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             
-            # const company = v.querySelector('[data-qa=vacancy-serp__vacancy-employer-text]')?.textContent || null;
+            await self._scroll_page(page)
+            await page.wait_for_timeout(500)
             cards = await page.evaluate("""
                 () => Array.from(document.querySelectorAll('[data-qa^=vacancy-serp__vacancy]'))
                     .map(v => {
@@ -72,6 +74,26 @@ class AutoParserHH:
                 
         except Exception as e:
             logger.error(f"Error getting list: {e}")
+
+    async def _scroll_page(self,page):
+        await page.evaluate("""
+            () => new Promise((resolve) => {
+                const distance = 300;       // пикселей за шаг
+                const delay = 100;          // мс между шагами
+                
+                const timer = setInterval(() => {
+                    window.scrollBy(0, distance);
+                    
+                    const scrolled = window.scrollY + window.innerHeight;
+                    const total = document.documentElement.scrollHeight;
+                    
+                    if (scrolled >= total) {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, delay);
+            })
+        """)
 
     async def _block_resources(self,route, request):
         if request.resource_type in ("image", "font", "media", "stylesheet"):
