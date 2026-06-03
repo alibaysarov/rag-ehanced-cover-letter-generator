@@ -7,7 +7,6 @@ from langchain_core.messages.base import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from abc import ABC, abstractmethod
 
-import traceback
 
 '''
 @property
