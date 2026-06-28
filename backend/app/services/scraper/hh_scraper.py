@@ -130,27 +130,6 @@ async def _get_list(browser, query: str, job_id: int)-> list[tuple[str, str]]:
         
     return all_items
 
-async def _phase1_collect_ids(browser, query: str, job_id: int) -> list[tuple[str, str]]:
-    total_pages = await _get_total_pages(browser, query)
-    total_pages = min(total_pages, HH_MAX_PAGES)
-    logger.info(f"[job={job_id}] Total pages to scrape: {total_pages}")
-
-    semaphore = asyncio.Semaphore(3)
-    
-    tasks = [
-        _scrape_list_page(browser, query, page_num, semaphore)
-        for page_num in range(0, total_pages)
-    ]
-    results = await asyncio.gather(*tasks)
-    seen: set[str] = set()
-    all_items: list[tuple[str, str]] = []
-    for page_items in results:
-        for vacancy_id, title in page_items:
-            if vacancy_id not in seen:
-                seen.add(vacancy_id)
-                all_items.append((vacancy_id, title))
-    return all_items
-
 
 async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semaphore: asyncio.Semaphore) -> Optional[dict]:
     async with semaphore:
@@ -235,11 +214,7 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
             session.commit()
 
     try:
-        
         async with with_timer("browser"):
-            # browser = await p.chromium.launch(headless=True,executable_path="./browsers/chromium-1187/chrome-linux/chrome")
-            # try:
-            # vacancy_items = await _phase1_collect_ids(chromium_module.chromium, query, job_id)
             vacancy_items = await _get_list(chromium_module.chromium,query,job_id)
             with Session(engine) as session:
                 parsing_job = session.get(ParsingJob, job_id)
@@ -249,8 +224,6 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
                     session.commit()
 
             await _phase2_fetch_details(chromium_module.chromium, vacancy_items, job_id, user_id)
-            # finally:
-            #     await browser.close()
 
         with Session(engine) as session:
             parsing_job = session.get(ParsingJob, job_id)
