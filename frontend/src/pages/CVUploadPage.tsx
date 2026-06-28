@@ -17,6 +17,7 @@ import {
   AlertDescription,
   Text,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { useUploadCV } from '@/hooks/useLetter';
 
 interface CVUploadPageProps {
@@ -24,6 +25,7 @@ interface CVUploadPageProps {
 }
 
 const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const uploadCV = useUploadCV();
 
@@ -43,29 +45,29 @@ const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
   return (
     <Box maxW="600px" mx="auto" mt={8} p={4}>
       <Heading mb={6} textAlign="center">
-        Upload Your Resume
+        {t('cvs.uploadModal.title')}
       </Heading>
 
       <Text mb={6} textAlign="center" color="gray.600">
-        First, upload your resume (PDF format) to get started with cover letter generation.
+        {t('cvs.uploadModal.desc')}
       </Text>
 
       <Card>
         <CardHeader>
-          <Heading size="md">Resume Upload</Heading>
+          <Heading size="md">{t('cvs.uploadModal.title')}</Heading>
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
             <VStack spacing={4}>
               <FormControl isRequired>
-                <FormLabel>Resume File (PDF)</FormLabel>
+                <FormLabel>{t('cvs.uploadModal.fileLabel')}</FormLabel>
                 <Input
                   type="file"
                   accept=".pdf"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
                 />
                 <FormHelperText>
-                  Only PDF files are supported. Maximum size: 10MB.
+                  {t('cvs.uploadModal.helperText')}
                 </FormHelperText>
               </FormControl>
 
@@ -73,11 +75,11 @@ const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
                 type="submit"
                 colorScheme="blue"
                 isLoading={uploadCV.isPending}
-                loadingText="Uploading..."
+                loadingText={t('cvs.uploadModal.uploading')}
                 width="full"
                 disabled={!file}
               >
-                Upload Resume
+                {t('cvs.uploadModal.upload')}
               </Button>
             </VStack>
           </form>
@@ -87,7 +89,7 @@ const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
       {uploadCV.isError && (
         <Alert status="error" mt={4}>
           <AlertIcon />
-          <AlertTitle>Upload Failed!</AlertTitle>
+          <AlertTitle>{t('cvs.toast.uploadFailTitle')}</AlertTitle>
           <AlertDescription>
             {uploadCV.error.message}
           </AlertDescription>
@@ -97,9 +99,9 @@ const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
       {uploadCV.isSuccess && uploadCV.data?.success && (
         <Alert status="success" mt={4}>
           <AlertIcon />
-          <AlertTitle>Upload Successful!</AlertTitle>
+          <AlertTitle>{t('cvs.toast.uploadedTitle')}</AlertTitle>
           <AlertDescription>
-            Your resume has been uploaded successfully. Resume ID: {uploadCV.data.source_id}
+            {t('cvs.toast.uploadedDesc')} Resume ID: {uploadCV.data.source_id}
           </AlertDescription>
         </Alert>
       )}

@@ -5,7 +5,13 @@ from app.api.v1.api import api_router
 from app.core.config import settings
 from app.middleware.auth import AuthMiddleware
 from app.database import init_db, check_db_connection
+
+from app.pw_instances.chromium import start_browser,close_browser
 import logging
+
+
+
+from app.cache import redis as redis_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,6 +21,9 @@ async def lifespan(app: FastAPI):
     """Lifespan events"""
     # Startup
     logger.info("Starting application...")
+    await redis_db.connect_redis()
+    
+    await start_browser()
     
     # Check database connection
     if not check_db_connection():
@@ -31,6 +40,8 @@ async def lifespan(app: FastAPI):
     
     yield
     
+    await redis_db.close_conn()
+    await close_browser()
     # Shutdown
     logger.info("Shutting down application...")
 
@@ -41,6 +52,26 @@ app = FastAPI(
     description=settings.DESCRIPTION,
     lifespan=lifespan
 )
+
+
+
+
+@app.get("/")
+async def root():
+    a=1
+    b=2
+    c=a*b
+    
+    return {"message": "Hello World","data":c}
+
+@app.get("/redis-test")
+async def redis_test():
+    await redis_db.redis_client.set("key","value")
+    
+    
+    cache_hit = await redis_db.redis_client.get("key")
+    
+    return {"message":cache_hit}
 
 app.add_middleware(AuthMiddleware)
 
@@ -60,3 +91,9 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "API is running"}
+
+
+
+
+
+

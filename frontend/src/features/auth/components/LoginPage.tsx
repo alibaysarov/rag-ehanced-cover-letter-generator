@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   Box,
-  Button,
-  Container,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -14,27 +13,26 @@ import {
   Stack,
   Text,
   Link,
-  Card,
-  CardBody,
-  Alert,
-  AlertIcon,
-  useToast
+  useToast,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-
-// Validation schema
-const loginSchema = z.object({
-  email: z.string().email('Неверный email адрес'),
-  password: z.string(),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { AuroraBackground } from '@/components/ui/AuroraBackground';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { GradientButton } from '@/components/ui/GradientButton';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const { login, isLoginLoading, isAuthenticated } = useAuth();
+
+  const loginSchema = z.object({
+    email: z.string().email(t('validation.invalidEmail')),
+    password: z.string().min(1, t('validation.enterPassword')),
+  });
+  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     register,
@@ -44,9 +42,7 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  // Redirect if already authenticated
   useEffect(() => {
-    
     if (isAuthenticated) {
       navigate('/');
     }
@@ -56,89 +52,109 @@ const LoginPage: React.FC = () => {
     try {
       await login(data);
       toast({
-        title: 'Вход выполнен успешно',
+        title: t('auth.login.successTitle'),
         status: 'success',
-        duration: 3000,
+        duration: 2500,
         isClosable: true,
       });
       navigate('/');
     } catch (error) {
-      // Error is handled by the useAuth hook
       toast({
-        title: 'Ошибка при входе',
+        title: t('auth.login.errorTitle'),
+        description: error instanceof Error ? error.message : t('auth.login.errorDesc'),
         status: 'error',
-        duration: 3000,
+        duration: 3500,
         isClosable: true,
       });
-      console.error('Login error:', error);
     }
   };
 
   return (
-    <Container maxW="md" py={12}>
-      <Card>
-        <CardBody>
+    <Box position="relative" minH="100vh">
+      <AuroraBackground />
+      <Flex minH="100vh" align="center" justify="center" px={{ base: 6, md: 8 }} py={12}>
+        <GlassCard padding={{ base: 8, md: 10 }} radius="3xl" maxW="440px" w="full">
           <Stack spacing={8}>
-            <Box textAlign="center">
-              <Heading size="lg" mb={2}>
-                Вход в аккаунт
+            <Box>
+              <Heading
+                fontFamily="heading"
+                fontSize="3xl"
+                fontWeight={600}
+                color="slate.900"
+                letterSpacing="-0.02em"
+                mb={2}
+              >
+                {t('auth.login.title')}
               </Heading>
-              <Text color="gray.600">
-                Введите свои данные для входа
+              <Text color="slate.500" fontSize="sm">
+                {t('auth.login.subtitle')}
               </Text>
             </Box>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={6}>
+              <Stack spacing={5}>
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                    {t('auth.login.email')}
+                  </FormLabel>
                   <Input
                     type="email"
                     placeholder="your@email.com"
+                    autoComplete="email"
                     {...register('email')}
                   />
-                  <FormErrorMessage>
-                    {errors.email?.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel>Пароль</FormLabel>
+                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                    {t('auth.login.password')}
+                  </FormLabel>
                   <Input
                     type="password"
-                    placeholder="Ваш пароль"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
                     {...register('password')}
                   />
-                  <FormErrorMessage>
-                    {errors.password?.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
                 </FormControl>
 
-                <Button
+                <GradientButton
                   type="submit"
-                  colorScheme="blue"
                   size="lg"
-                  width="full"
+                  w="full"
                   isLoading={isSubmitting || isLoginLoading}
-                  loadingText="Выполняется вход..."
+                  loadingText={t('auth.login.loading')}
+                  mt={2}
                 >
-                  Войти
-                </Button>
+                  {t('auth.login.submit')}
+                </GradientButton>
               </Stack>
             </form>
 
             <Box textAlign="center">
-              <Text>
-                Нет аккаунта?{' '}
-                <Link as={RouterLink} to={'/register'} color="blue.500">
-                  Зарегистрироваться
+              <Text fontSize="sm" color="slate.500">
+                {t('auth.login.noAccount')}{' '}
+                <Link
+                  as={RouterLink}
+                  to="/register"
+                  fontWeight={600}
+                  sx={{
+                    backgroundImage:
+                      'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
+                  }}
+                >
+                  {t('auth.login.register')}
                 </Link>
               </Text>
             </Box>
           </Stack>
-        </CardBody>
-      </Card>
-    </Container>
+        </GlassCard>
+      </Flex>
+    </Box>
   );
 };
 

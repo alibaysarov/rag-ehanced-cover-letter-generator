@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   Box,
-  Button,
-  Container,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -15,33 +14,34 @@ import {
   Text,
   Link,
   useToast,
-  Card,
-  CardBody,
-  Alert,
-  AlertIcon,
   SimpleGrid,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-
-// Validation schema
-const registerSchema = z.object({
-  first_name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  last_name: z.string().min(2, 'Фамилия должна содержать минимум 2 символа'),
-  email: z.string().email('Неверный email адрес'),
-  password: z.string(),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Пароли не совпадают",
-  path: ["confirmPassword"],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+import { AuroraBackground } from '@/components/ui/AuroraBackground';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { GradientButton } from '@/components/ui/GradientButton';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { register: registerUser, isRegisterLoading, registerError, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  const { register: registerUser, isRegisterLoading, isAuthenticated } = useAuth();
+
+  const registerSchema = z
+    .object({
+      first_name: z.string().trim().max(100).optional(),
+      last_name: z.string().trim().max(100).optional(),
+      email: z.string().email(t('validation.invalidEmail')),
+      password: z.string().min(8, t('validation.min8chars')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('validation.passwordsMismatch'),
+      path: ['confirmPassword'],
+    });
+  type RegisterFormData = z.infer<typeof registerSchema>;
 
   const {
     register,
@@ -51,7 +51,6 @@ const RegisterPage: React.FC = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
@@ -60,131 +59,156 @@ const RegisterPage: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      // Remove confirmPassword before sending to API
-      const { confirmPassword, ...registerData } = data;
-      await registerUser(registerData);
+      const { confirmPassword: _confirm, first_name, last_name, ...rest } = data;
+      const trimmedFirst = first_name?.trim();
+      const trimmedLast = last_name?.trim();
+      await registerUser({
+        ...rest,
+        first_name: trimmedFirst ? trimmedFirst : undefined,
+        last_name: trimmedLast ? trimmedLast : undefined,
+      });
       toast({
-        title: 'Регистрация выполнена успешно',
-        description: 'Теперь вы можете войти в систему',
+        title: t('auth.register.successTitle'),
+        description: t('auth.register.successDesc'),
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
       navigate('/login');
     } catch (error) {
-      // Error is handled by the useAuth hook
-      console.error('Register error:', error);
+      toast({
+        title: t('auth.register.errorTitle'),
+        description: error instanceof Error ? error.message : t('auth.register.errorDesc'),
+        status: 'error',
+        duration: 3500,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <Container maxW="md" py={12}>
-      <Card>
-        <CardBody>
+    <Box position="relative" minH="100vh">
+      <AuroraBackground />
+      <Flex minH="100vh" align="center" justify="center" px={{ base: 6, md: 8 }} py={12}>
+        <GlassCard padding={{ base: 8, md: 10 }} radius="3xl" maxW="480px" w="full">
           <Stack spacing={8}>
-            <Box textAlign="center">
-              <Heading size="lg" mb={2}>
-                Создание аккаунта
+            <Box>
+              <Heading
+                fontFamily="heading"
+                fontSize="3xl"
+                fontWeight={600}
+                color="slate.900"
+                letterSpacing="-0.02em"
+                mb={2}
+              >
+                {t('auth.register.title')}
               </Heading>
-              <Text color="gray.600">
-                Заполните форму для регистрации
+              <Text color="slate.500" fontSize="sm">
+                {t('auth.register.subtitle')}
               </Text>
             </Box>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={6}>
-                {registerError && (
-                  <Alert status="error">
-                    <AlertIcon />
-                    {registerError}
-                  </Alert>
-                )}
-
+              <Stack spacing={5}>
                 <SimpleGrid columns={2} spacing={4}>
                   <FormControl isInvalid={!!errors.first_name}>
-                    <FormLabel>Имя</FormLabel>
+                    <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                      {t('auth.register.firstName')}
+                    </FormLabel>
                     <Input
-                      placeholder="Иван"
+                      placeholder={t('auth.register.firstNamePlaceholder')}
                       {...register('first_name')}
                     />
-                    <FormErrorMessage>
-                      {errors.first_name?.message}
-                    </FormErrorMessage>
+                    <FormErrorMessage>{errors.first_name?.message}</FormErrorMessage>
                   </FormControl>
 
                   <FormControl isInvalid={!!errors.last_name}>
-                    <FormLabel>Фамилия</FormLabel>
+                    <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                      {t('auth.register.lastName')}
+                    </FormLabel>
                     <Input
-                      placeholder="Иванов"
+                      placeholder={t('auth.register.lastNamePlaceholder')}
                       {...register('last_name')}
                     />
-                    <FormErrorMessage>
-                      {errors.last_name?.message}
-                    </FormErrorMessage>
+                    <FormErrorMessage>{errors.last_name?.message}</FormErrorMessage>
                   </FormControl>
                 </SimpleGrid>
 
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                    {t('auth.register.email')}
+                  </FormLabel>
                   <Input
                     type="email"
                     placeholder="your@email.com"
+                    autoComplete="email"
                     {...register('email')}
                   />
-                  <FormErrorMessage>
-                    {errors.email?.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel>Пароль</FormLabel>
+                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                    {t('auth.register.password')}
+                  </FormLabel>
                   <Input
                     type="password"
-                    placeholder="Минимум 6 символов"
+                    placeholder={t('auth.register.passwordPlaceholder')}
+                    autoComplete="new-password"
                     {...register('password')}
                   />
-                  <FormErrorMessage>
-                    {errors.password?.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.confirmPassword}>
-                  <FormLabel>Подтверждение пароля</FormLabel>
+                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                    {t('auth.register.confirmPassword')}
+                  </FormLabel>
                   <Input
                     type="password"
-                    placeholder="Повторите пароль"
+                    placeholder={t('auth.register.confirmPasswordPlaceholder')}
+                    autoComplete="new-password"
                     {...register('confirmPassword')}
                   />
-                  <FormErrorMessage>
-                    {errors.confirmPassword?.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage>{errors.confirmPassword?.message}</FormErrorMessage>
                 </FormControl>
 
-                <Button
+                <GradientButton
                   type="submit"
-                  colorScheme="blue"
                   size="lg"
-                  width="full"
+                  w="full"
                   isLoading={isSubmitting || isRegisterLoading}
-                  loadingText="Создание аккаунта..."
+                  loadingText={t('auth.register.loading')}
+                  mt={2}
                 >
-                  Зарегистрироваться
-                </Button>
+                  {t('auth.register.submit')}
+                </GradientButton>
               </Stack>
             </form>
 
             <Box textAlign="center">
-              <Text>
-                Уже есть аккаунт?{' '}
-                <Link as={RouterLink} to="/login" color="blue.500">
-                  Войти
+              <Text fontSize="sm" color="slate.500">
+                {t('auth.register.haveAccount')}{' '}
+                <Link
+                  as={RouterLink}
+                  to="/login"
+                  fontWeight={600}
+                  sx={{
+                    backgroundImage:
+                      'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
+                  }}
+                >
+                  {t('auth.register.login')}
                 </Link>
               </Text>
             </Box>
           </Stack>
-        </CardBody>
-      </Card>
-    </Container>
+        </GlassCard>
+      </Flex>
+    </Box>
   );
 };
 

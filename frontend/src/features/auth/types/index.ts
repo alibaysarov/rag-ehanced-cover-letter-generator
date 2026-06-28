@@ -5,8 +5,8 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  first_name: string;
-  last_name: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   password: string;
 }
@@ -37,4 +37,15 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+}
+
+export interface UpdateProfileRequest {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
 }
