@@ -31,4 +31,12 @@ dependencies = [
     "inngest>=0.5.13",
     "streamlit>=1.52.2",
     "langchain-openai>=1.2.0",
+    "duckduckgo-search>=8.1.1",
+    "langchain-community>=0.4.1",
+    "bs4>=0.0.2",
+    "playwright>=1.59.0",
+    "aioredis>=2.0.1",
+    "redis>=7.4.0",
+    "transformers>=5.9.0",
+    "debugpy>=1.8.20",
 ]

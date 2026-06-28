@@ -7,7 +7,6 @@ from langchain_core.messages.base import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from abc import ABC, abstractmethod
 
-import traceback
 
 '''
 @property
@@ -22,14 +21,49 @@ import traceback
 class GeneralLLMClient(ABC):
     model:BaseChatModel = None
     def __init__(self,model:BaseChatModel):
-        self.model = model
+        schema = self.get_schema()
+        if schema is None:
+            self.model = model
+        else:
+            self.model = model.with_structured_output(schema=schema)
+        
     
+    
+    
+    
+    @property
+    def get_model(self):
+        return self.model
     
     @property
     @abstractmethod
     def prompt_template(self) -> ChatPromptTemplate:
         """Наследники возвращают ChatPromptTemplate"""
         ...
+    
+    @abstractmethod
+    def get_schema(self)->Optional[type[BaseModel]]:
+        """Для настройки structured output"""
+        ...
+    
+    
+    def count_prompt_tokens(self, body: dict) -> int:
+        messages = self.get_prompt(body)
+
+        full_prompt = ""
+
+        for msg in messages:
+            full_prompt += f"{msg.type}: {msg.content}\n"
+
+        tokens = self.model.get_num_tokens(full_prompt)
+
+        print("=" * 50)
+        print(full_prompt)
+        print("=" * 50)
+        print(f"TOKENS: {tokens}")
+
+        return tokens
+    
     
     def get_prompt(self, body: dict) -> list[BaseMessage]:
         # Подставляем переменные из body в шаблон
@@ -39,8 +73,10 @@ class GeneralLLMClient(ABC):
         if schema is not None:
             self.model = self.model.with_structured_output(schema=schema)
     
+    
     async def get_stream_response(self,body:dict={})-> AsyncIterator[str]:
         messages = self.get_prompt(body)
+        self.count_prompt_tokens(body)
         async for chunk in self.model.astream(messages):
                 if chunk.content:
                     yield chunk.content

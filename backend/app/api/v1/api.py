@@ -1,5 +1,7 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import letter,auth,user,cv
+from app.api.v1.endpoints import letter, auth, user, cv, projects, parse
+from app.api.v1.endpoints.stats import router as stats_router
+from app.services.scraper.auto_parse_router import router as auto_parse_router
 
 api_router = APIRouter()
 
@@ -24,3 +26,15 @@ api_router.include_router(
     prefix="/cv",
     tags=["cv"]
 )
+api_router.include_router(
+    projects.router,
+    prefix="/projects",
+    tags=["projects"]
+)
+api_router.include_router(
+    parse.router,
+    prefix="/parse",
+    tags=["parse"]
+)
+api_router.include_router(stats_router, prefix="/stats", tags=["stats"])
+api_router.include_router(auto_parse_router, prefix="/auto-parse", tags=["auto-parse"])
