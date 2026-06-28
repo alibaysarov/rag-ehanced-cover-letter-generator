@@ -8,7 +8,7 @@ from app.decorators.time_perf import time_performance
 from urllib.parse import quote_plus
 from pydantic import BaseModel
 from itertools import chain
-
+from app.helper.flatten_list import flatten_list
 import asyncio
 import os
 import logging
@@ -18,8 +18,6 @@ HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
 VACANCIES_URL = "https://hh.ru/search/vacancy?text={query}&page={page}"
 
 
-def _flatten_list(nested_list)->list:
-    return list(chain.from_iterable(nested_list))
 
 class Vacancy(BaseModel):
     name:str
@@ -37,7 +35,7 @@ class AutoParserHH:
             self.get_list_items(get_browser(),text,i)
             for i in range(pages)
         ]
-        results =_flatten_list(await asyncio.gather(*tasks)) 
+        results =flatten_list(await asyncio.gather(*tasks)) 
         
         return results
 
@@ -65,7 +63,6 @@ class AutoParserHH:
                     .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
             """)
             
-            print("for page",page_num, "cards ",len(cards))
             result = [
                 Vacancy(name=card['title'],link=card['link'],vacancy_id=card['vacancy_id'])
                 for card in cards
@@ -125,34 +122,4 @@ class AutoParserHH:
             return 1
         finally:
             await page.close()
-
-
-
-
-
-# @time_performance
-# async def start():
-    
-#     await start_browser()
-    
-#     parser = AutoParserHH()
-    
-#     vacancy_names = [
-#         "backend developer",
-#         "PHP developer",
-#         "Frontend разработчик"
-#     ]
-    
-#     vacancies_tasks = [parser.get_vacancies_by_name(browser=get_browser(),text=name,job_id=12) for name in vacancy_names]
-    
-#     result = _flatten_list(await asyncio.gather(*vacancies_tasks))
-    
-#     print("result ",len(result), result)
-    
-#     print("finished")
-#     await close_browser()
-    
-    
-
-# asyncio.run(start())
     

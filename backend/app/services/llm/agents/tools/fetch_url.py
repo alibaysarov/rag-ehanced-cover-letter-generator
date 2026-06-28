@@ -9,7 +9,6 @@ async def parse_hh(url: str):
     Parses hh.ru vacancy page and retrieves text data
     """
     browser = None
-    print("parsing with browser")
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)

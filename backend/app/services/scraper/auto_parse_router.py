@@ -17,6 +17,10 @@ from app.repository.user_repository import UserRepository
 from app.services.jwt import JwtService
 from app.services.scraper.hh_scraper import launch_parse_job
 
+from app.services.scraper.vacancy_scraper import VacancyScrapingService
+
+auto_service = VacancyScrapingService()
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 jwt_service = JwtService()
@@ -38,6 +42,25 @@ class MarkAppliedRequest(BaseModel):
     letter_text: str = ""
 
 
+@router.post("/start/test")
+async def start_parse(
+    body: StartParseRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repository),
+):
+    user_id = _get_user_from_request(request, user_repo)
+    
+    parsing_job = ParsingJob(user_id=user_id, query=body.query, status="pending")
+    db.add(parsing_job)
+    db.commit()
+    db.refresh(parsing_job)
+    await auto_service.run_parse_job(parsing_job.id,query=body.query,user_id=user_id)
+    
+    return {
+        "status":"Success"
+    }
+    
 @router.post("/start")
 async def start_parse(
     body: StartParseRequest,
