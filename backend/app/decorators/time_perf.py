@@ -12,7 +12,6 @@ async def with_timer(label=""):
     print(f"[{label}] выполнено за {elapsed:.3f} мс")
 
 
-    
 
 def time_performance(func):
     @wraps(func)

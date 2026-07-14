@@ -15,8 +15,8 @@ class SaveProjectsResponse(BaseModel):
 
 
 class ProjectResponse(BaseModel):
-    id: str
-    source_id: str
+    id: str|int
+    source_id: str|int
     name: str
     website: Optional[str] = None
     start_month: Optional[int] = None

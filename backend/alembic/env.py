@@ -2,9 +2,10 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-
+from sqlmodel import SQLModel
 from app.core.config import settings
-from app.models import Base  # noqa: F401 – import so all models are registered
+# from app.models import Base
+from app.models import *
 
 # Alembic Config object
 config = context.config
@@ -16,7 +17,7 @@ if config.config_file_name is not None:
 # Set sqlalchemy.url from application settings
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata
 
 
 def run_migrations_offline() -> None:

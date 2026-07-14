@@ -5,7 +5,7 @@ from langchain_ollama import ChatOllama
 import os
 
 from .qwen import QwenClient
-
+from .gemini import GeminiClient
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from ...schemas.llm_outputs.cv_parse import CVImportModel
 
@@ -67,12 +67,7 @@ Backend-разработчик (Node.js)
 
 
 class CVImportPrompt(QwenClient):
-    
-    # def __init__(self):
-    #     base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        
-    #     model = ChatOllama(model="mistral:7b",format="json", temperature=0, base_url=base_url)
-    #     self.model = model
+
     
     def get_schema(self):
         return CVImportModel
@@ -125,21 +120,3 @@ class CVImportPrompt(QwenClient):
             ("system", system),
             ("human", human),
         ])
-    
-    
-    # @property
-    # def prompt_template(self):
-    #     human = """
-    #     Проанализируй текст резюме: {cv_text}
-    #     Извлеки и суммируй следующую информацию:
-    #     - Имя в резюме
-    #     - Фамилия в резюме
-    #     - Email (Если есть) в резюме
-    #     - Проекты
-    #     Представь информацию в структурированном виде.
-    #     """
-
-    #     return ChatPromptTemplate.from_messages([
-    #         ("system", "You are a professional HR specialist."),
-    #         ("human", human),
-    #     ])

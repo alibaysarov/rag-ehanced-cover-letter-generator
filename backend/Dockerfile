@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM python:3.12-slim AS base
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -26,5 +24,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 8000
+
+RUN uv run playwright install --with-deps chromium
+
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

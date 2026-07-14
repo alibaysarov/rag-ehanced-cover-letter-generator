@@ -278,7 +278,8 @@
     "close": "Закрыть",
     "history": "История",
     "noVacancies": "Вакансий пока нет",
-    "vacancyLink": "Открыть на hh.ru"
+    "vacancyLink": "Открыть на hh.ru",
+    "employerLink":"Ссылка на компанию"
   },
   "datePicker": {
     "weekDays": ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],

@@ -5,7 +5,7 @@ from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.embeddings import BaseEmbedder, OpenAIEmbedder,LocalMistralEmbedder
 from app.storage.repository.qdrant import QdrantStorage, get_projects_storage
-
+from app.repository import ProjectRepository
 
 _PROJECT_NAMESPACE = uuid.NAMESPACE_DNS
 
@@ -18,7 +18,23 @@ class ProjectStorageService:
     ):
         self.embedder = embedder or LocalMistralEmbedder()
         self.storage = storage or get_projects_storage(dim=self.embedder.dimensions)
+        self.repository = ProjectRepository()
 
+    def create_many(
+        self,
+        user_id: int,
+        projects: list[ProjectFromCVModel],
+    ):
+        
+        created_count = self.repository.create_many(user_id=user_id,projects=projects)
+        return created_count
+    
+    def get_relevant(self,user_id:int,technology_tags:list[str]):
+        return self.repository.search_by_technologies(user_id=user_id,techs=technology_tags)
+    
+    def delete(self,user_id:int,id:int):
+        return self.repository.delete(id,user_id)
+    
     def save_projects(
         self,
         user_id: int,
@@ -61,25 +77,45 @@ class ProjectStorageService:
         return len(projects)
 
     def list_user_projects(self, user_id: int) -> list[dict]:
-        points = self.storage.list_by_user_id(user_id)
+        projects = self.repository.get_by_user(user_id)
         result = []
-        for p in points:
-            payload = p["payload"]
+        for project in projects:
             result.append({
-                "id": p["id"],
-                "source_id": payload.get("source_id", ""),
-                "name": payload.get("project_name", ""),
-                "website": payload.get("website"),
-                "start_month": payload.get("start_month"),
-                "start_year": payload.get("start_year"),
-                "end_month": payload.get("end_month"),
-                "end_year": payload.get("end_year"),
-                "currently_working": payload.get("currently_working", False),
-                "skills": payload.get("skills", []),
-                "achievements": payload.get("achievements", []),
-                "technologies": payload.get("technologies", []),
+                "id": str(project.id),
+                "source_id": project.id,
+                "name": project.name,
+                "website": project.name,
+                "start_month": None,
+                "start_year": None,
+                "end_month": None,
+                "end_year": None,
+                "currently_working": False,
+                "skills": [],
+                "achievements": [],
+                "technologies": project.technologies
             })
         return result
+        
+    # def list_user_projects(self, user_id: int) -> list[dict]:
+    #     points = self.storage.list_by_user_id(user_id)
+    #     result = []
+    #     for p in points:
+    #         payload = p["payload"]
+    #         result.append({
+    #             "id": p["id"],
+    #             "source_id": payload.get("source_id", ""),
+    #             "name": payload.get("project_name", ""),
+    #             "website": payload.get("website"),
+    #             "start_month": payload.get("start_month"),
+    #             "start_year": payload.get("start_year"),
+    #             "end_month": payload.get("end_month"),
+    #             "end_year": payload.get("end_year"),
+    #             "currently_working": payload.get("currently_working", False),
+    #             "skills": payload.get("skills", []),
+    #             "achievements": payload.get("achievements", []),
+    #             "technologies": payload.get("technologies", []),
+    #         })
+    #     return result
 
     def update_project(
         self,

@@ -132,7 +132,7 @@ interface VacancyModalProps {
 }
 
 export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied }: VacancyModalProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const queryClient = useQueryClient();
   const { content, status, streamFromText, reset, preload } = useStreamLetter();
   const { hasCopied, onCopy } = useClipboard(content);
@@ -233,6 +233,25 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
         <ModalBody pb={2}>
 
           {/* Job description */}
+          {vacancy.web_site && URL.canParse(vacancy.web_site) && (
+            <Box mb="2">
+              <Link
+                href={vacancy.web_site}
+                isExternal
+                display="inline-flex"
+                alignItems="center"
+                gap={1.5}
+                fontSize="sm"
+                fontWeight={600}
+                color="aurora.indigo"
+                _hover={{ textDecoration: 'underline' }}
+              >
+                {t('autoParse.employerLink')}
+                <IconExternalLink size={14} stroke={2} />
+              </Link>
+            </Box>
+          )}
+
           <Text
             fontSize="xs"
             fontWeight={700}

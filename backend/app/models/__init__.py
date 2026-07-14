@@ -6,5 +6,7 @@ from .letter import Letter
 from .sent_cover_letter import SentCoverLetter
 from .parsing_job import ParsingJob
 from .auto_parsed_job import AutoParsedJob
+from .project import Project
 
-__all__ = ["Base", "BaseModel", "User", "CV", "Letter", "SentCoverLetter", "ParsingJob", "AutoParsedJob"]
+
+__all__ = ["Base", "BaseModel", "User", "CV", "Letter", "SentCoverLetter", "ParsingJob", "AutoParsedJob","Project"]

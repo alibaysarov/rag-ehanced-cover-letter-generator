@@ -14,6 +14,7 @@ class AutoParsedJob(SQLModel, table=True):
     url: str = Field(nullable=False)
     job_title: str = Field(nullable=False)
     job_text: str = Field(nullable=False)
+    web_site: str = Field(nullable=True)
     is_applied: bool = Field(default=False)
     is_viewed: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)

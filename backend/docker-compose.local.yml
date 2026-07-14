@@ -32,6 +32,95 @@ services:
       - QDRANT_URL=${QDRANT_URL}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - OLLAMA_HOST=http://host.docker.internal:11434
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: app-celery-worker
+
+    command: >
+      celery
+      -A app.celery_app
+      worker
+      --loglevel=info
+      --concurrency=4
+
+    restart: unless-stopped
+
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+    volumes:
+      - .:/app
+      - /app/.venv
+
+    env_file:
+      - .env
+
+    environment:
+
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+
+
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: app-celery-beat
+
+    command: >
+      celery
+      -A app.celery_app
+      beat
+      --loglevel=info
+
+    restart: unless-stopped
+
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+    volumes:
+      - .:/app
+      - /app/.venv
+
+    env_file:
+      - .env
+
+    environment:
+
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD}@redis:6379/1
+  rabbitmq:
+    image: rabbitmq:3-management
+
+    container_name: app-rabbitmq
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   frontend:
     build:
@@ -93,3 +182,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  rabbitmq_data:

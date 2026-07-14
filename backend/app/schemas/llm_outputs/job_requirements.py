@@ -11,15 +11,15 @@ class JobRequirement(BaseModel):
     project_name: str = Field("Название/область проекта")
     required_technologies: list[str] = Field(
         default_factory=list,
-        description="Обязательные технологии (must-have, явно требуются в вакансии). Все в нижнем регистре.",
+        description="Обязательные технологии (must-have, явно требуются в вакансии).",
     )
     preferred_technologies: list[str] = Field(
         default_factory=list,
-        description="Желательные технологии ('будет плюсом', 'опыт с', 'приветствуется'). Все в нижнем регистре.",
+        description="Желательные технологии",
     )
     nice_to_have_technologies: list[str] = Field(
         default_factory=list,
-        description="Опциональные/nice-to-have технологии ('знакомство с', 'понимание основ'). Все в нижнем регистре.",
+        description="Опциональные/nice-to-have технологии",
     )
     requirements: list[str] = Field(default_factory=list, description="Требуемые навыки и компетенции")
 

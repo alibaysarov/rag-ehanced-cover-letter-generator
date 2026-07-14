@@ -38,9 +38,8 @@ async def save_projects(
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
     user = _get_current_user(request, user_repo)
-    saved = projects_service.save_projects(
+    saved = projects_service.create_many(
         user_id=user.id,
-        source_id=body.source_id,
         projects=body.projects,
     )
     return SaveProjectsResponse(saved=saved)

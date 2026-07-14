@@ -15,7 +15,7 @@ from app.database import engine
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.decorators.time_perf import time_performance,with_timer
-
+from playwright.async_api import Page
 from app.pw_instances import chromium as chromium_module
 
 
@@ -29,6 +29,11 @@ VACANCY_URL = "https://hh.ru/vacancy/{vacancy_id}"
 # tasks, so without this set a running parse can be garbage-collected mid-run.
 _background_tasks: set[asyncio.Task] = set()
 
+
+def get_company_url(url:str):
+        if url.startswith("https://hh.ru"):
+            return url
+        return f"https://hh.ru{url}"
 
 def launch_parse_job(job_id: int, query: str, user_id: int) -> None:
     """Start a parse in the background and keep a strong reference to it so it
@@ -63,6 +68,65 @@ async def _get_list(browser, query: str, job_id: int)-> list[tuple[str, str]]:
 
 
 async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semaphore: asyncio.Semaphore) -> Optional[dict]:
+    
+    async def _get_content_pw(page:Page)->dict:
+        title_el = await page.query_selector('[data-qa="vacancy-title"]')
+        body_el = await page.query_selector('[data-qa="vacancy-description"]')
+
+        detail_title = (await title_el.inner_text()).strip() if title_el else ""
+        title = detail_title or prefetched_title or "Unknown"
+        body = (await body_el.inner_text()).strip() if body_el else ""
+        
+        vacancy_el = await page.query_selector('a[data-qa="vacancy-company-name"]')
+        vacancy_url = (await vacancy_el.get_attribute("href")) if vacancy_el else ""
+        
+        vacancy_item = {
+            "vacancy_id": vacancy_id,
+            "url": url,
+            "job_title": title,
+            "job_text": body.strip(),
+            "vacancy_url": get_company_url(vacancy_url) if vacancy_url else ""
+        }
+        
+        return vacancy_item
+        
+        
+    async def _get_content_js(page:Page)->dict:
+        
+        vacancy_item = await page.evaluate("""
+            () =>{
+                
+                const titleEl = document.querySelector('[data-qa="vacancy-title"]');
+                if(!titleEl) {
+                    return null;
+                }
+                
+                const bodyEl =  document.querySelector('[data-qa="vacancy-description"]');
+                
+                if(!bodyEl) {
+                    return null;
+                }
+                
+                const companyEl = document.querySelector('a[data-qa="vacancy-company-name"]');
+                
+                const title = titleEl.innerText.trim() ?? '';
+                const body = bodyEl.innerText.trim() ?? '';
+                const companyUrl = companyEl?.href ?? '';
+                
+                return {
+                    "job_title": title,
+                    "job_text": body,
+                    "vacancy_url": companyUrl ?? '',
+                }
+            
+            }
+        """)
+        
+        vacancy_item['vacancy_id'] = vacancy_id
+        vacancy_item['url'] = url
+        
+        return vacancy_item
+        
     async with semaphore:
         page = await browser.new_page()
         try:
@@ -70,32 +134,31 @@ async def _scrape_vacancy(browser, vacancy_id: str, prefetched_title: str, semap
             url = VACANCY_URL.format(vacancy_id=vacancy_id)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
-            title_el = await page.query_selector('[data-qa="vacancy-title"]')
-            body_el = await page.query_selector('[data-qa="vacancy-description"]')
-
-            detail_title = (await title_el.inner_text()).strip() if title_el else ""
-            title = detail_title or prefetched_title or "Unknown"
-            body = (await body_el.inner_text()).strip() if body_el else ""
-
-            return {
-                "vacancy_id": vacancy_id,
-                "url": url,
-                "job_title": title,
-                "job_text": body.strip(),
-            }
+            result = await _get_content_js(page=page)
+            
+            return result
         except Exception as e:
-            logger.warning(f"Error scraping vacancy {vacancy_id}: {e}")
-            return None
+            logger.warning(f"Error scraping vacancy with js {vacancy_id}: {e}")
+            try:
+                pw_item = await _get_content_pw(page=page)
+                return pw_item
+            except Exception as e:
+                logger.warning(f"Error scraping vacancy from pw {vacancy_id}: {e}")
+                return None
+            finally:
+                await page.close()
         finally:
             await page.close()
 
 
 async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], job_id: int, user_id: int) -> None:
     semaphore = asyncio.Semaphore(4)
-
+    
     async def process_one(vacancy_id: str, prefetched_title: str):
         result = await _scrape_vacancy(browser, vacancy_id, prefetched_title, semaphore)
+        
         if result is None:
+            logger.info(f"vacancy with {vacancy_id} is None")
             return
         with Session(engine) as session:
             existing = session.exec(
@@ -114,6 +177,7 @@ async def _phase2_fetch_details(browser, vacancy_items: list[tuple[str, str]], j
                 url=result["url"],
                 job_title=result["job_title"],
                 job_text=result["job_text"],
+                web_site=result["vacancy_url"]
             )
             session.add(job_row)
 

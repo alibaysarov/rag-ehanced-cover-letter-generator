@@ -1,22 +1,11 @@
 from typing import AsyncIterator, Optional
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.messages.base import BaseMessage
 
+from langchain_core.messages.base import BaseMessage
+from langsmith import traceable
 from langchain_core.prompts import ChatPromptTemplate
 from abc import ABC, abstractmethod
-
-
-'''
-@property
-    def prompt_template(self) -> ChatPromptTemplate:
-        return ChatPromptTemplate.from_messages([
-            ("system", "You are a professional translator. Translate to {language}."),
-            ("human", "{text}"),
-        ])
-
-'''
 
 class GeneralLLMClient(ABC):
     model:BaseChatModel = None
@@ -74,9 +63,16 @@ class GeneralLLMClient(ABC):
             self.model = self.model.with_structured_output(schema=schema)
     
     
+    @traceable(run_type="llm")
+    def get_sync_response(self,body:dict={}):
+        messages = self.get_prompt(body)
+        return self.model.invoke(messages)
+    
+    
+    @traceable(run_type="llm")
     async def get_stream_response(self,body:dict={})-> AsyncIterator[str]:
         messages = self.get_prompt(body)
-        self.count_prompt_tokens(body)
+        # self.count_prompt_tokens(body)
         async for chunk in self.model.astream(messages):
                 if chunk.content:
                     yield chunk.content

@@ -278,7 +278,8 @@
     "close": "Close",
     "history": "History",
     "noVacancies": "No vacancies yet",
-    "vacancyLink": "View on hh.ru"
+    "vacancyLink": "View on hh.ru",
+    "employerLink":"Employer site"
   },
   "datePicker": {
     "weekDays": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],

@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright,Page
 
 
 @asynccontextmanager

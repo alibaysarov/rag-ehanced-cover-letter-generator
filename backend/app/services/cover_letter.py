@@ -2,11 +2,17 @@ from app.services.projects import ProjectStorageService, get_projects_service
 from app.repository.user_repository import UserRepository
 from ..services.llm.job_requirements import JobParsePrompt
 from ..schemas.llm_outputs.job_requirements import JobRequirement
+from app.services.llm.relevant_projects import RelevantProjectsPrompt
+
 from app.services.llm.job_items import CoverLetterPrompt
 from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.cache import redis as redis_db
+from app.repository.project_repository import ProjectRepository
+from app.models import Project
+from langsmith import traceable
 import json
 import re
+import asyncio
 
 def get_projects_storage_service() -> ProjectStorageService:
     return get_projects_service()
@@ -16,6 +22,7 @@ class CoverLetterService:
     def __init__(self, user_repo: UserRepository):
         self.llm = CoverLetterPrompt()
         self.projects_service = get_projects_service()
+        self.project_repository = ProjectRepository()
         self.user_repo = user_repo
     
     async def sync_by_url(self,url:str,user_id:int):
@@ -56,43 +63,98 @@ class CoverLetterService:
         re.IGNORECASE,
     )
 
+    # async def _clean_stream(self, body: dict):
+    #     """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
+    #     buffer = ""
+    #     cleaned = False
+
+    #     async for chunk in self.llm.get_stream_response(body):
+    #         if cleaned:
+    #             yield chunk
+    #             continue
+
+    #         buffer += chunk
+    #         # Flush once we have enough context (double newline or 300 chars)
+    #         if len(buffer) >= 300 or "\n\n" in buffer:
+    #             cleaned = True
+    #             buffer = self._STRIP_LABEL.sub("", buffer)
+    #             yield buffer.lstrip("\n ")
+
+    #     # Stream ended while still buffering (very short output)
+    #     if not cleaned and buffer:
+    #         buffer = self._STRIP_LABEL.sub("", buffer)
+    #         yield buffer.lstrip("\n ")
+    
+    @traceable(run_type="llm",name="Cover letter generate")
     async def _clean_stream(self, body: dict):
-        """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
-        buffer = ""
-        cleaned = False
+        result = await (self.llm.prompt_template | self.llm.get_model).ainvoke(body)
+        text = result.content
+        text = self._STRIP_LABEL.sub("", text).lstrip("\n ")
 
-        async for chunk in self.llm.get_stream_response(body):
-            if cleaned:
-                yield chunk
-                continue
+        chunk_size = 20
+        for i in range(0, len(text), chunk_size):
+            yield text[i:i+chunk_size]
+            await asyncio.sleep(0.02)
+    
+    # async def _clean_stream(self, body: dict):
+    #     """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
+    #     buffer = ""
+    #     cleaned = False
 
-            buffer += chunk
-            # Flush once we have enough context (double newline or 300 chars)
-            if len(buffer) >= 300 or "\n\n" in buffer:
-                cleaned = True
-                buffer = self._STRIP_LABEL.sub("", buffer)
-                yield buffer.lstrip("\n ")
+    #     async for chunk in self.llm.get_stream_response(body):
+    #         chunk = self._chunk_to_text(chunk)
+    #         if not chunk:
+    #             continue
+
+    #         if cleaned:
+    #             yield chunk
+    #             continue
+
+    #         buffer += chunk
+    #         # Flush once we have enough context (double newline or 300 chars)
+    #         if len(buffer) >= 300 or "\n\n" in buffer:
+    #             cleaned = True
+    #             buffer = self._STRIP_LABEL.sub("", buffer)
+    #             yield buffer.lstrip("\n ")
 
         # Stream ended while still buffering (very short output)
-        if not cleaned and buffer:
-            buffer = self._STRIP_LABEL.sub("", buffer)
-            yield buffer.lstrip("\n ")
+        # if not cleaned and buffer:
+        #     buffer = self._STRIP_LABEL.sub("", buffer)
+        #     yield buffer.lstrip("\n ")
+
+    @staticmethod
+    def _chunk_to_text(chunk) -> str:
+        """Normalize a stream chunk (str | list | dict | None) to plain text."""
+        if chunk is None:
+            return ""
+        if isinstance(chunk, str):
+            return chunk
+        if isinstance(chunk, list):
+            parts = []
+            for part in chunk:
+                if isinstance(part, str):
+                    parts.append(part)
+                elif isinstance(part, dict):
+                    parts.append(part.get("text", "") or "")
+                else:
+                    text_attr = getattr(part, "text", None)
+                    if text_attr:
+                        parts.append(text_attr)
+            return "".join(parts)
+        if isinstance(chunk, dict):
+            return chunk.get("text", "") or ""
+        # fallback for objects with a `.content` or `.text` attribute
+        text_attr = getattr(chunk, "text", None) or getattr(chunk, "content", None)
+        return text_attr if isinstance(text_attr, str) else ""
+    
     
     async def __get_data_from_text(self,text:str,user_id:int):
         job_parse = JobParsePrompt()
         chain = job_parse.prompt_template | job_parse.get_model
-        vacancy: JobRequirement = chain.invoke({"job_text": text})
+        vacancy: JobRequirement =await chain.ainvoke({"job_text": text})
 
-        ranked = self.projects_service.rank_projects_overlap(
-            user_id=user_id,
-            vacancy=vacancy,
-            top_k=5,
-        )
-        printed_ranked = [{
-            "project_name": item["payload"]["project_name"],
-            "technologies": item["payload"]["technologies"],
-            }for item in ranked]
-        print("ranked",printed_ranked)
+        ranked = self._get_ranked_projects(user_id,text, vacancy)
+        
         user = self.user_repo.get_user_by_id(user_id)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
@@ -106,6 +168,31 @@ class CoverLetterService:
             "user_last_name": (user.last_name or "") if user else "",
         }
         return body
+
+    def _get_ranked_projects(self, user_id,vacancy_text:str, job_requirement:JobRequirement):
+        
+        relevant_projects = self.project_repository.get_relevant(user_id,job_requirement.required_technologies)
+        if len(relevant_projects) > 2:
+            relevant_project_promt = RelevantProjectsPrompt()
+            model_response = relevant_project_promt.get_sync_response({
+                "job_text":vacancy_text,
+                "technologies":job_requirement.required_technologies,
+                "projects":relevant_projects
+            })
+            projects = model_response.projects
+            result = []
+            
+            
+            
+            for project in projects:
+                relevant_projects
+                item = next((item for item,_ in relevant_projects if str(item.id) == str(project.id)), None)
+                if item is not None:
+                    result.append(item)
+            return result
+        
+        return [project for project,_ in relevant_projects] 
+    
 
     async def __get_data_from_url(self,url:str,user_id:int):
         text = None
@@ -119,16 +206,9 @@ class CoverLetterService:
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
         
-        ranked = self.projects_service.rank_projects_overlap(
-            user_id=user_id,
-            vacancy=vacancy,
-            top_k=5,
-        )
-        printed_ranked = [{
-            "project_name": item["payload"]["project_name"],
-            "technologies": item["payload"]["technologies"],
-            }for item in ranked]
-        print("ranked ",printed_ranked)
+        ranked = self._get_ranked_projects(user_id=user_id,vacancy_text=text,job_requirement=vacancy)
+        
+        
         user = self.user_repo.get_user_by_id(user_id)
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
@@ -143,14 +223,23 @@ class CoverLetterService:
         }
         return body
     
-    def __projects_normalize(self, ranked: list[dict]) -> str:
+    
+    def __projects_normalize(self, ranked: list[Project]) -> str:
+        # result = [
+        #     {
+        #         "project_name": item["payload"]["project_name"],
+        #         "skills": item["payload"]["skills"],
+        #         "achievements": item["payload"]["achievements"],
+        #         "technologies": item["payload"]["technologies"],
+        #     }
+        #     for item in ranked
+        # ]
         result = [
             {
-                "project_name": item["payload"]["project_name"],
-                "skills": item["payload"]["skills"],
-                "achievements": item["payload"]["achievements"],
-                "technologies": item["payload"]["technologies"],
-            }
-            for item in ranked
+                "project_name":item.name,
+                "skills":item.skills,
+                "achievements":item.achievements,
+                "technologies":item.technologies
+            } for item in ranked
         ]
         return json.dumps(result, ensure_ascii=False, indent=2)

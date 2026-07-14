@@ -12,12 +12,14 @@ import { GradientButton } from '@/components/ui/GradientButton';
 import { VacancyModal } from './VacancyModal';
 import { autoParseApi } from '../api/auto-parse-client';
 import type { AutoParsedJob } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface VacancyCardProps {
   vacancy: AutoParsedJob;
 }
 
 export function VacancyCard({ vacancy }: VacancyCardProps) {
+  const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
@@ -56,16 +58,37 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
         <GlassCard hover padding={5}>
           <Flex direction="column" gap={3} h="100%">
             {/* Title row */}
-            <Text
-              fontFamily="heading"
-              fontSize="md"
-              fontWeight={600}
-              color="slate.900"
-              letterSpacing="-0.01em"
-              noOfLines={2}
-            >
-              {vacancy.job_title}
-            </Text>
+            <Flex direction={"column"} gap="10px">
+              <Text
+                fontFamily="heading"
+                fontSize="md"
+                fontWeight={600}
+                color="slate.900"
+                letterSpacing="-0.01em"
+                noOfLines={2}
+              >
+                {vacancy.job_title}
+              </Text>
+
+              {vacancy.web_site && URL.canParse(vacancy.web_site) && (
+                <Link
+                  href={vacancy.web_site}
+                  isExternal
+                  display="inline-flex"
+                  alignItems="center"
+                  gap={1.5}
+                  fontSize="sm"
+                  fontWeight={600}
+                  color="aurora.indigo"
+                  _hover={{ textDecoration: 'underline' }}
+                >
+                  {t('autoParse.employerLink')}
+                  <IconExternalLink size={14} stroke={2} />
+                </Link>
+                // <Text as={"a"} fontSize={"sm"} href={vacancy.web_site}>{t('autoParse.employerLink')}</Text>
+              )}
+            </Flex>
+
 
             {/* Truncated description */}
             <Text fontSize="sm" color="slate.600" lineHeight={1.65} noOfLines={3} flex="1">

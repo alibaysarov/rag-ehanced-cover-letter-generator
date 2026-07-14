@@ -14,6 +14,7 @@ export interface AutoParsedJob {
   id: number;
   vacancy_id: string;
   url: string;
+  web_site: string | null;
   job_title: string;
   job_text: string;
   is_applied: boolean;

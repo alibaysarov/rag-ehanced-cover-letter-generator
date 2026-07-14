@@ -54,9 +54,8 @@ async def cv_import(
         result: CVImportModel = chain.invoke({"cv_text": cv_text})
 
         effective_source_id = source_id or str(uuid.uuid4())
-        saved = projects_service.save_projects(
+        saved = projects_service.create_many(
             user_id=user.id,
-            source_id=effective_source_id,
             projects=result.projects,
         )
 
@@ -124,8 +123,3 @@ async def delete_cv(
     except Exception as e:
         logging.error("Error retrieving CVs", exc_info=True)
         raise HTTPException(status_code=500, detail="Error retrieving CVs")  
-
-
-def _get_user_by_mail(email:str,user_repo: UserRepository):
-    current_user = user_repo.get_user_by_email(email)
-    return current_user
