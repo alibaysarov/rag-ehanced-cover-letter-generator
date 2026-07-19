@@ -6,14 +6,28 @@ class GeekJobVacancyParser(GeneralVacancyParser):
     def __init__(self):
         super().__init__("geek_job","https://geekjob.ru/vacancies", False)
     
-    def get_single_url(self)->str:
-        return "https://geekjob.ru/vacancy/{vacancy_id}"
+    def get_single_url(self,vacancy_id)->str:
+        return f"https://geekjob.ru/vacancy/{vacancy_id}"
     
     def evaluate_pagination(self)->str:
         return """
         () => [...document.querySelectorAll('[data-qa="pager-page"]')]
                 .map(item => item.textContent?.trim() || null)
                 .filter(v => v != null)
+        """
+    
+    
+    def evaluate_vacancy_page(self):
+        return """
+        ()=>{
+            const job_title = document.querySelector("h1")?.textContent?.trim() || null;
+            const job_text = document.querySelector('div.description')?.textContent?.trim() || null;
+            
+            return {
+                job_title,
+                job_text,
+            }
+        }
         """
     
     

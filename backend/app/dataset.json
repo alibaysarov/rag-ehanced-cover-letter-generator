@@ -1,0 +1,1483 @@
+[
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "2, QA специалист (Тестировщик) Привет! Мы — аккредитованная IT компания, занимающаяся веб-разработкой на заказ. Технологии, которые мы используем: Laravel (PHP), PostgreSQL, Vue.js, Webpack, Docker, Kubernetes, Gitlab CI, а также автотесты, Scrum (Стори Поинты, Спринты, Jira), Gitflow, Mattermost. Написание end-to-end автотестов на PlayWright + js/ts.",
+    "output": "{\"id\": 2, \"name\": \"QA специалист (Тестировщик)\", \"technologies\": [\"Laravel\", \"PHP\", \"PostgreSQL\", \"Vue.js\", \"Webpack\", \"Docker\", \"Kubernetes\", \"Gitlab CI\", \"PlayWright\", \"JS\", \"TS\", \"Scrum\", \"Jira\", \"Gitflow\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "5, PHP-разработчик Restaurant Guru – один из самых крупных и удобных информационных сервисов о заведениях во всем мире. Наш стек: HTML, CSS, JavaScript, React, PHP 8, Laravel, MySQL (MariaDB), Sphinx, Nginx, Redis, Memcached, Cloudflare, Git, GitLab. Опыт работы с Linux.",
+    "output": "{\"id\": 5, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8\", \"Laravel\", \"MySQL\", \"MariaDB\", \"React\", \"JavaScript\", \"Sphinx\", \"Nginx\", \"Redis\", \"Memcached\", \"Cloudflare\", \"Git\", \"GitLab\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "3, Senior PHP-developer Мы ищем middle/senior PHP-разработчика. Стек: PHP, Oracle, Redis, RabbitMQ, PHPUnit, Docker, Git. Монолит на PHP (7.2 → 7.4 → дальше 8). Самописный framework, Laravel, паттерны, юнит-тесты, DDD.",
+    "output": "{\"id\": 3, \"name\": \"Senior PHP-developer\", \"technologies\": [\"PHP\", \"Oracle\", \"Redis\", \"RabbitMQ\", \"PHPUnit\", \"Docker\", \"Git\", \"Laravel\", \"DDD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "71, Scrum-мастер /PM ООО ТП Инжиниринг. Оперативное и эффективное взаимодействие через Битрикс-24, Teams , Share Point , Jira, Confluence. Знакомство со стеком: Go, PHP/Laravel, PostgreSQL, Kubernetes.",
+    "output": "{\"id\": 71, \"name\": \"Scrum-мастер /PM\", \"technologies\": [\"Jira\", \"Confluence\", \"Bitrix-24\", \"Teams\", \"Share Point\", \"Go\", \"PHP\", \"Laravel\", \"PostgreSQL\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "4, Python-разработчик Институт информационных технологий МИРЭА. Наш стек: Python 3, FastAPI; SQLAlchemy, Alembic, Pydantic; Redis; PostgreSQL; Sentry; Zabbix / Grafana. Знание основ PHP.",
+    "output": "{\"id\": 4, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3\", \"FastAPI\", \"SQLAlchemy\", \"Alembic\", \"Pydantic\", \"Redis\", \"PostgreSQL\", \"Sentry\", \"Zabbix\", \"Grafana\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "395, Тестировщик Департамент информационных технологий Москвы. Наш стек: Postman, Swagger, DevTools, Python, CI/CD (Jenkins, GitLab CI). Уверенное знание PHP и/или Python. SQL, MySQL, PostgreSQL, MongoDB. JMeter, Allure TestOps.",
+    "output": "{\"id\": 395, \"name\": \"Тестировщик\", \"technologies\": [\"Postman\", \"Swagger\", \"DevTools\", \"Python\", \"PHP\", \"Jenkins\", \"GitLab CI\", \"SQL\", \"MySQL\", \"PostgreSQL\", \"MongoDB\", \"JMeter\", \"Allure TestOps\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "32, Java-разработчик Погрузитесь в мир современных технологий. Требования: Опыт разработки на PHP и Java.",
+    "output": "{\"id\": 32, \"name\": \"Java-разработчик\", \"technologies\": [\"Java\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "111, Backend PHP разработчик Опыт PHP8 и MySQL (MariaDB). Опыт HTML5 и CSS3. Минимальный опыт JavaScript.",
+    "output": "{\"id\": 111, \"name\": \"Backend PHP разработчик\", \"technologies\": [\"PHP 8\", \"MySQL\", \"MariaDB\", \"HTML5\", \"CSS3\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "9, Верстальщик Ищем HTML-верстальщика, который хочет расти в стек Laravel. Уверенное знание HTML5, CSS3 (Flexbox, Grid). Bootstrap и/или TailwindCSS. Vite, npm, Git. Базовые навыки PHP и понимание SQL. Docker, Vue.js.",
+    "output": "{\"id\": 9, \"name\": \"Верстальщик\", \"technologies\": [\"HTML5\", \"CSS3\", \"Flexbox\", \"Grid\", \"Bootstrap\", \"TailwindCSS\", \"Vite\", \"npm\", \"Git\", \"PHP\", \"SQL\", \"Laravel\", \"Docker\", \"Vue.js\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "21, Middle PHP Developer Обязанности: Оптимизация кода систем. Требования: уверенные знания Elasticsearch; знание PHP7+; Symfony; MySQL, Mongo, PostgreSQL.",
+    "output": "{\"id\": 21, \"name\": \"Middle PHP Developer\", \"technologies\": [\"PHP 7\", \"Symfony\", \"Elasticsearch\", \"MySQL\", \"MongoDB\", \"PostgreSQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "23, Web-разработчик (CMS) Ищем CMS разработчика. Разработка новых проектов на 1С-Битрикс и WordPress. Стек: PHP, MySQL, HTML5/CSS3/JS, интеграции по REST/SOAP, Linux. Composer, Docker, npm/yarn.",
+    "output": "{\"id\": 23, \"name\": \"Web-разработчик (CMS)\", \"technologies\": [\"1С-Битрикс\", \"WordPress\", \"PHP\", \"MySQL\", \"HTML5\", \"CSS3\", \"JavaScript\", \"REST\", \"SOAP\", \"Linux\", \"Composer\", \"Docker\", \"npm\", \"yarn\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "26, Senior Recruiter (Финтех) Wiam Group - международная финтех-компания. Подбор IT специалистов: разработчики (PHP, React, Mobile), DevOps, QA, Data Scientists, ML-инженеры. Сорсинг через LinkedIn, GitHub.",
+    "output": "{\"id\": 26, \"name\": \"Senior Recruiter (Финтех)\", \"technologies\": [\"PHP\", \"React\", \"DevOps\", \"QA\", \"Data Science\", \"ML\", \"LinkedIn\", \"GitHub\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "13, Full-stack разработчик (PHP+Vue.JS) Стек технологий: PHP 8 (Laravel 12), Vue.js, MySQL/PostgreSQL, JS (ES6+), CSS 3, HTML 5, Git.",
+    "output": "{\"id\": 13, \"name\": \"Full-stack разработчик (PHP+Vue.JS)\", \"technologies\": [\"PHP 8\", \"Laravel\", \"Vue.js\", \"MySQL\", \"PostgreSQL\", \"JavaScript\", \"CSS 3\", \"HTML 5\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "15, Junior Full Stack Developer Требования: HTML5, CSS3 и JavaScript (ES6+); React, Vue.js или Angular; Node.js, Python, Java, PHP или C#; SQL; Git; Docker; Linux; CI/CD.",
+    "output": "{\"id\": 15, \"name\": \"Junior Full Stack Developer\", \"technologies\": [\"HTML5\", \"CSS3\", \"JavaScript\", \"React\", \"Vue.js\", \"Angular\", \"Node.js\", \"Python\", \"Java\", \"PHP\", \"C#\", \"SQL\", \"Git\", \"Docker\", \"Linux\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "10, Веб-разработчик Разрабатывать и развивать корпоративные сайты на 1С-Битрикс. Свободно владеешь HTML, CSS, JavaScript. PHP, Git. Умеешь работать с нейросетями (ИИ). Docker, CI/CD.",
+    "output": "{\"id\": 10, \"name\": \"Веб-разработчик\", \"technologies\": [\"1С-Битрикс\", \"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"Git\", \"AI\", \"Docker\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "12, PHP Laravel Backend разработчик Нужно знать: PHP 8+, Laravel, ООП, MySQL. Плюсом: Redis, Elasticsearch.",
+    "output": "{\"id\": 12, \"name\": \"PHP Laravel Backend разработчик\", \"technologies\": [\"PHP 8\", \"Laravel\", \"MySQL\", \"Redis\", \"Elasticsearch\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "429, Инженер по тестированию банковского процессинга Ожидаем: Опыт работы с Java/Python. SQL, Oracle, PostgreSQL. Знание UNIX-like систем. ISO 8583. Базовый C.",
+    "output": "{\"id\": 429, \"name\": \"Инженер по тестированию банковского процессинга\", \"technologies\": [\"Java\", \"Python\", \"SQL\", \"Oracle\", \"PostgreSQL\", \"UNIX\", \"C\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "14, WEB-разработчик (PHP/Laravel) Требования: PHP (Laravel), REST API. MySQL/PostgreSQL, Docker, Git.",
+    "output": "{\"id\": 14, \"name\": \"WEB-разработчик (PHP/Laravel)\", \"technologies\": [\"PHP\", \"Laravel\", \"REST API\", \"MySQL\", \"PostgreSQL\", \"Docker\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "17, PHP-разработчик (Full-stack) Middle/Middle+ Adtech Solutions. Опыт коммерческой разработки на PHP. Laravel, Git, Vue.js, MySQL / PostgreSQL. Docker, Redis.",
+    "output": "{\"id\": 17, \"name\": \"PHP-разработчик (Full-stack) Middle/Middle+\", \"technologies\": [\"PHP\", \"Laravel\", \"Git\", \"Vue.js\", \"MySQL\", \"PostgreSQL\", \"Docker\", \"Redis\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "18, PHP Backend Developer (Laravel) Keepgo. Знание PHP 8.4, Laravel 10+. MySQL, Docker, Git. PHPUnit, Pest. Redis, RabbitMQ, PHPStan, CI/CD, DDD, Clean Architecture.",
+    "output": "{\"id\": 18, \"name\": \"PHP Backend Developer (Laravel)\", \"technologies\": [\"PHP 8.4\", \"Laravel 10\", \"MySQL\", \"Docker\", \"Git\", \"PHPUnit\", \"Pest\", \"Redis\", \"RabbitMQ\", \"PHPStan\", \"CI/CD\", \"DDD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "24, PHP-разработчик SVK.Digital. Стек: PHP 8.3, Laravel, Redis, PostgreSQL, MySQL, PHPUnit, Git. Zabbix, Sentry.",
+    "output": "{\"id\": 24, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8.3\", \"Laravel\", \"Redis\", \"PostgreSQL\", \"MySQL\", \"PHPUnit\", \"Git\", \"Zabbix\", \"Sentry\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "27, Fullstack программист-разработчик Highway Media. Отлично знать PHP, MySQL и JavaScript. Yii2, Vue, Git, nix-консоль. Galera, Percona XtraDB.",
+    "output": "{\"id\": 27, \"name\": \"Fullstack программист-разработчик\", \"technologies\": [\"PHP\", \"MySQL\", \"JavaScript\", \"Yii2\", \"Vue\", \"Git\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "29, Программист - разработчик Обязанности: верстка PHP, HTML и CSS. Знание 1С-Битрикс, JAVA скрипты, Photoshop.",
+    "output": "{\"id\": 29, \"name\": \"Программист - разработчик\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"1С-Битрикс\", \"JavaScript\", \"Photoshop\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "30, Fullstack разработчик PHP (Symfony), Middle + Компания GTS. PHP 8+, Symfony 6/7, RabbitMQ, Doctrine ORM. SQL, Web-сокеты. Flutter, Linux, Git. Битрикс (D7).",
+    "output": "{\"id\": 30, \"name\": \"Fullstack разработчик PHP (Symfony), Middle +\", \"technologies\": [\"PHP 8\", \"Symfony\", \"RabbitMQ\", \"Doctrine ORM\", \"SQL\", \"Web-sockets\", \"Flutter\", \"Linux\", \"Git\", \"Битрикс\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "34, Junior Developer FM Logistic. Разработка PHP в команду TMS X. Laravel, SOLID, REST API, JSON API. Buggregator, Jaeger. Гибридный формат.",
+    "output": "{\"id\": 34, \"name\": \"Junior Developer\", \"technologies\": [\"PHP\", \"Laravel\", \"SOLID\", \"REST API\", \"JSON API\", \"Buggregator\", \"Jaeger\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "36, Full-stack разработчик PHP HostKey. Знание PHP 7+ (7, 8), JavaScript, jQuery, HTML5, CSS3, Bootstrap. SQL-базы данных. Git/Gitlab.",
+    "output": "{\"id\": 36, \"name\": \"Full-stack разработчик PHP\", \"technologies\": [\"PHP\", \"JavaScript\", \"jQuery\", \"HTML5\", \"CSS3\", \"Bootstrap\", \"SQL\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "19, Fullstack-разработчик Стек технологий: HTML, CSS, JS, Vue.js, TS, MS SQL, WebTutor.",
+    "output": "{\"id\": 19, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"HTML\", \"CSS\", \"JS\", \"Vue.js\", \"TS\", \"MS SQL\", \"WebTutor\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "28, Backend-разработчик PHP (Laravel) Middle+ Стек: PHP 8.2, Laravel 9+, TypeScript, MariaDB, Oracle, Redis, RabbitMQ, Docker, GitLab CI/CD, Prometheus, Grafana, Sentry, Graylog. Vue 3 / Nuxt.js. ИИ (AI assistants).",
+    "output": "{\"id\": 28, \"name\": \"Backend-разработчик PHP (Laravel) Middle+\", \"technologies\": [\"PHP 8.2\", \"Laravel 9\", \"TypeScript\", \"MariaDB\", \"Oracle\", \"Redis\", \"RabbitMQ\", \"Docker\", \"GitLab CI\", \"Prometheus\", \"Grafana\", \"Sentry\", \"Graylog\", \"Vue 3\", \"Nuxt.js\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "31, Senior Frontend разработчик Bnovo. Стек: JS (ES6+), TypeScript, Vue.js 2/3, Vuex, Pinia, HTML5, CSS3/SCSS. SOLID, Clean Architecture. REST, WebSocket, JWT, CORS. Vitest, Jest, Playwright, Cypress. GitLab CI, Docker. ИИ (LLM, Copilot, Cursor).",
+    "output": "{\"id\": 31, \"name\": \"Senior Frontend разработчик\", \"technologies\": [\"JavaScript\", \"TypeScript\", \"Vue.js\", \"Pinia\", \"HTML5\", \"CSS3\", \"SCSS\", \"REST\", \"WebSocket\", \"Jest\", \"Playwright\", \"CI/CD\", \"Docker\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "33, Младший Python-разработчик МИРЭА. Python, FastAPI, SQLAlchemy, Alembic, Pydantic, Redis, PostgreSQL, Git, REST API. Знание PHP. CI/CD.",
+    "output": "{\"id\": 33, \"name\": \"Младший Python-разработчик\", \"technologies\": [\"Python\", \"FastAPI\", \"SQLAlchemy\", \"Alembic\", \"Pydantic\", \"Redis\", \"PostgreSQL\", \"Git\", \"REST API\", \"PHP\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "38, Старший Разработчик PHP CarMoney. PHP, Yii2. РСУБД: PostgreSQL, MySQL, MSSQL. NoSQL: Cassandra, Redis. Брокеры: Apache Kafka, RabbitMQ. Kubernetes, Docker, CI/CD (GitLab). EDA, Clean Architecture.",
+    "output": "{\"id\": 38, \"name\": \"Старший Разработчик PHP\", \"technologies\": [\"PHP\", \"Yii2\", \"PostgreSQL\", \"MySQL\", \"MSSQL\", \"Cassandra\", \"Redis\", \"Kafka\", \"RabbitMQ\", \"Kubernetes\", \"Docker\", \"GitLab CI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "40, Head of IT / Руководитель IT Стек: PHP/Laravel, Vue, PostgreSQL, ClickHouse, Redis, RabbitMQ, k8s. ERP система.",
+    "output": "{\"id\": 40, \"name\": \"Head of IT / Руководитель IT\", \"technologies\": [\"PHP\", \"Laravel\", \"Vue\", \"PostgreSQL\", \"ClickHouse\", \"Redis\", \"RabbitMQ\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "35, Junior Backend Developer Требования: Python, Java, PHP, C# или Node.js. SQL, REST API, JSON, Git. Django, Flask, Spring Boot, Laravel, Express.js. Docker, Linux.",
+    "output": "{\"id\": 35, \"name\": \"Junior Backend Developer\", \"technologies\": [\"Python\", \"Java\", \"PHP\", \"C#\", \"Node.js\", \"SQL\", \"REST API\", \"JSON\", \"Git\", \"Django\", \"Flask\", \"Spring Boot\", \"Laravel\", \"Express.js\", \"Docker\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "37, Flutter Developer (Junior+ / Middle) Devim. Стек: Flutter | BLoC | Dio | GetIt | REST API | Feature First Architecture | Firebase. PHP backend.",
+    "output": "{\"id\": 37, \"name\": \"Flutter Developer (Junior+ / Middle)\", \"technologies\": [\"Flutter\", \"BLoC\", \"Dio\", \"GetIt\", \"REST API\", \"Firebase\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "42, Руководитель IT-проектов и ИИ-автоматизации (VIPFLAT) n8n, Make, Zapier, Albato. API, webhook, JSON. PHP, JavaScript. LLM (Claude, ChatGPT), промпт-инжиниринг. Jira.",
+    "output": "{\"id\": 42, \"name\": \"Руководитель IT-проектов и ИИ-автоматизации (VIPFLAT)\", \"technologies\": [\"n8n\", \"Make\", \"Zapier\", \"Albato\", \"API\", \"Webhook\", \"JSON\", \"PHP\", \"JavaScript\", \"LLM\", \"Claude\", \"ChatGPT\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "44, Laravel Backend разработчик Laravel 10+ / PHP 8.1+. REST API, Swagger / OpenAPI. SQL: MySQL / PostgreSQL, Eloquent ORM. WebSockets, Redis, Docker / Docker Compose. PHPUnit. RabbitMQ.",
+    "output": "{\"id\": 44, \"name\": \"Laravel Backend разработчик\", \"technologies\": [\"Laravel\", \"PHP 8.1\", \"REST API\", \"Swagger\", \"MySQL\", \"PostgreSQL\", \"Eloquent ORM\", \"WebSockets\", \"Redis\", \"Docker\", \"PHPUnit\", \"RabbitMQ\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "47, Middle Fullstack разработчик MyHeat. HTML, CSS, JavaScript, PHP, SQL. Bootstrap. Grunt, Webpack. Git. PostgreSQL, Linux, React, jQuery.",
+    "output": "{\"id\": 47, \"name\": \"Middle Fullstack разработчик\", \"technologies\": [\"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"SQL\", \"Bootstrap\", \"Grunt\", \"Webpack\", \"Git\", \"PostgreSQL\", \"Linux\", \"React\", \"jQuery\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "49, TeamLead Vue-разработчик YCLIENTS. Vue.js, высокоуровневые языки, базы данных. Agile, Scrum. BestBenefits.",
+    "output": "{\"id\": 49, \"name\": \"TeamLead Vue-разработчик\", \"technologies\": [\"Vue.js\", \"SQL\", \"Agile\", \"Scrum\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "51, Middle Backend Developer (PHP, Yii2) Стек: PHP 8.0+, Yii2/Yii3, PostgreSQL, Redis, Elasticsearch, RabbitMQ, Docker, GitHub, OpenAPI (Swagger), DDD.",
+    "output": "{\"id\": 51, \"name\": \"Middle Backend Developer (PHP, Yii2)\", \"technologies\": [\"PHP 8.0\", \"Yii2\", \"Yii3\", \"PostgreSQL\", \"Redis\", \"Elasticsearch\", \"RabbitMQ\", \"Docker\", \"OpenAPI\", \"DDD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "54, Fullstack Developer — Laravel + React/Next.js PHP, Laravel, Eloquent, REST API. Blade, Tailwind CSS, Alpine.js, React, Next.js, TypeScript. Nginx, Git, CI/CD.",
+    "output": "{\"id\": 54, \"name\": \"Fullstack Developer — Laravel + React/Next.js\", \"technologies\": [\"PHP\", \"Laravel\", \"Eloquent\", \"REST API\", \"Blade\", \"Tailwind CSS\", \"Alpine.js\", \"React\", \"Next.js\", \"TypeScript\", \"Nginx\", \"Git\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "56, PHP-разработчик (Go) Middle Триада. PHP 7+, Symfony, Go, MySQL, PostgreSQL, Redis, Memcached, Kafka, Jaeger, Docker, Kubernetes, xDebug. SOA.",
+    "output": "{\"id\": 56, \"name\": \"PHP-разработчик (Go) Middle\", \"technologies\": [\"PHP 7\", \"Symfony\", \"Go\", \"MySQL\", \"PostgreSQL\", \"Redis\", \"Memcached\", \"Kafka\", \"Jaeger\", \"Docker\", \"Kubernetes\", \"xDebug\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "58, Младший веб-разработчик PHP, HTML/CSS. ООП. Fullstack. Обучение внутри компании.",
+    "output": "{\"id\": 58, \"name\": \"Младший веб-разработчик\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"ООП\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "39, Разработчик Бэкенд (РНР) Ригла. PHP 7.1–8.1. ООП, SOLID, DI. REST API, GraphQL.",
+    "output": "{\"id\": 39, \"name\": \"Разработчик Бэкенд (РНР)\", \"technologies\": [\"PHP 8.1\", \"ООП\", \"SOLID\", \"DI\", \"REST API\", \"GraphQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "41, Веб-разработчик на 1С Битрикс 1C-Битрикс (D7), Yii2. PHP (ООП), MySQL. HTML/CSS, JavaScript (jQuery). API (Wildberries, Ozon).",
+    "output": "{\"id\": 41, \"name\": \"Веб-разработчик на 1С Битрикс\", \"technologies\": [\"1C-Битрикс\", \"D7\", \"Yii2\", \"PHP\", \"MySQL\", \"HTML\", \"CSS\", \"JavaScript\", \"jQuery\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "43, Senior Backend Developer/Ведущий разработчик Bnovo. Стек: PHP, Go, MySQL, PostgreSQL, Kafka. Unix, Git, CI/CD. Микросервисы.",
+    "output": "{\"id\": 43, \"name\": \"Senior Backend Developer/Ведущий разработчик\", \"technologies\": [\"PHP\", \"Go\", \"MySQL\", \"PostgreSQL\", \"Kafka\", \"Unix\", \"Git\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "46, Fullstack-разработчик JavaScript/TypeScript, React/Vue, Node.js/PHP, MySQL/PostgreSQL. Git. Адаптивная верстка.",
+    "output": "{\"id\": 46, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"JavaScript\", \"TypeScript\", \"React\", \"Vue\", \"Node.js\", \"PHP\", \"MySQL\", \"PostgreSQL\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "48, Разработчик (Python и PHP) Основы Python, PHP и SQL. Joomla CMS. HTML и CSS. ИИ (Codex и Claude).",
+    "output": "{\"id\": 48, \"name\": \"Разработчик (Python и PHP)\", \"technologies\": [\"Python\", \"PHP\", \"SQL\", \"Joomla\", \"HTML\", \"CSS\", \"Codex\", \"Claude\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "53, Старший Backend-разработчик (лидер команды) ПИК Digital. PHP 8/7.x, Symfony. Go, JS/TS, Python. RabbitMQ, Apache Kafka. PostgreSQL/MySQL. Юнит и интеграционные тесты.",
+    "output": "{\"id\": 53, \"name\": \"Старший Backend-разработчик (лидер команды)\", \"technologies\": [\"PHP 8\", \"Symfony\", \"Go\", \"TypeScript\", \"Python\", \"RabbitMQ\", \"Kafka\", \"PostgreSQL\", \"MySQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "55, PHP-разработчик Ensi. PHP, Laravel, PostgreSQL, MySQL. Linux. Kafka, RabbitMQ. Elasticsearch. Docker, Kubernetes (K8s). Pest, OAS3.",
+    "output": "{\"id\": 55, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP\", \"Laravel\", \"PostgreSQL\", \"MySQL\", \"Linux\", \"Kafka\", \"RabbitMQ\", \"Elasticsearch\", \"Docker\", \"Kubernetes\", \"Pest\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "45, Frontend Developer PHP, HTML, CSS, WordPress, Elementor и Tilda. OpenCart. SEO-оптимизация.",
+    "output": "{\"id\": 45, \"name\": \"Frontend Developer\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"WordPress\", \"Elementor\", \"Tilda\", \"OpenCart\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "50, Web - разработчик / администратор ЦНИИ РТК. 1С-Битрикс, Joomla, HTML, MySQL, PHP, CSS. Bitrix VM.",
+    "output": "{\"id\": 50, \"name\": \"Web - разработчик / администратор\", \"technologies\": [\"1С-Битрикс\", \"Joomla\", \"HTML\", \"MySQL\", \"PHP\", \"CSS\", \"Bitrix VM\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "52, Senior PHP-разработчик PHP 8.1+, ООП, SOLID. Symfony, PostgreSQL / MySQL, Redis / RabbitMQ / Kafka. REST и SOAP. Docker, CI/CD (GitLab CI / GitHub Actions).",
+    "output": "{\"id\": 52, \"name\": \"Senior PHP-разработчик\", \"technologies\": [\"PHP 8.1\", \"ООП\", \"SOLID\", \"Symfony\", \"PostgreSQL\", \"MySQL\", \"Redis\", \"RabbitMQ\", \"Kafka\", \"REST\", \"SOAP\", \"Docker\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "57, Программист Питон - Backend Developer Python Python, Agile, ООП. PostgreSQL, REST API. Docker, Git. Kafka/RabbitMQ/WSO2. JavaScript (ES6). ERPNext или Odoo. Java/Scala/PHP.",
+    "output": "{\"id\": 57, \"name\": \"Программист Питон - Backend Developer Python\", \"technologies\": [\"Python\", \"PostgreSQL\", \"REST API\", \"Docker\", \"Git\", \"Kafka\", \"RabbitMQ\", \"JavaScript\", \"ERPNext\", \"Odoo\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "59, Ведущий Backend разработчик PHP (Битрикс) PHP 8+, MySQL, REST/SOAP API, Git. 1С-Битрикс. JavaScript, Vue.js. HTML5, CSS3.",
+    "output": "{\"id\": 59, \"name\": \"Ведущий Backend разработчик PHP (Битрикс)\", \"technologies\": [\"PHP 8\", \"MySQL\", \"REST API\", \"SOAP API\", \"Git\", \"1С-Битрикс\", \"JavaScript\", \"Vue.js\", \"HTML5\", \"CSS3\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "64, PHP-разработчик Junior PHP, Laravel, Yii2. Redis, Docker, Nginx. MySQL, PostgreSQL, Git. HTML, CSS, JavaScript.",
+    "output": "{\"id\": 64, \"name\": \"PHP-разработчик Junior\", \"technologies\": [\"PHP\", \"Laravel\", \"Yii2\", \"Redis\", \"Docker\", \"Nginx\", \"MySQL\", \"PostgreSQL\", \"Git\", \"HTML\", \"CSS\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "66, Старший PHP/Go разработчик (Symfony) PHP 8+, Symfony, GIT. RabbitMQ / Kafka, REST API. SQL (индексы, оптимизация).",
+    "output": "{\"id\": 66, \"name\": \"Старший PHP/Go разработчик (Symfony)\", \"technologies\": [\"PHP 8\", \"Symfony\", \"Go\", \"Git\", \"RabbitMQ\", \"Kafka\", \"REST API\", \"SQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "60, Системный аналитик / Бизнес аналитик / Full-stack Analyst Bitrix24, 1С-Битрикс CMS, ERP ТУРБО Х. BPMN, UML, API.",
+    "output": "{\"id\": 60, \"name\": \"Системный аналитик / Бизнес аналитик / Full-stack Analyst\", \"technologies\": [\"Bitrix24\", \"1С-Битрикс\", \"BPMN\", \"UML\", \"API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "62, PHP/Go developer PHP, Go (goroutines, channels). Реляционные и нереляционные БД. Очереди, CI/CD, Docker, Git.",
+    "output": "{\"id\": 62, \"name\": \"PHP/Go developer\", \"technologies\": [\"PHP\", \"Go\", \"SQL\", \"NoSQL\", \"CI/CD\", \"Docker\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "65, Fullstack-разработчик (PHP/Laravel + Vue.js/JS) Nuxt 2/3, Vue 2/3, Laravel, JavaScript, jQuery. REST API, Vuex, Pinia. HTML5, CSS3. TypeScript.",
+    "output": "{\"id\": 65, \"name\": \"Fullstack-разработчик (PHP/Laravel + Vue.js/JS)\", \"technologies\": [\"Nuxt\", \"Vue\", \"Laravel\", \"JavaScript\", \"jQuery\", \"REST API\", \"Vuex\", \"Pinia\", \"HTML5\", \"CSS3\", \"TypeScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "61, Web-программист / Web-разработчик PHP5/7, JS, Jquery, Yii2, CSS, Ajax, Git. Nginx, php-fpm, websockets, ssh. PostgreSQL, MariaDB (MySQL). Linux, Docker, Bash.",
+    "output": "{\"id\": 61, \"name\": \"Web-программист / Web-разработчик\", \"technologies\": [\"PHP\", \"JS\", \"Jquery\", \"Yii2\", \"CSS\", \"Ajax\", \"Git\", \"Nginx\", \"Websockets\", \"PostgreSQL\", \"MariaDB\", \"MySQL\", \"Linux\", \"Docker\", \"Bash\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "63, Fullstack-разработчик (PHP / API / AI интеграции) PHP, Laravel, API (REST, HTTP). AI/нейросети. Sphinx, MySQL, JavaScript, CSS, jQuery. LLM, чат-боты.",
+    "output": "{\"id\": 63, \"name\": \"Fullstack-разработчик (PHP / API / AI интеграции)\", \"technologies\": [\"PHP\", \"Laravel\", \"REST API\", \"AI\", \"Sphinx\", \"MySQL\", \"JavaScript\", \"CSS\", \"jQuery\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "67, PHP / Laravel разработчик Росатом. PHP 8.2+, Laravel 12+, Git. PostgreSQL, HTML, CSS, JS. Docker Compose. REST, SOAP, Swagger/OpenAPI. Gitlab CI/CD.",
+    "output": "{\"id\": 67, \"name\": \"PHP / Laravel разработчик\", \"technologies\": [\"PHP 8.2\", \"Laravel 12\", \"Git\", \"PostgreSQL\", \"HTML\", \"CSS\", \"JS\", \"Docker Compose\", \"REST\", \"SOAP\", \"Swagger\", \"OpenAPI\", \"Gitlab CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "68, PHP-разработчик PHP 8+, Laravel 9+, MySQL, Redis. Kafka, NATS. Git, Docker, CI/CD, Kubernetes, GitLab CI. PHPUnit/Pest.",
+    "output": "{\"id\": 68, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8\", \"Laravel 9\", \"MySQL\", \"Redis\", \"Kafka\", \"NATS\", \"Git\", \"Docker\", \"CI/CD\", \"Kubernetes\", \"GitLab CI\", \"PHPUnit\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "69, Lead PHP-разработчик PHP 8.1/8.2+, Symfony, PostgreSQL, Doctrine ORM. Docker, Docker Compose, Git. REST API. RabbitMQ, Redis. PHPUnit, Swagger/OpenAPI.",
+    "output": "{\"id\": 69, \"name\": \"Lead PHP-разработчик\", \"technologies\": [\"PHP 8.2\", \"Symfony\", \"PostgreSQL\", \"Doctrine ORM\", \"Docker\", \"Git\", \"REST API\", \"RabbitMQ\", \"Redis\", \"PHPUnit\", \"Swagger\", \"OpenAPI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "70, Разработчик JS/TS (Junior) JavaScript, TypeScript, React / Next.js. HTML, CSS, Tailwind. REST API, gRPC. Node.js, Битрикс (D7), Git, Postman. AI-интеграции.",
+    "output": "{\"id\": 70, \"name\": \"Разработчик JS/TS (Junior)\", \"technologies\": [\"JavaScript\", \"TypeScript\", \"React\", \"Next.js\", \"HTML\", \"CSS\", \"Tailwind\", \"REST API\", \"gRPC\", \"Node.js\", \"Битрикс\", \"Git\", \"Postman\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "72, Программист-разработчик PHP/JS, СУБД, TCP/IP, Git, Linux.",
+    "output": "{\"id\": 72, \"name\": \"Программист-разработчик\", \"technologies\": [\"PHP\", \"JS\", \"SQL\", \"TCP/IP\", \"Git\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "73, Frontend-разработчик TypeScript, React / Vue. S3, PHP + Laravel. SASS, LESS, Stylus.",
+    "output": "{\"id\": 73, \"name\": \"Frontend-разработчик\", \"technologies\": [\"TypeScript\", \"React\", \"Vue\", \"PHP\", \"Laravel\", \"SASS\", \"LESS\", \"Stylus\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "79, FullStack разработчик Opencart Javascript (jQuery), HTML, CSS, SASS. OpenCart, Joomla, Wordpress, 1C-Bitrix. Laravel, Django. PHP, MySQL.",
+    "output": "{\"id\": 79, \"name\": \"FullStack разработчик Opencart\", \"technologies\": [\"JavaScript\", \"jQuery\", \"HTML\", \"CSS\", \"SASS\", \"OpenCart\", \"Joomla\", \"Wordpress\", \"1C-Bitrix\", \"Laravel\", \"Django\", \"PHP\", \"MySQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "80, Middle PHP-разработчик PHP 8.1/8.2+, Symfony, REST API, PostgreSQL, Doctrine ORM, Docker, Git. RabbitMQ, Redis, PHPUnit, Swagger/OpenAPI.",
+    "output": "{\"id\": 80, \"name\": \"Middle PHP-разработчик\", \"technologies\": [\"PHP 8.2\", \"Symfony\", \"REST API\", \"PostgreSQL\", \"Doctrine ORM\", \"Docker\", \"Git\", \"RabbitMQ\", \"Redis\", \"PHPUnit\", \"Swagger\", \"OpenAPI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "82, Бекенд-разработчик (PHP/Yii) PHP 8.0+, Redis, Rabbitmq, Kafka, Docker. Laravel, Symfony, Yii2. TDD, DDD.",
+    "output": "{\"id\": 82, \"name\": \"Бекенд-разработчик (PHP/Yii)\", \"technologies\": [\"PHP 8.0\", \"Redis\", \"Rabbitmq\", \"Kafka\", \"Docker\", \"Laravel\", \"Symfony\", \"Yii2\", \"TDD\", \"DDD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "89, Программист по сайтам на Битрикс 1С-Битрикс (D7), HTML, CSS, JavaScript, PHP, Git. WordPress, Docker, CI/CD, Битрикс24.",
+    "output": "{\"id\": 89, \"name\": \"Программист по сайтам на Битрикс\", \"technologies\": [\"1С-Битрикс\", \"D7\", \"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"Git\", \"WordPress\", \"Docker\", \"CI/CD\", \"Битрикс24\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "92, Аналитик данных SQL (MySQL, PostgreSQL), Power BI (DAX, Power Query). Excel, Google Apps Script. AI инструменты. PHP / Laravel, Redis, ElasticSearch, Python, Pandas.",
+    "output": "{\"id\": 92, \"name\": \"Аналитик данных\", \"technologies\": [\"SQL\", \"MySQL\", \"PostgreSQL\", \"Power BI\", \"DAX\", \"Excel\", \"AI\", \"PHP\", \"Laravel\", \"Redis\", \"ElasticSearch\", \"Python\", \"Pandas\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "74, Middle Backend-разработчик (PHP) Symfony/Laravel PHP 7+, Symfony, Docker, ApiPlatform. Gitlab, Jira, Confluence, Figma.",
+    "output": "{\"id\": 74, \"name\": \"Middle Backend-разработчик (PHP) Symfony/Laravel\", \"technologies\": [\"PHP 7\", \"Symfony\", \"Docker\", \"ApiPlatform\", \"Gitlab\", \"Jira\", \"Confluence\", \"Figma\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "77, Разработчик PHP (полного цикла / Fullstack) PHP (Laravel/Symfony/Yii2), REST API. SQL, Elasticsearch / OpenSearch, Go, C#, GitLab CI/CD, AI coding tools.",
+    "output": "{\"id\": 77, \"name\": \"Разработчик PHP (полного цикла / Fullstack)\", \"technologies\": [\"PHP\", \"Laravel\", \"Symfony\", \"Yii2\", \"REST API\", \"SQL\", \"Elasticsearch\", \"OpenSearch\", \"Go\", \"C#\", \"GitLab CI/CD\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "83, Стажер/Backend-разработчик Git, API (REST), SQL / NoSQL. Стек: Python, Kotlin, Scala, PHP, React, TypeScript. Linux, CI/CD.",
+    "output": "{\"id\": 83, \"name\": \"Стажер/Backend-разработчик\", \"technologies\": [\"Git\", \"REST API\", \"SQL\", \"NoSQL\", \"Python\", \"Kotlin\", \"Scala\", \"PHP\", \"React\", \"TypeScript\", \"Linux\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "84, Full-Stack разработчик (Python + Vue) Python (Django), Vue.js, HTML/CSS/JS. aiogram (Telegram-боты), MySQL, SQLite, Git, Docker.",
+    "output": "{\"id\": 84, \"name\": \"Full-Stack разработчик (Python + Vue)\", \"technologies\": [\"Python\", \"Django\", \"Vue.js\", \"HTML\", \"CSS\", \"JavaScript\", \"aiogram\", \"MySQL\", \"SQLite\", \"Git\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "86, Project Manager (команда разработки) Jira, Scrum, AI-инструменты (Claude Code). Технический бэкграунд: Laravel/PHP.",
+    "output": "{\"id\": 86, \"name\": \"Project Manager (команда разработки)\", \"technologies\": [\"Jira\", \"Scrum\", \"Claude Code\", \"Laravel\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "87, HTML-верстальщик/Frontend-разработчик HTML5, CSS3, SVG, SASS/LESS/PostCSS, JS/TS. Webpack, Parcel, Rollup, Git. Canvas/Lottie, PHP.",
+    "output": "{\"id\": 87, \"name\": \"HTML-верстальщик/Frontend-разработчик\", \"technologies\": [\"HTML5\", \"CSS3\", \"SVG\", \"SASS\", \"LESS\", \"PostCSS\", \"JavaScript\", \"TypeScript\", \"Webpack\", \"Git\", \"Canvas\", \"Lottie\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "91, Ведущий Backend-разработчик в MAX Go, PostgreSQL, Redis, Kafka, Docker. GitLab, Jenkins, OpenShift, Kubernetes, grpc, protocol buffers.",
+    "output": "{\"id\": 91, \"name\": \"Ведущий Backend-разработчик в MAX\", \"technologies\": [\"Go\", \"PostgreSQL\", \"Redis\", \"Kafka\", \"Docker\", \"GitLab\", \"Jenkins\", \"OpenShift\", \"Kubernetes\", \"grpc\", \"protocol buffers\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "93, Стажер/web-разработчик (программист) PHP, ООП, MVC, PSR. 1С-Битрикс, API, composer.",
+    "output": "{\"id\": 93, \"name\": \"Стажер/web-разработчик (программист)\", \"technologies\": [\"PHP\", \"ООП\", \"MVC\", \"PSR\", \"1С-Битрикс\", \"API\", \"composer\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "96, Веб разработчик / Travel Tech PHP 7+, Symfony, Docker, Gitlab. MySQL, Redis, RabbitMQ. JS, CSS, HTML, React, AI.",
+    "output": "{\"id\": 96, \"name\": \"Веб разработчик / Travel Tech\", \"technologies\": [\"PHP\", \"Symfony\", \"Docker\", \"Gitlab\", \"MySQL\", \"Redis\", \"RabbitMQ\", \"JavaScript\", \"CSS\", \"HTML\", \"React\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "98, Frontend-разработчик React 18+, TypeScript, Vite, Ant Design, SCSS. PHP 7.4+, MySQL, Git, REST API, Docker, PHPUnit, Vitest.",
+    "output": "{\"id\": 98, \"name\": \"Frontend-разработчик\", \"technologies\": [\"React\", \"TypeScript\", \"Vite\", \"Ant Design\", \"SCSS\", \"PHP\", \"MySQL\", \"Git\", \"REST API\", \"Docker\", \"PHPUnit\", \"Vitest\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "100, Backend PHP разработчик PHP, Python, Golang. MySQL, PostgreSQL, ClickHouse, Kafka. Copilot, Cursor, Claude, AI-агенты, LLM. Docker, Kubernetes, Ansible, GitLab.",
+    "output": "{\"id\": 100, \"name\": \"Backend PHP разработчик\", \"technologies\": [\"PHP\", \"Python\", \"Golang\", \"MySQL\", \"PostgreSQL\", \"ClickHouse\", \"Kafka\", \"Copilot\", \"Cursor\", \"Claude\", \"AI\", \"LLM\", \"Docker\", \"Kubernetes\", \"Ansible\", \"GitLab\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "122, PHP-разработчик Windows, Apache 2.4, Git, PHP 8.1-8.5, Yii 1.x, MS SQL 2019. JIRA.",
+    "output": "{\"id\": 122, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8.5\", \"Apache\", \"Git\", \"Yii\", \"MS SQL\", \"JIRA\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "75, Backend-разработчик (middle) PHP 7/8, Laravel 5+. MySQL, MSSQL, PostgreSQL, Vue.js, XML, REST API.",
+    "output": "{\"id\": 75, \"name\": \"Backend-разработчик (middle)\", \"technologies\": [\"PHP\", \"Laravel\", \"MySQL\", \"MSSQL\", \"PostgreSQL\", \"Vue.js\", \"XML\", \"REST API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "76, Middle Web-разработчик (PHP) PHP 7+, Laravel 8+. MariaDB, PostgreSQL, SQL, HTML, CSS, JavaScript, jQuery, Git, Redis, ClickHouse, ElasticSearch.",
+    "output": "{\"id\": 76, \"name\": \"Middle Web-разработчик (PHP)\", \"technologies\": [\"PHP 7\", \"Laravel 8\", \"MariaDB\", \"PostgreSQL\", \"SQL\", \"HTML\", \"CSS\", \"JavaScript\", \"jQuery\", \"Git\", \"Redis\", \"ClickHouse\", \"ElasticSearch\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "78, PHP-разработчик (Laravel) / Backend developer PHP 8+, Laravel, PostgreSQL, Redis, Horizon. AI-инструменты, Jira, Confluence, Bitbucket, nginx, php-fpm.",
+    "output": "{\"id\": 78, \"name\": \"PHP-разработчик (Laravel) / Backend developer\", \"technologies\": [\"PHP 8\", \"Laravel\", \"PostgreSQL\", \"Redis\", \"Horizon\", \"AI\", \"Jira\", \"Confluence\", \"Bitbucket\", \"nginx\", \"php-fpm\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "81, Backend разработчик (Middle+/Senior, Go) Go (конкурентность, профилирование), REST/gRPC, PostgreSQL/MySQL, Redis. AI-инструменты (Cursor, GitHub Copilot). PHP, Kubernetes/Docker, CI/CD.",
+    "output": "{\"id\": 81, \"name\": \"Backend разработчик (Middle+/Senior, Go)\", \"technologies\": [\"Go\", \"REST\", \"gRPC\", \"PostgreSQL\", \"MySQL\", \"Redis\", \"Cursor\", \"Copilot\", \"PHP\", \"Kubernetes\", \"Docker\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "85, Стажер Backend / FullStack разработчик Python, JavaScript. JSON, XML, HTML, CSS, REST, gRPC. PostgreSQL, MariaDB, SQLite, SQL. Rabbit, Redis. Flask, Django, .NET, React JS.",
+    "output": "{\"id\": 85, \"name\": \"Стажер Backend / FullStack разработчик\", \"technologies\": [\"Python\", \"JavaScript\", \"JSON\", \"XML\", \"HTML\", \"CSS\", \"REST\", \"gRPC\", \"PostgreSQL\", \"MariaDB\", \"SQLite\", \"SQL\", \"RabbitMQ\", \"Redis\", \"Flask\", \"Django\", \".NET\", \"React JS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "88, Fullstack-разработчик PHP, HTML, CSS, JavaScript, Git. MySQL, Laravel, Symfony. Swift, Kotlin, Java, Golang.",
+    "output": "{\"id\": 88, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"JavaScript\", \"Git\", \"MySQL\", \"Laravel\", \"Symfony\", \"Swift\", \"Kotlin\", \"Java\", \"Golang\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "90, Senior backend developer (PHP, Symfony) в Fintech PHP 8, Symfony 7, MariaDB, PostgreSQL, ClickHouse, Nginx, Docker, Redis, RabbitMQ, Elasticsearch, Kubernetes, Ansible, Terraform, Grafana, Zabbix, Prometheus, CI/CD, Go, Python, AI.",
+    "output": "{\"id\": 90, \"name\": \"Senior backend developer (PHP, Symfony) в Fintech\", \"technologies\": [\"PHP 8\", \"Symfony 7\", \"MariaDB\", \"PostgreSQL\", \"ClickHouse\", \"Nginx\", \"Docker\", \"Redis\", \"RabbitMQ\", \"Elasticsearch\", \"Kubernetes\", \"Ansible\", \"Terraform\", \"Grafana\", \"Zabbix\", \"Prometheus\", \"CI/CD\", \"Go\", \"Python\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "95, Backend PHP Developer Middle+ PHP 7.1-7.4, symfony1, symfony 4, doctrine, MySQL, MongoDB, Redis, RabbitMQ, REST API, GraphQL, HTML/CSS/JS, jQuery, Webpack, Docker, Git, CI, Go.",
+    "output": "{\"id\": 95, \"name\": \"Backend PHP Developer Middle+\", \"technologies\": [\"PHP\", \"Symfony\", \"Doctrine\", \"MySQL\", \"MongoDB\", \"Redis\", \"RabbitMQ\", \"REST API\", \"GraphQL\", \"JavaScript\", \"jQuery\", \"Webpack\", \"Docker\", \"Git\", \"CI\", \"Go\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "97, Senior PHP/Laravel разработчик для ERP-проектов PHP 8+, Laravel, PostgreSQL, MySQL, REST API, migrations, seeders, services, jobs, commands, Laravel Queue / Scheduler, Ozon/Wildberries API, Laravel Horizon, Redis, Claude Code, Codex.",
+    "output": "{\"id\": 97, \"name\": \"Senior PHP/Laravel разработчик для ERP-проектов\", \"technologies\": [\"PHP 8\", \"Laravel\", \"PostgreSQL\", \"MySQL\", \"REST API\", \"Laravel Queue\", \"Laravel Horizon\", \"Redis\", \"Claude Code\", \"Codex\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "124, Team Lead PHP PHP 8+, Python, MySQL, Clickhouse, Redis, Docker, Kubernetes, Git, CI/CD, Symfony, паттерны проектирования.",
+    "output": "{\"id\": 124, \"name\": \"Team Lead PHP\", \"technologies\": [\"PHP 8\", \"Python\", \"MySQL\", \"Clickhouse\", \"Redis\", \"Docker\", \"Kubernetes\", \"Git\", \"CI/CD\", \"Symfony\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "94, PHP developer PHP 7.4, 8.1+, Symfony/Phalcon, Doctrine ORM, PHPUnit, PostgreSQL, ClickhouseDB, Kafka, Kubernetes, Prometheus, Grafana, Golang, RabbitMQ, YouTrack, Confluence.",
+    "output": "{\"id\": 94, \"name\": \"PHP developer\", \"technologies\": [\"PHP 8.1\", \"Symfony\", \"Phalcon\", \"Doctrine ORM\", \"PHPUnit\", \"PostgreSQL\", \"ClickhouseDB\", \"Kafka\", \"Kubernetes\", \"Prometheus\", \"Grafana\", \"Golang\", \"RabbitMQ\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "99, Senior Fullstack-разработчик (Laravel + Nuxt) PHP/Laravel, Vue 3 / Nuxt 3, Laravel Reverb, SMS, Telegram, OTP, WebSocket, Spatie Media Library, Laravel Dompdf, Maatwebsite/Excel.",
+    "output": "{\"id\": 99, \"name\": \"Senior Fullstack-разработчик (Laravel + Nuxt)\", \"technologies\": [\"PHP\", \"Laravel\", \"Vue 3\", \"Nuxt 3\", \"Laravel Reverb\", \"WebSocket\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "101, PHP-разработчик на Bitrix/Yii2 1С-Битрикс, Yii2, PHP 7.4 - 8 +, MySQL (Percona, MariaDB), RabbitMQ, Redis, Elasticsearch, Logstash, Kibana, Vue3, bootstrap, vite, webpack, GO, asterisk.",
+    "output": "{\"id\": 101, \"name\": \"PHP-разработчик на Bitrix/Yii2\", \"technologies\": [\"1С-Битрикс\", \"Yii2\", \"PHP 8\", \"MySQL\", \"MariaDB\", \"RabbitMQ\", \"Redis\", \"Elasticsearch\", \"ELK\", \"Vue3\", \"Bootstrap\", \"Vite\", \"Webpack\", \"Go\", \"Asterisk\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "106, Автор идей-стартапов/инициативный разработчик в AI-акселератор ИИ, автоматизация, MVP.",
+    "output": "{\"id\": 106, \"name\": \"Автор идей-стартапов/инициативный разработчик в AI-акселератор\", \"technologies\": [\"AI\", \"MVP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "108, Wordpress Разработчик WordPress, WooCommerce, PHP, HTML5, CSS3, JavaScript, jQuery, MySQL, Git.",
+    "output": "{\"id\": 108, \"name\": \"Wordpress Разработчик\", \"technologies\": [\"WordPress\", \"WooCommerce\", \"PHP\", \"HTML5\", \"CSS3\", \"JavaScript\", \"jQuery\", \"MySQL\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "102, Fullstack-разработчик (PHP, JS) PHP (ООП), MySQL, JS, Laravel, Yii2, Vue.js.",
+    "output": "{\"id\": 102, \"name\": \"Fullstack-разработчик (PHP, JS)\", \"technologies\": [\"PHP\", \"MySQL\", \"JavaScript\", \"Laravel\", \"Yii2\", \"Vue.js\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "104, IT-Специалист Javascript, Python, PHP, PostgreSQL, MS SQL. amoCRM, Bitrix24.",
+    "output": "{\"id\": 104, \"name\": \"IT-Специалист\", \"technologies\": [\"JavaScript\", \"Python\", \"PHP\", \"PostgreSQL\", \"MS SQL\", \"amoCRM\", \"Bitrix24\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "107, Junior Frontend-разработчик (Vue / Nuxt) HTML5, CSS3 (SCSS), JavaScript, TypeScript, Vue 3 (Composition API), Nuxt 3, Nuxt 4, PHP (Symfony/Yii2), Python (Django), Motion/GSAP.",
+    "output": "{\"id\": 107, \"name\": \"Junior Frontend-разработчик (Vue / Nuxt)\", \"technologies\": [\"HTML5\", \"CSS3\", \"SCSS\", \"JavaScript\", \"TypeScript\", \"Vue 3\", \"Nuxt\", \"PHP\", \"Symfony\", \"Yii2\", \"Python\", \"Django\", \"GSAP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "109, PHP-разработчик / Fullstack-разработчик PHP (Symfony), JS (Vue.js 2 и 3), SQL, Linux, RabbitMQ, ELK, Gitlab CI, Docker.",
+    "output": "{\"id\": 109, \"name\": \"PHP-разработчик / Fullstack-разработчик\", \"technologies\": [\"PHP\", \"Symfony\", \"JavaScript\", \"Vue.js\", \"SQL\", \"Linux\", \"RabbitMQ\", \"ELK\", \"Gitlab CI\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "114, Fullstack-разработчик (MODX / WordPress + AI) MODX, WordPress, HTML, CSS, JavaScript, PHP, Tilda, Claude, Cursor AI.",
+    "output": "{\"id\": 114, \"name\": \"Fullstack-разработчик (MODX / WordPress + AI)\", \"technologies\": [\"MODX\", \"WordPress\", \"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"Tilda\", \"Claude\", \"Cursor AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "115, Teamlead QA Engineer/ Руководитель команды тестирования Postman, Swagger, SQL, Kibana, Grafana, Sentry, Selenium, Playwright, Cypress, Python, Java, JavaScript, TypeScript, Allure, CI/CD, PHP, Symfony, MySQL, Redis, RabbitMQ.",
+    "output": "{\"id\": 115, \"name\": \"Teamlead QA Engineer/ Руководитель команды тестирования\", \"technologies\": [\"Postman\", \"Swagger\", \"SQL\", \"Kibana\", \"Grafana\", \"Sentry\", \"Selenium\", \"Playwright\", \"Cypress\", \"Python\", \"Java\", \"JavaScript\", \"TypeScript\", \"Allure\", \"CI/CD\", \"PHP\", \"Symfony\", \"MySQL\", \"Redis\", \"RabbitMQ\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "117, PHP-разработчик Senior PHP 8.3, Laravel 11, MySQL, Redis, RabbitMQ, Git, REST/SOAP API, Docker, Linux, Elasticsearch, PostgreSQL, MongoDB.",
+    "output": "{\"id\": 117, \"name\": \"PHP-разработчик Senior\", \"technologies\": [\"PHP 8.3\", \"Laravel 11\", \"MySQL\", \"Redis\", \"RabbitMQ\", \"Git\", \"REST API\", \"SOAP API\", \"Docker\", \"Linux\", \"Elasticsearch\", \"PostgreSQL\", \"MongoDB\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "103, Старший разработчик backend, PHP PHP, MySQL, SQL, Git, Linux, Debian.",
+    "output": "{\"id\": 103, \"name\": \"Старший разработчик backend, PHP\", \"technologies\": [\"PHP\", \"MySQL\", \"SQL\", \"Git\", \"Linux\", \"Debian\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "105, Back end PHP разработчик PHP, JavaScript, TypeScript, Symfony, React, Elasticsearch, OpenSearch, Git, GitLab CI/CD, PostgreSQL, MongoDB, Figma.",
+    "output": "{\"id\": 105, \"name\": \"Back end PHP разработчик\", \"technologies\": [\"PHP\", \"JavaScript\", \"TypeScript\", \"Symfony\", \"React\", \"Elasticsearch\", \"OpenSearch\", \"Git\", \"GitLab CI/CD\", \"PostgreSQL\", \"MongoDB\", \"Figma\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "110, Помощник html-верстальщика / Frontend разработчика HTML5, CSS3, JS, PHP, SQL.",
+    "output": "{\"id\": 110, \"name\": \"Помощник html-верстальщика / Frontend разработчика\", \"technologies\": [\"HTML5\", \"CSS3\", \"JavaScript\", \"PHP\", \"SQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "112, IT-Специалист Javascript, Python, PHP, PostgreSQL, MS SQL. amoCRM, Bitrix24.",
+    "output": "{\"id\": 112, \"name\": \"IT-Специалист\", \"technologies\": [\"JavaScript\", \"Python\", \"PHP\", \"PostgreSQL\", \"MS SQL\", \"amoCRM\", \"Bitrix24\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "113, Frontend-разработчик JS / TypeScript / Vue.js JavaScript, TypeScript, Vue.js, REST API, npm/yarn/pnpm, Docker, nginx, PHP/Symfony.",
+    "output": "{\"id\": 113, \"name\": \"Frontend-разработчик JS / TypeScript / Vue.js\", \"technologies\": [\"JavaScript\", \"TypeScript\", \"Vue.js\", \"REST API\", \"npm\", \"yarn\", \"pnpm\", \"Docker\", \"nginx\", \"PHP\", \"Symfony\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "120, Middle Backend-разработчик GO Go, PostgreSQL, SQL, Docker, CI/CD (Jenkins), PHP.",
+    "output": "{\"id\": 120, \"name\": \"Middle Backend-разработчик GO\", \"technologies\": [\"Go\", \"PostgreSQL\", \"SQL\", \"Docker\", \"CI/CD\", \"Jenkins\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "116, Full stack разработчик 1С – Битрикс, WordPress, Joomla, Drupal. HTML, CSS, JavaScript, PHP, MySQL, Git.",
+    "output": "{\"id\": 116, \"name\": \"Full stack разработчик\", \"technologies\": [\"1С – Битрикс\", \"WordPress\", \"Joomla\", \"Drupal\", \"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"MySQL\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "118, PHP Backend-разработчик Kolesa.kz PHP, MySQL, MongoDB, Redis, Linux, Docker, Nginx, Git, CI/CD, Kubernetes, Go.",
+    "output": "{\"id\": 118, \"name\": \"PHP Backend-разработчик Kolesa.kz\", \"technologies\": [\"PHP\", \"MySQL\", \"MongoDB\", \"Redis\", \"Linux\", \"Docker\", \"Nginx\", \"Git\", \"CI/CD\", \"Kubernetes\", \"Go\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "119, Руководитель бекенд разработки Python, Go, Vue, PHP, SQL.",
+    "output": "{\"id\": 119, \"name\": \"Руководитель бекенд разработки\", \"technologies\": [\"Python\", \"Go\", \"Vue\", \"PHP\", \"SQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "121, Веб-разработчик 1С-Битрикс 1С-Битрикс, WordPress, PHP, HTML, CSS, Git.",
+    "output": "{\"id\": 121, \"name\": \"Веб-разработчик 1С-Битрикс\", \"technologies\": [\"1С-Битрикс\", \"WordPress\", \"PHP\", \"HTML\", \"CSS\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "123, Fullstack Разработчик ( Nuxt js + Laravel ) + CURSOR AI Nuxt js (SSR + SSG), Laravel, Yii 2, Docker, Git, PostgreSQL, MariaDB, Redis, CURSOR AI, Ansible, Terraform.",
+    "output": "{\"id\": 123, \"name\": \"Fullstack Разработчик ( Nuxt js + Laravel ) + CURSOR AI\", \"technologies\": [\"Nuxt js\", \"Laravel\", \"Yii 2\", \"Docker\", \"Git\", \"PostgreSQL\", \"MariaDB\", \"Redis\", \"CURSOR AI\", \"Ansible\", \"Terraform\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "130, Junior разработчик HTML, CSS, JavaScript, PHP, Git, 1С-Битрикс.",
+    "output": "{\"id\": 130, \"name\": \"Junior разработчик\", \"technologies\": [\"HTML\", \"CSS\", \"JavaScript\", \"PHP\", \"Git\", \"1С-Битрикс\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "132, Программист (Backend-разработчик PHP — разработчик серверной части) PostgreSQL, PHP, Nuxt, Git, Yii2, CMS Bitrix, Docker, Redis. ИИ-инструменты.",
+    "output": "{\"id\": 132, \"name\": \"Программист (Backend-разработчик PHP — разработчик серверной части)\", \"technologies\": [\"PostgreSQL\", \"PHP\", \"Nuxt\", \"Git\", \"Yii2\", \"CMS Bitrix\", \"Docker\", \"Redis\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "125, PHP-разработчик PHP 8.3, Laravel, PostgreSQL, Redis, Git Flow, WebRTC, WebSocket, HTTP, Node.js, Go, Vue.js, Asterisk, MySQL, MariaDB.",
+    "output": "{\"id\": 125, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8.3\", \"Laravel\", \"PostgreSQL\", \"Redis\", \"Git Flow\", \"WebRTC\", \"WebSocket\", \"HTTP\", \"Node.js\", \"Go\", \"Vue.js\", \"Asterisk\", \"MySQL\", \"MariaDB\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "127, Senior Backend разработчик (PHP) PHP 7.4+, Laravel 8, NodeJS, MySQL, Clickhouse, MongoDB, Redis, memcached, TypeScript, VueJS, RedPanda, Kafka, Docker Swarm, Prometheus, Grafana.",
+    "output": "{\"id\": 127, \"name\": \"Senior Backend разработчик (PHP)\", \"technologies\": [\"PHP 7.4\", \"Laravel 8\", \"NodeJS\", \"MySQL\", \"Clickhouse\", \"MongoDB\", \"Redis\", \"memcached\", \"TypeScript\", \"VueJS\", \"RedPanda\", \"Kafka\", \"Docker Swarm\", \"Prometheus\", \"Grafana\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "134, Technical Lead (CTO) Swift, Kotlin, Vue.js 2/3, PHP.",
+    "output": "{\"id\": 134, \"name\": \"Technical Lead (CTO)\", \"technologies\": [\"Swift\", \"Kotlin\", \"Vue.js\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "136, Операционный Технический Директор Java, Python, PHP, PostgreSQL, React JS, Linux, Jira, Confluence, Excel.",
+    "output": "{\"id\": 136, \"name\": \"Операционный Технический Директор\", \"technologies\": [\"Java\", \"Python\", \"PHP\", \"PostgreSQL\", \"React JS\", \"Linux\", \"Jira\", \"Confluence\", \"Excel\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "139, Junior Backend Developer (PHP, Laravel) PHP, MySQL, Linux, Git, Laravel, Docker.",
+    "output": "{\"id\": 139, \"name\": \"Junior Backend Developer (PHP, Laravel)\", \"technologies\": [\"PHP\", \"MySQL\", \"Linux\", \"Git\", \"Laravel\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "141, Php программист / Full-Stack Web Developer HTML5, CSS3, JavaScript, jQuery, PHP, MySQL, Git, Laravel, 1С-Битрикс, Wordpress, Figma, Photoshop.",
+    "output": "{\"id\": 141, \"name\": \"Php программист / Full-Stack Web Developer\", \"technologies\": [\"HTML5\", \"CSS3\", \"JavaScript\", \"jQuery\", \"PHP\", \"MySQL\", \"Git\", \"Laravel\", \"1С-Битрикс\", \"Wordpress\", \"Figma\", \"Photoshop\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "146, Руководитель группы разработки PHP, Node.JS, С, Rust, PostgreSQL, ClickHouse, RabbitMQ, Redis, Kubernetes (K8S), Docker, GitLab CI/CD, Packer, Cisco, Huawei, SIEM, NTA, MDM, VPN, AI инструменты.",
+    "output": "{\"id\": 146, \"name\": \"Руководитель группы разработки\", \"technologies\": [\"PHP\", \"Node.JS\", \"С\", \"Rust\", \"PostgreSQL\", \"ClickHouse\", \"RabbitMQ\", \"Redis\", \"Kubernetes\", \"Docker\", \"GitLab CI/CD\", \"Packer\", \"Cisco\", \"Huawei\", \"SIEM\", \"NTA\", \"MDM\", \"VPN\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "126, Senior Fullstack-разработчик (Laravel + Nuxt) PHP/Laravel, Vue 3 / Nuxt 3, Laravel Reverb, SMS, Telegram, OTP, WebSocket.",
+    "output": "{\"id\": 126, \"name\": \"Senior Fullstack-разработчик (Laravel + Nuxt)\", \"technologies\": [\"PHP\", \"Laravel\", \"Vue 3\", \"Nuxt 3\", \"Laravel Reverb\", \"WebSocket\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "128, Web-программист (full stack разработчик ModX / WP) PHP, HTML, CSS, JS, WordPress, ModX, XLST, AI инструменты.",
+    "output": "{\"id\": 128, \"name\": \"Web-программист (full stack разработчик ModX / WP)\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"JavaScript\", \"WordPress\", \"ModX\", \"XLST\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "129, Администратор Битрикс24 Битрикс24, Bitrix VM, Nginx, Apache, PHP, JS, Linux (Centos 9).",
+    "output": "{\"id\": 129, \"name\": \"Администратор Битрикс24\", \"technologies\": [\"Битрикс24\", \"Bitrix VM\", \"Nginx\", \"Apache\", \"PHP\", \"JS\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "131, PHP-разработчик PHP (5.6 / 8.2+), HTML/JS, REST, SOAP, gRPC, MQ, PostgreSQL, SQL, Oracle, SQL Server, Git, GitLab, Docker, XML, RabbitMQ, Kafka.",
+    "output": "{\"id\": 131, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP 8.2\", \"HTML\", \"JavaScript\", \"REST\", \"SOAP\", \"gRPC\", \"MQ\", \"PostgreSQL\", \"SQL\", \"Oracle\", \"SQL Server\", \"Git\", \"GitLab\", \"Docker\", \"XML\", \"RabbitMQ\", \"Kafka\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "148, Backend-разработчик PHP, Symfony 5, Doctrine 3, php 8.3, PromQL, Victoria Metrics, MariaDB, Clickhouse, Kafka, RabbitMQ, Redis, Memcached, Docker, k8s, Apache Lucene.",
+    "output": "{\"id\": 148, \"name\": \"Backend-разработчик\", \"technologies\": [\"PHP\", \"Symfony 5\", \"Doctrine 3\", \"php 8.3\", \"PromQL\", \"Victoria Metrics\", \"MariaDB\", \"Clickhouse\", \"Kafka\", \"RabbitMQ\", \"Redis\", \"Memcached\", \"Docker\", \"k8s\", \"Apache Lucene\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "133, Программист (разработчик) Битрикс 24 1С-Битрикс 24 (D7 API), REST API, SOAP, JSON, PHP, MySQL, JavaScript, HTML, AJAX, ORM, 1С.",
+    "output": "{\"id\": 133, \"name\": \"Программист (разработчик) Битрикс 24\", \"technologies\": [\"1С-Битрикс 24\", \"D7 API\", \"REST API\", \"SOAP\", \"JSON\", \"PHP\", \"MySQL\", \"JavaScript\", \"HTML\", \"AJAX\", \"ORM\", \"1С\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "135, PHP-разработчик Tech Lead. Laravel 11, Lumen 6, Vue 2, Vue 3, Kubernetes, Docker, GitLab CI, MySQL, PostgreSQL, Redis, Git, 1С.",
+    "output": "{\"id\": 135, \"name\": \"PHP-разработчик\", \"technologies\": [\"Laravel 11\", \"Lumen 6\", \"Vue 2\", \"Vue 3\", \"Kubernetes\", \"Docker\", \"GitLab CI\", \"MySQL\", \"PostgreSQL\", \"Redis\", \"Git\", \"1С\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "137, Web-программист стажёр (Backend) Node.js, React/TypeScript, php (7.0+), ElasticSearch, RabbitMQ, PostgreSQL, Clickhouse, Redis, Postman, API/SOAP, HTML, CSS, JS, Git.",
+    "output": "{\"id\": 137, \"name\": \"Web-программист стажёр (Backend)\", \"technologies\": [\"Node.js\", \"React\", \"TypeScript\", \"PHP 7\", \"ElasticSearch\", \"RabbitMQ\", \"PostgreSQL\", \"Clickhouse\", \"Redis\", \"Postman\", \"API\", \"SOAP\", \"HTML\", \"CSS\", \"JavaScript\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "142, Ведущий разработчик Back - end C#, .NET 6/8, ASP.NET Core, Git, Jira, Mongo, PHP.",
+    "output": "{\"id\": 142, \"name\": \"Ведущий разработчик Back - end\", \"technologies\": [\"C#\", \".NET 6/8\", \"ASP.NET Core\", \"Git\", \"Jira\", \"Mongo\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "144, Frontend-разработчик 1С-Bitrix, PHP, MySQL, JS, JQuery, AJAX, Git, Vue.js, Python, Django Rest Framework, Redis, С#, .NET Framework, Celery, PostgreSQL, Node.js, GoLang, Jira, HTML, CSS.",
+    "output": "{\"id\": 144, \"name\": \"Frontend-разработчик\", \"technologies\": [\"1С-Bitrix\", \"PHP\", \"MySQL\", \"JavaScript\", \"JQuery\", \"AJAX\", \"Git\", \"Vue.js\", \"Python\", \"Django Rest Framework\", \"Redis\", \"С#\", \".NET Framework\", \"Celery\", \"PostgreSQL\", \"Node.js\", \"GoLang\", \"Jira\", \"HTML\", \"CSS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "147, DevOps-инженер (Инженер CI/CD) Linux, Docker, GitLab CI, TeamCity, Terraform, Ansible, SaltStack, MySQL, PostgreSQL, Clickhouse, Kafka, RabbitMQ, Grafana Stack, Zabbix, OpenTelemetry, Graylog, Hadoop, Cloudera Manager, OpenSearch, Elasticsearch, Airflow, MLflow, Kubernetes (K8s), Keycloak, Python, PHP, Go, Java, AI-инструменты.",
+    "output": "{\"id\": 147, \"name\": \"DevOps-инженер (Инженер CI/CD)\", \"technologies\": [\"Linux\", \"Docker\", \"GitLab CI\", \"TeamCity\", \"Terraform\", \"Ansible\", \"SaltStack\", \"MySQL\", \"PostgreSQL\", \"Clickhouse\", \"Kafka\", \"RabbitMQ\", \"Grafana\", \"Zabbix\", \"OpenTelemetry\", \"Graylog\", \"Hadoop\", \"Cloudera Manager\", \"OpenSearch\", \"Elasticsearch\", \"Airflow\", \"MLflow\", \"Kubernetes\", \"Keycloak\", \"Python\", \"PHP\", \"Go\", \"Java\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "149, PHP-разработчик PHP, SQL/MySQL, 1C-Bitrix, Laravel, Yii 2, Git, Node.js.",
+    "output": "{\"id\": 149, \"name\": \"PHP-разработчик\", \"technologies\": [\"PHP\", \"SQL\", \"MySQL\", \"1C-Bitrix\", \"Laravel\", \"Yii 2\", \"Git\", \"Node.js\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "138, Backend-разработчик PHP, PostgreSQL, Nginx, Alfakom, ПО «АЛЬФА ДОК», Docker, RabbitMQ, LLM, ESIA, СМЭВ.",
+    "output": "{\"id\": 138, \"name\": \"Backend-разработчик\", \"technologies\": [\"PHP\", \"PostgreSQL\", \"Nginx\", \"Alfakom\", \"АЛЬФА ДОК\", \"Docker\", \"RabbitMQ\", \"LLM\", \"ESIA\", \"СМЭВ\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "140, Fullstack-разработчик PHP, HTML, CSS, JavaScript.",
+    "output": "{\"id\": 140, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"PHP\", \"HTML\", \"CSS\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "143, Senior PL/SQL разработчик PL/SQL, SQL, Oracle, Git Flow, SOAP, REST, XML, JSON, PHP, C#, Python.",
+    "output": "{\"id\": 143, \"name\": \"Senior PL/SQL разработчик\", \"technologies\": [\"PL/SQL\", \"SQL\", \"Oracle\", \"Git Flow\", \"SOAP\", \"REST\", \"XML\", \"JSON\", \"PHP\", \"C#\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "145, Middle Разработчик PHP PHP, Symfony 5/7, MS SQL, PostgreSQL, MySQL, Redis, Docker, Twig, Stimulus, React/Vue, Firebird.",
+    "output": "{\"id\": 145, \"name\": \"Middle Разработчик PHP\", \"technologies\": [\"PHP\", \"Symfony 5/7\", \"MS SQL\", \"PostgreSQL\", \"MySQL\", \"Redis\", \"Docker\", \"Twig\", \"Stimulus\", \"React\", \"Vue\", \"Firebird\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "6, Веб-разработчик MODX, Bitrix, HTML/CSS/JavaScript, Bitrix24 (CRM, вебхуки/REST API), DNS, SSL, IP-телефония (Mango, UIS, Zadarma), PHP.",
+    "output": "{\"id\": 6, \"name\": \"Веб-разработчик\", \"technologies\": [\"MODX\", \"Bitrix\", \"HTML\", \"CSS\", \"JavaScript\", \"Bitrix24\", \"REST API\", \"DNS\", \"SSL\", \"IP-телефония\", \"PHP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "20, Middle PHP-pазработчик (Yii2) PHP 7.4+, Yii2, SQL (PostgreSQL), Redis, JavaScript.",
+    "output": "{\"id\": 20, \"name\": \"Middle PHP-pазработчик (Yii2)\", \"technologies\": [\"PHP 7.4\", \"Yii2\", \"SQL\", \"PostgreSQL\", \"Redis\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "25, PHP-разработчик (Middle) PHP, Symfony, Zend, MySQL/PostgreSQL, Linux, Git, Docker, Golang, Clickhouse.",
+    "output": "{\"id\": 25, \"name\": \"PHP-разработчик (Middle)\", \"technologies\": [\"PHP\", \"Symfony\", \"Zend\", \"MySQL\", \"PostgreSQL\", \"Linux\", \"Git\", \"Docker\", \"Golang\", \"Clickhouse\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "1, Программист (Junior - младший разработчик) C++, C#, Delphi, Python, Pascal, 1С, PostgreSQL, MS SQL, JavaScript, PHP, HTML.",
+    "output": "{\"id\": 1, \"name\": \"Программист (Junior - младший разработчик)\", \"technologies\": [\"C++\", \"C#\", \"Delphi\", \"Python\", \"Pascal\", \"1С\", \"PostgreSQL\", \"MS SQL\", \"JavaScript\", \"PHP\", \"HTML\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "151, Middle+ Python Fastapi Developer Python, FastAPI, PostgreSQL, SQLAlchemy, Alembic, JWT, OAuth2, Redis, Docker, Git, Sentry.",
+    "output": "{\"id\": 151, \"name\": \"Middle+ Python Fastapi Developer\", \"technologies\": [\"Python\", \"FastAPI\", \"PostgreSQL\", \"SQLAlchemy\", \"Alembic\", \"JWT\", \"OAuth2\", \"Redis\", \"Docker\", \"Git\", \"Sentry\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "7, Разработчик PHP & Go PHP 8+ (Laravel), Go, MySQL, PostgreSQL, REST API, Docker, Docker Compose, Git, Битрикс.",
+    "output": "{\"id\": 7, \"name\": \"Разработчик PHP & Go\", \"technologies\": [\"PHP 8\", \"Laravel\", \"Go\", \"MySQL\", \"PostgreSQL\", \"REST API\", \"Docker\", \"Docker Compose\", \"Git\", \"Битрикс\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "156, Разработчик python (junior +) Python, PostgreSQL, Elasticsearch, MySQL, REST API, Git, GitLab CI, Flask, Django.",
+    "output": "{\"id\": 156, \"name\": \"Разработчик python (junior +)\", \"technologies\": [\"Python\", \"PostgreSQL\", \"Elasticsearch\", \"MySQL\", \"REST API\", \"Git\", \"GitLab CI\", \"Flask\", \"Django\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "161, Junior DevOps-инженер Linux, Python, Bash, Git, HTTP/HTTPS, SQL, Docker, Ansible, GitLab CI, Nexus, Nginx/Apache, PostgreSQL.",
+    "output": "{\"id\": 161, \"name\": \"Junior DevOps-инженер\", \"technologies\": [\"Linux\", \"Python\", \"Bash\", \"Git\", \"HTTP\", \"HTTPS\", \"SQL\", \"Docker\", \"Ansible\", \"GitLab CI\", \"Nexus\", \"Nginx\", \"Apache\", \"PostgreSQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "8, Разработчик Python, Java, PHP, Go, C#, Linux, Docker, REST, GraphQL, gRPC, WebSocket, SQL, Git/Gitlab.",
+    "output": "{\"id\": 8, \"name\": \"Разработчик\", \"technologies\": [\"Python\", \"Java\", \"PHP\", \"Go\", \"C#\", \"Linux\", \"Docker\", \"REST\", \"GraphQL\", \"gRPC\", \"WebSocket\", \"SQL\", \"Git\", \"Gitlab\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "11, Middle PHP / Laravel Developer PHP 8+, Laravel 10+, PostgreSQL, Redis, RabbitMQ, Docker, JavaScript, Vue 3, Linux.",
+    "output": "{\"id\": 11, \"name\": \"Middle PHP / Laravel Developer\", \"technologies\": [\"PHP 8\", \"Laravel 10\", \"PostgreSQL\", \"Redis\", \"RabbitMQ\", \"Docker\", \"JavaScript\", \"Vue 3\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "150, Middle Python разработчик (Django) Python, Django, DRF, Celery, PostgreSQL, Redis, Docker, Kubernetes, Nginx, Gunicorn, Git, CI/CD, SOAP, FastAPI, aiohttp, UML.",
+    "output": "{\"id\": 150, \"name\": \"Middle Python разработчик (Django)\", \"technologies\": [\"Python\", \"Django\", \"DRF\", \"Celery\", \"PostgreSQL\", \"Redis\", \"Docker\", \"Kubernetes\", \"Nginx\", \"Gunicorn\", \"Git\", \"CI/CD\", \"SOAP\", \"FastAPI\", \"aiohttp\", \"UML\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "152, VIBE CODER (разработчик) Claude Code, Cursor, VS Code, JavaScript, TypeScript, Python, API (Wildberries, Ozon).",
+    "output": "{\"id\": 152, \"name\": \"VIBE CODER (разработчик)\", \"technologies\": [\"Claude Code\", \"Cursor\", \"VS Code\", \"JavaScript\", \"TypeScript\", \"Python\", \"API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "153, Java-разработчик Java (11-21), Go, Python, Oracle, PostgreSQL, Maven, Gradle, Git, JMS, AMQP, CXF, REST, GRPC, Kafka, CI/CD, ActiveMQ, Camel, Docker, Kubernetes.",
+    "output": "{\"id\": 153, \"name\": \"Java-разработчик\", \"technologies\": [\"Java 11-21\", \"Go\", \"Python\", \"Oracle\", \"PostgreSQL\", \"Maven\", \"Gradle\", \"Git\", \"JMS\", \"AMQP\", \"CXF\", \"REST\", \"GRPC\", \"Kafka\", \"CI/CD\", \"ActiveMQ\", \"Camel\", \"Docker\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "155, Backend-разработчик (Python / FastAPI) Python, FastAPI, PostgreSQL, SQLAlchemy, Alembic, Docker, Git, Claude Code, Cursor, LLM (OpenAI, Anthropic, YandexGPT, GigaChat).",
+    "output": "{\"id\": 155, \"name\": \"Backend-разработчик (Python / FastAPI)\", \"technologies\": [\"Python\", \"FastAPI\", \"PostgreSQL\", \"SQLAlchemy\", \"Alembic\", \"Docker\", \"Git\", \"Claude Code\", \"Cursor\", \"LLM\", \"OpenAI\", \"Anthropic\", \"YandexGPT\", \"GigaChat\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "159, Middle Backend разработчик Python Python, Go, Node.js, uv/poetry, PostgreSQL, ElasticSearch, ClickHouse, Apache Pulsar, RabbitMQ, Apache Kafka, Git, Mattermost, Kubernetes, ArgoCD, LGTM stack (Loki, Grafana, Tempo, Mimir), GitLab CI, LLM агенты.",
+    "output": "{\"id\": 159, \"name\": \"Middle Backend разработчик Python\", \"technologies\": [\"Python\", \"Go\", \"Node.js\", \"uv\", \"poetry\", \"PostgreSQL\", \"ElasticSearch\", \"ClickHouse\", \"Apache Pulsar\", \"RabbitMQ\", \"Apache Kafka\", \"Git\", \"Mattermost\", \"Kubernetes\", \"ArgoCD\", \"LGTM stack\", \"Loki\", \"Grafana\", \"Tempo\", \"Mimir\", \"GitLab CI\", \"LLM\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "154, Стажер NLP Python, LLM, AI-агенты, RAG, FAISS / Qdrant, FastAPI / Flask, REST API, JSON, OpenAI, LoRA / PEFT, Kafka, RabbitMQ, NATS, Docker.",
+    "output": "{\"id\": 154, \"name\": \"Стажер NLP\", \"technologies\": [\"Python\", \"LLM\", \"AI\", \"RAG\", \"FAISS\", \"Qdrant\", \"FastAPI\", \"Flask\", \"REST API\", \"JSON\", \"OpenAI\", \"LoRA\", \"PEFT\", \"Kafka\", \"RabbitMQ\", \"NATS\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "157, Тестировщик SQL, REST (GET/POST), Postman, Python.",
+    "output": "{\"id\": 157, \"name\": \"Тестировщик\", \"technologies\": [\"SQL\", \"REST\", \"Postman\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "162, Backend разработчик (Python) Python, FastAPI, asyncio, PostgreSQL (asyncpg), SQLAlchemy, NumPy, Docker, GitLab CI, pytest, hypothesis, uv, ruff, pyright, Kubernetes, Vue 3.",
+    "output": "{\"id\": 162, \"name\": \"Backend разработчик (Python)\", \"technologies\": [\"Python\", \"FastAPI\", \"asyncio\", \"PostgreSQL\", \"SQLAlchemy\", \"NumPy\", \"Docker\", \"GitLab CI\", \"pytest\", \"hypothesis\", \"uv\", \"ruff\", \"pyright\", \"Kubernetes\", \"Vue 3\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "165, Frontend-разработчик (React / TypeScript) React, TypeScript, Vite, npm/pnpm, Git, REST API, JWT, Telegram Mini Apps, Next.js, Python.",
+    "output": "{\"id\": 165, \"name\": \"Frontend-разработчик (React / TypeScript)\", \"technologies\": [\"React\", \"TypeScript\", \"Vite\", \"npm\", \"pnpm\", \"Git\", \"REST API\", \"JWT\", \"Telegram Mini Apps\", \"Next.js\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "169, Python-разработчик (Junior) Python, Django/FastAPI, API, PostgreSQL, SQLite, Redis.",
+    "output": "{\"id\": 169, \"name\": \"Python-разработчик (Junior)\", \"technologies\": [\"Python\", \"Django\", \"FastAPI\", \"API\", \"PostgreSQL\", \"SQLite\", \"Redis\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "158, Разработчик внутренних IT-продуктов (AI-native билдер) Python, Flask, Django, FastAPI, Claude Code, AI-native.",
+    "output": "{\"id\": 158, \"name\": \"Разработчик внутренних IT-продуктов (AI-native билдер)\", \"technologies\": [\"Python\", \"Flask\", \"Django\", \"FastAPI\", \"Claude Code\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "163, Devops \\ офис Docker, Kubernetes, Helm, CI/CD (GitLab/Jenkins), IaC, GitOps, Prometheus, Grafana, shell, bash, python, TCP/IP, Git, Gitflow, Atlassian JIRA, Confluence, Loki, SQL, Tantor DB, Pentaho BI Suite.",
+    "output": "{\"id\": 163, \"name\": \"Devops \\\\ офис\", \"technologies\": [\"Docker\", \"Kubernetes\", \"Helm\", \"CI/CD\", \"GitLab\", \"Jenkins\", \"IaC\", \"GitOps\", \"Prometheus\", \"Grafana\", \"shell\", \"bash\", \"python\", \"TCP/IP\", \"Git\", \"Gitflow\", \"JIRA\", \"Confluence\", \"Loki\", \"SQL\", \"Tantor DB\", \"Pentaho BI Suite\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "166, Искуственный Интелект Python / Go / Node.js. LLM, NLP, computer vision.",
+    "output": "{\"id\": 166, \"name\": \"Искуственный Интелект\", \"technologies\": [\"Python\", \"Go\", \"Node.js\", \"LLM\", \"NLP\", \"Computer Vision\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "170, Разработчик Python Python, Django, Docker, PostgreSQL, Git, GitLab, Jira, ClickUp, Weeek, Linux, REST Api, ORM, Frontend (HTML, CSS, JavaScript).",
+    "output": "{\"id\": 170, \"name\": \"Разработчик Python\", \"technologies\": [\"Python\", \"Django\", \"Docker\", \"PostgreSQL\", \"Git\", \"GitLab\", \"Jira\", \"ClickUp\", \"Weeek\", \"Linux\", \"REST API\", \"ORM\", \"HTML\", \"CSS\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "177, Специалист по тестированию Postman, Charles, DevTools, Swagger, DBeaver, Jira, Confluence, SQL, HTML/CSS, ElasticSearch, Grafana, Kafka, RabbitMQ, CI/CD (Jenkins, GitLab CI/CD), Python, pytest, Selenium, Allure.",
+    "output": "{\"id\": 177, \"name\": \"Специалист по тестированию\", \"technologies\": [\"Postman\", \"Charles\", \"DevTools\", \"Swagger\", \"DBeaver\", \"Jira\", \"Confluence\", \"SQL\", \"HTML\", \"CSS\", \"ElasticSearch\", \"Grafana\", \"Kafka\", \"RabbitMQ\", \"CI/CD\", \"Jenkins\", \"GitLab CI/CD\", \"Python\", \"pytest\", \"Selenium\", \"Allure\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "181, AI-автоматизатор бизнес-процессов/ AI-разработчик Python, LLM, OpenAI API, LangChain, LangGraph, n8n, RAG, API-интеграциями, PostgreSQL, Docker, Docker Compose, CRM, 1С, Grafana, promptfoo.",
+    "output": "{\"id\": 181, \"name\": \"AI-автоматизатор бизнес-процессов/ AI-разработчик\", \"technologies\": [\"Python\", \"LLM\", \"OpenAI API\", \"LangChain\", \"LangGraph\", \"n8n\", \"RAG\", \"API\", \"PostgreSQL\", \"Docker\", \"Docker Compose\", \"CRM\", \"1С\", \"Grafana\", \"promptfoo\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "185, Junior Python Developer Django/FastAPI / Flask, Python Core, AsyncIO, SQLAlchemy, DjangoORM, SQL, PostgreSQL, Kafka / RabbitMQ, No-SQL (MongoDB, DynamoDB, Redis), AWS / Azure / GСP, Docker, Pytest, GNU/linux, CI/CD, React, Angular, Vue, Kubernetes (K8S).",
+    "output": "{\"id\": 185, \"name\": \"Junior Python Developer\", \"technologies\": [\"Django\", \"FastAPI\", \"Flask\", \"Python\", \"AsyncIO\", \"SQLAlchemy\", \"DjangoORM\", \"SQL\", \"PostgreSQL\", \"Kafka\", \"RabbitMQ\", \"No-SQL\", \"MongoDB\", \"DynamoDB\", \"Redis\", \"AWS\", \"Azure\", \"GСP\", \"Docker\", \"Pytest\", \"Linux\", \"CI/CD\", \"React\", \"Angular\", \"Vue\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "189, Python-разработчик Python 3.8+, asyncio, Pytest, FastAPI, RESTful API, Elastic Search API, PostgreSQL, S3, Clickhouse, Git, Unix, Dependency Injection, Clean Architecture, DDD, aiohttp, Apache Airflow, RabbitMQ/Apache Kafka, No SQL (Neo4j, Redis).",
+    "output": "{\"id\": 189, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.8\", \"asyncio\", \"Pytest\", \"FastAPI\", \"RESTful API\", \"Elastic Search API\", \"PostgreSQL\", \"S3\", \"Clickhouse\", \"Git\", \"Unix\", \"Dependency Injection\", \"Clean Architecture\", \"DDD\", \"aiohttp\", \"Apache Airflow\", \"RabbitMQ\", \"Apache Kafka\", \"No SQL\", \"Neo4j\", \"Redis\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "193, Тестировщик SQL, Python, Java, Pytest, JUnit, Airflow, Spark, Kafka, PostgreSQL, ClickHouse, GreenPlum, DropApp, Git, CI/CD (Jenkins, GitLab CI).",
+    "output": "{\"id\": 193, \"name\": \"Тестировщик\", \"technologies\": [\"SQL\", \"Python\", \"Java\", \"Pytest\", \"JUnit\", \"Airflow\", \"Spark\", \"Kafka\", \"PostgreSQL\", \"ClickHouse\", \"GreenPlum\", \"DropApp\", \"Git\", \"CI/CD\", \"Jenkins\", \"GitLab CI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "197, Backend-разработчик Python (m/m+) Python, PostgreSQL/MySQL, gRPC, HTTP, REST/JSON, Kafka / RabbitMQ, Redis, RSMQ, Docker / Docker Compose, Git, CI/CD, OpenAPI/Swagger, FastAPI, pydantic, celery, psycopg, aiomysql, redis-py, aiokafka, grpcio, prefect, requests, aiohttp, BeautifulSoup, pandas, NumPy, Go, Telethon/Aiogram, protobuf, Scrapy / Playwright, ETL/ELT.",
+    "output": "{\"id\": 197, \"name\": \"Backend-разработчик Python (m/m+)\", \"technologies\": [\"Python\", \"PostgreSQL\", \"MySQL\", \"gRPC\", \"HTTP\", \"REST\", \"JSON\", \"Kafka\", \"RabbitMQ\", \"Redis\", \"RSMQ\", \"Docker\", \"Docker Compose\", \"Git\", \"CI/CD\", \"OpenAPI\", \"Swagger\", \"FastAPI\", \"pydantic\", \"celery\", \"psycopg\", \"aiomysql\", \"redis-py\", \"aiokafka\", \"grpcio\", \"prefect\", \"requests\", \"aiohttp\", \"BeautifulSoup\", \"pandas\", \"NumPy\", \"Go\", \"Telethon\", \"Aiogram\", \"protobuf\", \"Scrapy\", \"Playwright\", \"ETL\", \"ELT\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "201, Ведущий системный аналитик HTTP, REST, JSON, Websocket, UML, С4, SQL, PostgreSQL, ClickHouse, DevTools, Swagger/OpenAPI, PostMan, ELK, Linux, TCP/IP, OSI, Kafka, RabbitMQ, Redis, Docker, Kubernetes, TS / JS / Python.",
+    "output": "{\"id\": 201, \"name\": \"Ведущий системный аналитик\", \"technologies\": [\"HTTP\", \"REST\", \"JSON\", \"Websocket\", \"UML\", \"С4\", \"SQL\", \"PostgreSQL\", \"ClickHouse\", \"DevTools\", \"Swagger\", \"OpenAPI\", \"PostMan\", \"ELK\", \"Linux\", \"TCP/IP\", \"OSI\", \"Kafka\", \"RabbitMQ\", \"Redis\", \"Docker\", \"Kubernetes\", \"TypeScript\", \"JavaScript\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "160, Frontend Developer (Frontend-разработчик) HTML5, CSS3, JavaScript (ES6+), React.js, Vue.js, Angular, Git, REST API, TypeScript, Webpack, Vite.",
+    "output": "{\"id\": 160, \"name\": \"Frontend Developer (Frontend-разработчик)\", \"technologies\": [\"HTML5\", \"CSS3\", \"JavaScript\", \"React.js\", \"Vue.js\", \"Angular\", \"Git\", \"REST API\", \"TypeScript\", \"Webpack\", \"Vite\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "167, Python-разработчик Python 3.12, SQL (чистые запросы), PostgreSQL, Qdrant, Redis, Kafka, K8S.",
+    "output": "{\"id\": 167, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.12\", \"SQL\", \"PostgreSQL\", \"Qdrant\", \"Redis\", \"Kafka\", \"K8S\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "171, Junior / Pre-Junior Python программист (парсинг сайтов) Pyhton 3.10+, SQL (MySQL/PostgreSQL/MongoDB/NoSQL), JSON / XML / CSV, Linux, Docker, re, requests, asyncio, beautifulsoup4 (bs4), scrapy, selenium, pep8.",
+    "output": "{\"id\": 171, \"name\": \"Junior / Pre-Junior Python программист (парсинг сайтов)\", \"technologies\": [\"Python 3.10\", \"SQL\", \"MySQL\", \"PostgreSQL\", \"MongoDB\", \"NoSQL\", \"JSON\", \"XML\", \"CSV\", \"Linux\", \"Docker\", \"re\", \"requests\", \"asyncio\", \"beautifulsoup4\", \"scrapy\", \"selenium\", \"pep8\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "174, Начинающий Python-разработчик Python, ООП, REST API, Django, Django REST Framework, FastAPI, SQL, PostgreSQL, Git, Docker, asyncio, Celery, Redis, RabbitMQ, Pytest.",
+    "output": "{\"id\": 174, \"name\": \"Начинающий Python-разработчик\", \"technologies\": [\"Python\", \"ООП\", \"REST API\", \"Django\", \"Django REST Framework\", \"FastAPI\", \"SQL\", \"PostgreSQL\", \"Git\", \"Docker\", \"asyncio\", \"Celery\", \"Redis\", \"RabbitMQ\", \"Pytest\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "178, Python Developer (Mobile Team) Python 3.10+, flake8, mypy, pytest, PostgreSQL, FastAPI, Django 4/5, DRF, Celery, RabbitMQ, Kafka, Docker, k8s, Git, Trunk-Based Development.",
+    "output": "{\"id\": 178, \"name\": \"Python Developer (Mobile Team)\", \"technologies\": [\"Python 3.10\", \"flake8\", \"mypy\", \"pytest\", \"PostgreSQL\", \"FastAPI\", \"Django 4\", \"Django 5\", \"DRF\", \"Celery\", \"RabbitMQ\", \"Kafka\", \"Docker\", \"k8s\", \"Git\", \"Trunk-Based Development\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "182, DevOps-инженер Prometheus, Grafana, Otel, Ansible, Kubernetes, helm charts, argocd/flux, Proxmox, PostgreSQL, MySQL, Clickhouse, Elasticsearch, Kibana, Gitlab CI, Linux (CentOS, Ubuntu 22.04), TCP/IP, DNS, HTTP/HTTPS, SSH, VPN, firewall, Python.",
+    "output": "{\"id\": 182, \"name\": \"DevOps-инженер\", \"technologies\": [\"Prometheus\", \"Grafana\", \"Otel\", \"Ansible\", \"Kubernetes\", \"helm charts\", \"argocd\", \"flux\", \"Proxmox\", \"PostgreSQL\", \"MySQL\", \"Clickhouse\", \"Elasticsearch\", \"Kibana\", \"Gitlab CI\", \"Linux\", \"TCP/IP\", \"DNS\", \"HTTP\", \"HTTPS\", \"SSH\", \"VPN\", \"firewall\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "186, Разработчик (Бэкенд developer / Python) Middle+ Python 3.9+, GraphQL, REST API, WebSocket, Vue.js, TypeScript, Quasar, PostgreSQL, MongoDB, Redis, RabbitMQ, Flask/FastAPI, asyncio, SQLAlchemy, Git, Docker, CI/CD.",
+    "output": "{\"id\": 186, \"name\": \"Разработчик (Бэкенд developer / Python) Middle+\", \"technologies\": [\"Python 3.9\", \"GraphQL\", \"REST API\", \"WebSocket\", \"Vue.js\", \"TypeScript\", \"Quasar\", \"PostgreSQL\", \"MongoDB\", \"Redis\", \"RabbitMQ\", \"Flask\", \"FastAPI\", \"asyncio\", \"SQLAlchemy\", \"Git\", \"Docker\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "190, Support Engineer L3 / Junior Devops Linux, Docker, docker-compose, Git, CI/CD, SQL, Grafana, Loki, GitLab, Yandex Cloud, Ansible, Nginx, Python, Tailscale, OpenVPN, LDAP, Яндекс Трекер, Claude Code.",
+    "output": "{\"id\": 190, \"name\": \"Support Engineer L3 / Junior Devops\", \"technologies\": [\"Linux\", \"Docker\", \"docker-compose\", \"Git\", \"CI/CD\", \"SQL\", \"Grafana\", \"Loki\", \"GitLab\", \"Yandex Cloud\", \"Ansible\", \"Nginx\", \"Python\", \"Tailscale\", \"OpenVPN\", \"LDAP\", \"Яндекс Трекер\", \"Claude Code\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "194, Разработчик/младший разработчик Python, ООП, Flask, FastAPI, PostgreSQL, SQL, JavaScript (vanilla), HTML, CSS, Kafka, Docker/Compose, CI/CD (GitLab CI, GitHub Actions).",
+    "output": "{\"id\": 194, \"name\": \"Разработчик/младший разработчик\", \"technologies\": [\"Python\", \"ООП\", \"Flask\", \"FastAPI\", \"PostgreSQL\", \"SQL\", \"JavaScript\", \"HTML\", \"CSS\", \"Kafka\", \"Docker\", \"docker-compose\", \"CI/CD\", \"GitLab CI\", \"GitHub Actions\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "212, ИИ разработчик Python, LLM, RAG, REST API, Docker, Linux, Git.",
+    "output": "{\"id\": 212, \"name\": \"ИИ разработчик\", \"technologies\": [\"Python\", \"LLM\", \"RAG\", \"REST API\", \"Docker\", \"Linux\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "216, Python-разработчик middle+/senior Python, FastApi, ORM, SqlAlchemy, PostgreSQL, Redis, Mongo, ClickHouse, Elasticsearch, CI/CD, RabbitMQ, Kafka, Celery.",
+    "output": "{\"id\": 216, \"name\": \"Python-разработчик middle+/senior\", \"technologies\": [\"Python\", \"FastApi\", \"ORM\", \"SqlAlchemy\", \"PostgreSQL\", \"Redis\", \"Mongo\", \"ClickHouse\", \"Elasticsearch\", \"CI/CD\", \"RabbitMQ\", \"Kafka\", \"Celery\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "164, Junior Backend разработчик Python Python 3.x, Linux (ssh), PostgreSQL, ElasticSearch, ClickHouse, Apache Pulsar, RabbitMQ, Apache Kafka, GitLab, Mattermost, Kubernetes, ArgoCD, LGTM стек(Loki, Grafana, Tempo, Mimir).",
+    "output": "{\"id\": 164, \"name\": \"Junior Backend разработчик Python\", \"technologies\": [\"Python 3.x\", \"Linux\", \"PostgreSQL\", \"ElasticSearch\", \"ClickHouse\", \"Apache Pulsar\", \"RabbitMQ\", \"Apache Kafka\", \"GitLab\", \"Mattermost\", \"Kubernetes\", \"ArgoCD\", \"LGTM стек\", \"Loki\", \"Grafana\", \"Tempo\", \"Mimir\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "168, Стажер-backend developer NodeJS (TS), NestJS, Rust, PostgreSQL, Clickhouse, Nats, Docker, Kubernetes, gRPC, Git, Python, C++, API.",
+    "output": "{\"id\": 168, \"name\": \"Стажер-backend developer\", \"technologies\": [\"NodeJS\", \"TS\", \"NestJS\", \"Rust\", \"PostgreSQL\", \"Clickhouse\", \"Nats\", \"Docker\", \"Kubernetes\", \"gRPC\", \"Git\", \"Python\", \"C++\", \"API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "172, Python-разработчик Python, LLM, ML/AI, ElasticSearch, MLFlow/W&B/Jupyter Notebook, Docker, TCP/IP.",
+    "output": "{\"id\": 172, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"LLM\", \"ML\", \"AI\", \"ElasticSearch\", \"MLFlow\", \"W&B\", \"Jupyter Notebook\", \"Docker\", \"TCP/IP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "175, Backend-разработчик Python, FastAPI, Pydantic, Alembic, asyncio, SQLAlchemy, pandas, Celery, pytest, uv, PostgreSQL, ClickHouse, Redis, Docker, Docker Сompose, GitLab CI, Kafka, Git, Codex, Claude code, Cursor.",
+    "output": "{\"id\": 175, \"name\": \"Backend-разработчик\", \"technologies\": [\"Python\", \"FastAPI\", \"Pydantic\", \"Alembic\", \"asyncio\", \"SQLAlchemy\", \"pandas\", \"Celery\", \"pytest\", \"uv\", \"PostgreSQL\", \"ClickHouse\", \"Redis\", \"Docker\", \"docker-compose\", \"GitLab CI\", \"Kafka\", \"Git\", \"Codex\", \"Claude code\", \"Cursor\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "179, Python-разработчик Python, Git, REST API, AI/LLM, prompt engineering, FastAPI, Django, PostgreSQL, Redis, Celery, Docker, asyncio, OpenAI API, LangChain, LlamaIndex.",
+    "output": "{\"id\": 179, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"Git\", \"REST API\", \"AI\", \"LLM\", \"prompt engineering\", \"FastAPI\", \"Django\", \"PostgreSQL\", \"Redis\", \"Celery\", \"Docker\", \"asyncio\", \"OpenAI API\", \"LangChain\", \"LlamaIndex\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "183, Python-разработчик (Junior+ /Middle) Python, ETL, PostgreSQL, ClickHouse, SQL, RESTful API, Flask, Docker, CI/CD.",
+    "output": "{\"id\": 183, \"name\": \"Python-разработчик (Junior+ /Middle)\", \"technologies\": [\"Python\", \"ETL\", \"PostgreSQL\", \"ClickHouse\", \"SQL\", \"RESTful API\", \"Flask\", \"Docker\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "187, Python-разработчик Python 3.10+, Django, Redis, PostgreSQL, REST API, GitLab/GitHub/Bitbucket, Docker, Docker Compose, Kubernetes.",
+    "output": "{\"id\": 187, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.10\", \"Django\", \"Redis\", \"PostgreSQL\", \"REST API\", \"Git\", \"GitLab\", \"GitHub\", \"Bitbucket\", \"Docker\", \"docker-compose\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "219, Специалист по обеспечению качества (QA) Postman, Swagger, SQL, DevTools, Charles/Fiddler, SDLC/STLC, Agile/Scrum, TMS (TestY, TestIT), Python, JS, Android/iOS.",
+    "output": "{\"id\": 219, \"name\": \"Специалист по обеспечению качества (QA)\", \"technologies\": [\"Postman\", \"Swagger\", \"SQL\", \"DevTools\", \"Charles\", \"Fiddler\", \"SDLC\", \"STLC\", \"Agile\", \"Scrum\", \"TestY\", \"TestIT\", \"Python\", \"JavaScript\", \"Android\", \"iOS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "173, Python-аналитик (NLP / AI) Python, Git / GitHub, NLP, LLM, AI-модели API, Frontend-опыт.",
+    "output": "{\"id\": 173, \"name\": \"Python-аналитик (NLP / AI)\", \"technologies\": [\"Python\", \"Git\", \"GitHub\", \"NLP\", \"LLM\", \"AI API\", \"Frontend\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "176, QA-инженер middle (ручное тестирование) Postman, Swagger, JSON/XML, TestRail, Zephyr, SQL, Charles, Proxyman, mitmproxy, RabbitMQ, Kafka, Selenium, Cypress, Playwright, JS, Python, Java, Git, Kibana/OpenSearch, Sentry, ERP (1С/ТОРГ), WMS.",
+    "output": "{\"id\": 176, \"name\": \"QA-инженер middle (ручное тестирование)\", \"technologies\": [\"Postman\", \"Swagger\", \"JSON\", \"XML\", \"TestRail\", \"Zephyr\", \"SQL\", \"Charles\", \"Proxyman\", \"mitmproxy\", \"RabbitMQ\", \"Kafka\", \"Selenium\", \"Cypress\", \"Playwright\", \"JavaScript\", \"Python\", \"Java\", \"Git\", \"Kibana\", \"OpenSearch\", \"Sentry\", \"ERP\", \"1С\", \"WMS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "180, Python developer Python 3.12+, FastAPI, SQL, PostgreSQL / MySQL, Redis, RabbitMQ, Kafka, Git, GitLab, Docker, docker-compose, aio-libs, celery, socketio, Sentry, OpenTelemetry, kubernetes, helm-конфигами, newSQL (TIDB), BigData.",
+    "output": "{\"id\": 180, \"name\": \"Python developer\", \"technologies\": [\"Python 3.12\", \"FastAPI\", \"SQL\", \"PostgreSQL\", \"MySQL\", \"Redis\", \"RabbitMQ\", \"Kafka\", \"Git\", \"GitLab\", \"Docker\", \"docker-compose\", \"aio-libs\", \"celery\", \"socketio\", \"Sentry\", \"OpenTelemetry\", \"kubernetes\", \"helm\", \"newSQL\", \"TIDB\", \"BigData\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "184, Data Analyst (SQL / Python / DWH) SQL, Python, Pandas / PySpark, Hadoop / Hive / Greenplum, DWH, ETL/ELT, Git, Jira.",
+    "output": "{\"id\": 184, \"name\": \"Data Analyst (SQL / Python / DWH)\", \"technologies\": [\"SQL\", \"Python\", \"Pandas\", \"PySpark\", \"Hadoop\", \"Hive\", \"Greenplum\", \"DWH\", \"ETL\", \"ELT\", \"Git\", \"Jira\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "188, Senior Python Developer (Fintech) Python, FastAPI, SQLAlchemy, Pydantic, PostgreSQL, EXPLAIN, индексы, RabbitMQ, Kafka, Linux (bash), Docker, Kubernetes/Swarm, REST/AsyncAPI/gRPC, SOLID, API Gateway, Circuit Breaker, Saga.",
+    "output": "{\"id\": 188, \"name\": \"Senior Python Developer (Fintech)\", \"technologies\": [\"Python\", \"FastAPI\", \"SQLAlchemy\", \"Pydantic\", \"PostgreSQL\", \"RabbitMQ\", \"Kafka\", \"Linux\", \"bash\", \"Docker\", \"Kubernetes\", \"Swarm\", \"REST\", \"AsyncAPI\", \"gRPC\", \"SOLID\", \"API Gateway\", \"Circuit Breaker\", \"Saga\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "192, Full-stack разработчик / Vibe Coding Python/FastAPI, Node.js, TypeScript/React, PostgreSQL, Redis, Docker, CI/CD, Cursor, Claude Code, OpenAI Codex.",
+    "output": "{\"id\": 192, \"name\": \"Full-stack разработчик / Vibe Coding\", \"technologies\": [\"Python\", \"FastAPI\", \"Node.js\", \"TypeScript\", \"React\", \"PostgreSQL\", \"Redis\", \"Docker\", \"CI/CD\", \"Cursor\", \"Claude Code\", \"OpenAI Codex\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "196, Frontend-разработчик (Angular / TypeScript) Angular, TypeScript, REST API, CSS/Sass, BEM, i18n, Python, Cursor AI.",
+    "output": "{\"id\": 196, \"name\": \"Frontend-разработчик (Angular / TypeScript)\", \"technologies\": [\"Angular\", \"TypeScript\", \"REST API\", \"CSS\", \"Sass\", \"BEM\", \"i18n\", \"Python\", \"Cursor AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "200, Python-разработчик Python, FastAPI, Django, Flask, SQLAlchemy, PostgreSQL, REST API, OpenAPI, Pydantic, Docker, CI/CD, Git, React / TypeScript.",
+    "output": "{\"id\": 200, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"FastAPI\", \"Django\", \"Flask\", \"SQLAlchemy\", \"PostgreSQL\", \"REST API\", \"OpenAPI\", \"Pydantic\", \"Docker\", \"CI/CD\", \"Git\", \"React\", \"TypeScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "204, Тестировщик ПО (QA Engineer Middle/Senior) REST API (Postman, Swagger), SQL, Jira, Confluence, Selenium, Selenide, Cypress, Playwright, CI/CD, Java, Python, JavaScript.",
+    "output": "{\"id\": 204, \"name\": \"Тестировщик ПО (QA Engineer Middle/Senior)\", \"technologies\": [\"REST API\", \"Postman\", \"Swagger\", \"SQL\", \"Jira\", \"Confluence\", \"Selenium\", \"Selenide\", \"Cypress\", \"Playwright\", \"CI/CD\", \"Java\", \"Python\", \"JavaScript\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "191, Программист/разработчик Delphi, MS SQL Server, SQLite, REST API, JSON, Dart/Flutter, Python, Java, Git, ООП.",
+    "output": "{\"id\": 191, \"name\": \"Программист/разработчик\", \"technologies\": [\"Delphi\", \"MS SQL Server\", \"SQLite\", \"REST API\", \"JSON\", \"Dart\", \"Flutter\", \"Python\", \"Java\", \"Git\", \"ООП\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "195, Python-разработчик уровня Tech Lead / Architect FastAPI, SQLAlchemy, Redis, Kafka, PostgreSQL, Alembic, Pytest, Celery.",
+    "output": "{\"id\": 195, \"name\": \"Python-разработчик уровня Tech Lead / Architect\", \"technologies\": [\"FastAPI\", \"SQLAlchemy\", \"Redis\", \"Kafka\", \"PostgreSQL\", \"Alembic\", \"Pytest\", \"Celery\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "199, Старший аналитик (Большие данные) SQL, PostgreSQL, BI-инструментах FineBI, Tableau, PowerBI, DAX.",
+    "output": "{\"id\": 199, \"name\": \"Старший аналитик (Большие данные)\", \"technologies\": [\"SQL\", \"PostgreSQL\", \"FineBI\", \"Tableau\", \"PowerBI\", \"DAX\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "203, Python-разработчик Python 3.9–3.12, FastAPI, REST API, OpenAPI / Swagger, Kafka, Kubernetes, CI/CD, PostgreSQL.",
+    "output": "{\"id\": 203, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.12\", \"FastAPI\", \"REST API\", \"OpenAPI\", \"Swagger\", \"Kafka\", \"Kubernetes\", \"CI/CD\", \"PostgreSQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "207, Разработчик Python Python, SQL, PostgreSQL, MS SQL Server, Pandas, ETL, Plotly, Dash, Docker, Git, Linux, 1С.",
+    "output": "{\"id\": 207, \"name\": \"Разработчик Python\", \"technologies\": [\"Python\", \"SQL\", \"PostgreSQL\", \"MS SQL Server\", \"Pandas\", \"ETL\", \"Plotly\", \"Dash\", \"Docker\", \"Git\", \"Linux\", \"1С\"]}"
+  },
+  {
+    "instruction": "Вытащи этиные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "198, Старший специалист поисковой оптимизации SEO, CWV, SSR/CSR, Schema.org, robots, sitemap, ЯВБ, Я.метрика, Google Search Console, Screaming Frog, SQL, Python, Jira.",
+    "output": "{\"id\": 198, \"name\": \"Старший специалист поисковой оптимизации\", \"technologies\": [\"SEO\", \"CWV\", \"SSR\", \"CSR\", \"Schema.org\", \"robots\", \"sitemap\", \"ЯВБ\", \"Я.метрика\", \"Google Search Console\", \"Screaming Frog\", \"SQL\", \"Python\", \"Jira\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "202, Middle Python Developer Python 3.13 + Django 5. Bitrix24, 1C, Diadoc, OpenAI/Gemini/Claude SDK, Linear, GitHub, coding-LLM, RAG, A2A пайплайнами.",
+    "output": "{\"id\": 202, \"name\": \"Middle Python Developer\", \"technologies\": [\"Python 3.13\", \"Django 5\", \"Bitrix24\", \"1C\", \"Diadoc\", \"OpenAI\", \"Gemini\", \"Claude\", \"SDK\", \"Linear\", \"GitHub\", \"LLM\", \"RAG\", \"A2A\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "206, Frontend-разработчик (направление ИИ) React, JavaScript, TypeScript, HTML5, CSS3, Redux, Context API, MobX, Webpack, Parcel, Rollup, Jest, Mocha, Chai, React Testing Library, Formik, React Hook Form, React Table, Material-UI, REST API, Docker, JWT, OAuth2, Ant Design, Chakra UI.",
+    "output": "{\"id\": 206, \"name\": \"Frontend-разработчик (направление ИИ)\", \"technologies\": [\"React\", \"JavaScript\", \"TypeScript\", \"HTML5\", \"CSS3\", \"Redux\", \"Context API\", \"MobX\", \"Webpack\", \"Parcel\", \"Rollup\", \"Jest\", \"Mocha\", \"Chai\", \"React Testing Library\", \"Formik\", \"React Hook Form\", \"React Table\", \"Material-UI\", \"REST API\", \"Docker\", \"JWT\", \"OAuth2\", \"Ant Design\", \"Chakra UI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "205, Backend Developer (Senior) Matrix (Synapse / Dendrite / Element), Python (Twisted), Go, PostgreSQL, Redis, Docker, CI/CD, Linux, MinIO / S3 / Ceph, Nginx, TLS/HTTPS, E2EE, LDAP/AD, SSO (SAML 2.0 / OIDC), WebRTC, Elasticsearch / OpenSearch, ClamAV, SIEM.",
+    "output": "{\"id\": 205, \"name\": \"Backend Developer (Senior)\", \"technologies\": [\"Matrix\", \"Synapse\", \"Dendrite\", \"Element\", \"Python\", \"Twisted\", \"Go\", \"PostgreSQL\", \"Redis\", \"Docker\", \"CI/CD\", \"Linux\", \"MinIO\", \"S3\", \"Ceph\", \"Nginx\", \"TLS\", \"HTTPS\", \"E2EE\", \"LDAP\", \"AD\", \"SSO\", \"SAML 2.0\", \"OIDC\", \"WebRTC\", \"Elasticsearch\", \"OpenSearch\", \"ClamAV\", \"SIEM\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "208, Python-разработчик (Рубэкап) Python 3.13, Flask (Flask-RESTX), SQLAlchemy, PostgreSQL, Linux, REST, git.",
+    "output": "{\"id\": 208, \"name\": \"Python-разработчик (Рубэкап)\", \"technologies\": [\"Python 3.13\", \"Flask\", \"Flask-RESTX\", \"SQLAlchemy\", \"PostgreSQL\", \"Linux\", \"REST\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "209, DevOps-инженер Linux (strace, tcpdump), Ansible, Bash, Python, Vmware.",
+    "output": "{\"id\": 209, \"name\": \"DevOps-инженер\", \"technologies\": [\"Linux\", \"strace\", \"tcpdump\", \"Ansible\", \"Bash\", \"Python\", \"Vmware\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "210, Fullstack-разработчик (Agent-Coding) Go lang, Python, PostgreSQL, React, AI-агенты, agent-coding.",
+    "output": "{\"id\": 210, \"name\": \"Fullstack-разработчик (Agent-Coding)\", \"technologies\": [\"Go lang\", \"Python\", \"PostgreSQL\", \"React\", \"AI\", \"agent-coding\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "211, Инженер исследовательского тестирования PostgreSQL, OC Linux, C / C++ / Python / Java / Go, bash, GitLab, GitHub, PL/pgSQL.",
+    "output": "{\"id\": 211, \"name\": \"Инженер исследовательского тестирования\", \"technologies\": [\"PostgreSQL\", \"Linux\", \"C\", \"C++\", \"Python\", \"Java\", \"Go\", \"bash\", \"GitLab\", \"GitHub\", \"PL/pgSQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "215, Middle Backend-разработчик с уклоном в DevOps Node.js, TypeScript, REST API, PostgreSQL, MySQL, Clickhouse, Redis, RabbitMQ, Kafka, Docker, CI/CD, Linux, bash, Git, Python.",
+    "output": "{\"id\": 215, \"name\": \"Middle Backend-разработчик с уклоном в DevOps\", \"technologies\": [\"Node.js\", \"TypeScript\", \"REST API\", \"PostgreSQL\", \"MySQL\", \"Clickhouse\", \"Redis\", \"RabbitMQ\", \"Kafka\", \"Docker\", \"CI/CD\", \"Linux\", \"bash\", \"Git\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "213, Fullstack-разработчик React, TypeScript, Next.js, Node.js, PostgreSQL, Git, Python, Docker, CI/CD (GitLab CI, Jenkins, TeamCity), GraphQL, TypeORM, Redis.",
+    "output": "{\"id\": 213, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"React\", \"TypeScript\", \"Next.js\", \"Node.js\", \"PostgreSQL\", \"Git\", \"Python\", \"Docker\", \"CI/CD\", \"GitLab CI\", \"Jenkins\", \"TeamCity\", \"GraphQL\", \"TypeORM\", \"Redis\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "217, QA Engineer (Тестировщик) PostgreSQL, SQL, Postman, Graylog / Kibana / DevTools, Kafka / RabbitMQ, Python / pytest / Playwright.",
+    "output": "{\"id\": 217, \"name\": \"QA Engineer (Тестировщик)\", \"technologies\": [\"PostgreSQL\", \"SQL\", \"Postman\", \"Graylog\", \"Kibana\", \"DevTools\", \"Kafka\", \"RabbitMQ\", \"Python\", \"pytest\", \"Playwright\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "223, Python-разработчик Python 3.9+, ML, LLM, FastAPI, REST/gRPC API, PostgreSQL, MySQL, Docker, Kubernetes, pytest, OpenTelemetry, Kafka, RabbitMQ, Redis.",
+    "output": "{\"id\": 223, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.9\", \"ML\", \"LLM\", \"FastAPI\", \"REST API\", \"gRPC API\", \"PostgreSQL\", \"MySQL\", \"Docker\", \"Kubernetes\", \"pytest\", \"OpenTelemetry\", \"Kafka\", \"RabbitMQ\", \"Redis\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "227, Стажёр-разработчик (AI Engineering) TypeScript, Go, Python, Git, CI/CD, Claude SDK, Copilot, Cursor, GCP, Docker, Kubernetes, SQL, Neo4j, Datadog, OpenTelemetry.",
+    "output": "{\"id\": 227, \"name\": \"Стажёр-разработчик (AI Engineering)\", \"technologies\": [\"TypeScript\", \"Go\", \"Python\", \"Git\", \"CI/CD\", \"Claude SDK\", \"Copilot\", \"Cursor\", \"GCP\", \"Docker\", \"Kubernetes\", \"SQL\", \"Neo4j\", \"Datadog\", \"OpenTelemetry\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "231, Тестировщик Python 3, pytest, Selenium, Postman, DevTools, SQL, Jenkins.",
+    "output": "{\"id\": 231, \"name\": \"Тестировщик\", \"technologies\": [\"Python 3\", \"pytest\", \"Selenium\", \"Postman\", \"DevTools\", \"SQL\", \"Jenkins\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "235, Python-разработчик Python, FIX API, REST, WebSocket.",
+    "output": "{\"id\": 235, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"FIX API\", \"REST\", \"WebSocket\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "236, Инженер по тестированию (Python) Linux, Python, Pytest, Selenium / Selenide / Appium, bash, Git, BitBucket, GitHub, Jira, HTTPS / HTTP, REST.",
+    "output": "{\"id\": 236, \"name\": \"Инженер по тестированию (Python)\", \"technologies\": [\"Linux\", \"Python\", \"Pytest\", \"Selenium\", \"Selenide\", \"Appium\", \"bash\", \"Git\", \"BitBucket\", \"GitHub\", \"Jira\", \"HTTPS\", \"HTTP\", \"REST\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "243, Системный аналитик Java/Spring Boot, Angular, PostgreSQL, REST/SOAP API, OpenAPI, WSDL, XML, JSON, SOAP UI, UML, BPMN 2.0, Kafka, Figma, Enterprise Architect, ЕМИАС.",
+    "output": "{\"id\": 243, \"name\": \"Системный аналитик\", \"technologies\": [\"Java\", \"Spring Boot\", \"Angular\", \"PostgreSQL\", \"REST API\", \"SOAP API\", \"OpenAPI\", \"WSDL\", \"XML\", \"JSON\", \"SOAP UI\", \"UML\", \"BPMN 2.0\", \"Kafka\", \"Figma\", \"Enterprise Architect\", \"ЕМИАС\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "247, Стажёр DevOps / AI-инженер Claude Code, Open Claw, GPT, Gemini, Mistral, open-source LLM, Docker, K8s, GitHub Actions, GitLab CI, GCP, AWS, Linux, Nginx/OpenResty, Traefik, Istio, Terraform (IaC), PostgreSQL, Redis, ClickHouse, Google BigQuery, HTML/CSS/JS, REST API.",
+    "output": "{\"id\": 247, \"name\": \"Стажёр DevOps / AI-инженер\", \"technologies\": [\"Claude Code\", \"Open Claw\", \"GPT\", \"Gemini\", \"Mistral\", \"LLM\", \"Docker\", \"K8s\", \"GitHub Actions\", \"GitLab CI\", \"GCP\", \"AWS\", \"Linux\", \"Nginx\", \"OpenResty\", \"Traefik\", \"Istio\", \"Terraform\", \"PostgreSQL\", \"Redis\", \"ClickHouse\", \"Google BigQuery\", \"HTML\", \"CSS\", \"JavaScript\", \"REST API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "214, Стажер-разработчик (Python) Python, SQL, GO.",
+    "output": "{\"id\": 214, \"name\": \"Стажер-разработчик (Python)\", \"technologies\": [\"Python\", \"SQL\", \"GO\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "218, Стажер-разработчик Python / Junior Backend Developer Python, ООП, SQL, FastAPI, Litestar, Django, React, Vue, PostgreSQL, MongoDB, RabbitMQ, Redis, Linux, Docker, Kubernetes, GitLab CI, Excel.",
+    "output": "{\"id\": 218, \"name\": \"Стажер-разработчик Python / Junior Backend Developer\", \"technologies\": [\"Python\", \"ООП\", \"SQL\", \"FastAPI\", \"Litestar\", \"Django\", \"React\", \"Vue\", \"PostgreSQL\", \"MongoDB\", \"RabbitMQ\", \"Redis\", \"Linux\", \"Docker\", \"Kubernetes\", \"GitLab CI\", \"Excel\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "220, Senior Python Developer | Fintech Python, FastAPI, SQLAlchemy, Pydantic, PostgreSQL, EXPLAIN, RabbitMQ, Kafka, Linux (bash), Docker, Kubernetes/Swarm, REST/AsyncAPI/gRPC, SOLID, API Gateway, Circuit Breaker, Saga, Git.",
+    "output": "{\"id\": 220, \"name\": \"Senior Python Developer | Fintech\", \"technologies\": [\"Python\", \"FastAPI\", \"SQLAlchemy\", \"Pydantic\", \"PostgreSQL\", \"RabbitMQ\", \"Kafka\", \"Linux\", \"bash\", \"Docker\", \"Kubernetes\", \"Swarm\", \"REST\", \"AsyncAPI\", \"gRPC\", \"SOLID\", \"API Gateway\", \"Circuit Breaker\", \"Saga\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "224, Python/Django-разработчик Python, Django, PostgreSQL, Git, Django REST Framework, Docker.",
+    "output": "{\"id\": 224, \"name\": \"Python/Django-разработчик\", \"technologies\": [\"Python\", \"Django\", \"PostgreSQL\", \"Git\", \"Django REST Framework\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "228, Тестировщик web JavaScript / Python / Java / TypeScript, Playwright, Selenium, Cypress, pytest, JUnit, HTTP, REST, Postman, Swagger, GitHub Actions, GitLab CI, Jenkins, Docker, SQL.",
+    "output": "{\"id\": 228, \"name\": \"Тестировщик web\", \"technologies\": [\"JavaScript\", \"Python\", \"Java\", \"TypeScript\", \"Playwright\", \"Selenium\", \"Cypress\", \"pytest\", \"JUnit\", \"HTTP\", \"REST\", \"Postman\", \"Swagger\", \"GitHub Actions\", \"GitLab CI\", \"Jenkins\", \"Docker\", \"SQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "232, QA Engineer (Manual) REST API (Postman), SQL, JS / Python, CI/CD.",
+    "output": "{\"id\": 232, \"name\": \"QA Engineer (Manual)\", \"technologies\": [\"REST API\", \"Postman\", \"SQL\", \"JavaScript\", \"Python\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "237, DevOps-Engineer Junior/ Junior+ k8s, GitLab CI, Bash/Python, PostgreSQL, Kafka, Redis, KDB/Q, Apache Cassandra, Airflow/MLflow, IaC, Debezium.",
+    "output": "{\"id\": 237, \"name\": \"DevOps-Engineer Junior/ Junior+\", \"technologies\": [\"Kubernetes\", \"GitLab CI\", \"Bash\", \"Python\", \"PostgreSQL\", \"Kafka\", \"Redis\", \"KDB\", \"Q\", \"Apache Cassandra\", \"Airflow\", \"MLflow\", \"IaC\", \"Debezium\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "240, Бизнес-аналитик BPMN/UML, SQL, API (REST), SaaS, low-code/no-code, Excel/Google Sheets, Kafka, RabbitMQ, Python, Java, C#.",
+    "output": "{\"id\": 240, \"name\": \"Бизнес-аналитик\", \"technologies\": [\"BPMN\", \"UML\", \"SQL\", \"REST API\", \"SaaS\", \"low-code\", \"no-code\", \"Excel\", \"Google Sheets\", \"Kafka\", \"RabbitMQ\", \"Python\", \"Java\", \"C#\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "221, Python разработчик / ML Engineer (младший) Python, PyTorch, Transformers, scikit-learn, pandas, numpy, Computer Vision (CVAT, LabelStudio), NLP/LLM, RAG, Qdrant, LangChain, E5/RuBERT, FastAPI, Docker, ONNX, TensorRT, Triton Inference Server, vLLM, MLflow, Airflow, CI/CD, Kafka/RabbitMQ, PostgreSQL, MongoDB, Neo4j, Prometheus, Grafana, Langfuse.",
+    "output": "{\"id\": 221, \"name\": \"Python разработчик / ML Engineer (младший)\", \"technologies\": [\"Python\", \"PyTorch\", \"Transformers\", \"scikit-learn\", \"pandas\", \"numpy\", \"Computer Vision\", \"CVAT\", \"LabelStudio\", \"NLP\", \"LLM\", \"RAG\", \"Qdrant\", \"LangChain\", \"E5\", \"RuBERT\", \"FastAPI\", \"Docker\", \"ONNX\", \"TensorRT\", \"Triton Inference Server\", \"vLLM\", \"MLflow\", \"Airflow\", \"CI/CD\", \"Kafka\", \"RabbitMQ\", \"PostgreSQL\", \"MongoDB\", \"Neo4j\", \"Prometheus\", \"Grafana\", \"Langfuse\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "225, Frontend / Full-Stack разработчик (OHIF, React, TypeScript) React, TypeScript, OHIF Viewer, Cornerstone3D / VTK.js, REST / WebSocket API, DICOM / DICOMweb, Python, Yarn Workspaces.",
+    "output": "{\"id\": 225, \"name\": \"Frontend / Full-Stack разработчик (OHIF, React, TypeScript)\", \"technologies\": [\"React\", \"TypeScript\", \"OHIF Viewer\", \"Cornerstone3D\", \"VTK.js\", \"REST API\", \"WebSocket API\", \"DICOM\", \"DICOMweb\", \"Python\", \"Yarn Workspaces\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "229, Fullstack-разработчик Python (FastAPI / Django), Node.js, Go, React, Vue, TypeScript, HTML/CSS, PostgreSQL, Git, CI/CD, Docker, Kubernetes, OAuth2, SSO, Kafka, RabbitMQ, ClickHouse, Greenplum.",
+    "output": "{\"id\": 229, \"name\": \"Fullstack-разработчик\", \"technologies\": [\"Python\", \"FastAPI\", \"Django\", \"Node.js\", \"Go\", \"React\", \"Vue\", \"TypeScript\", \"HTML\", \"CSS\", \"PostgreSQL\", \"Git\", \"CI/CD\", \"Docker\", \"Kubernetes\", \"OAuth2\", \"SSO\", \"Kafka\", \"RabbitMQ\", \"ClickHouse\", \"Greenplum\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "233, Системный аналитик Python.",
+    "output": "{\"id\": 233, \"name\": \"Системный аналитик\", \"technologies\": [\"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "239, Инженер-разработчик БПЛА (полный цикл) ArduPilot / PX4, Mission Planner, QGroundControl, Python / C++, OpenDroneMap, FPV-системы, VTX.",
+    "output": "{\"id\": 239, \"name\": \"Инженер-разработчик БПЛА (полный цикл)\", \"technologies\": [\"ArduPilot\", \"PX4\", \"Mission Planner\", \"QGroundControl\", \"Python\", \"C++\", \"OpenDroneMap\", \"FPV\", \"VTX\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "242, Бизнес / Системный аналитик / Technical project manager SQL, API, UML, BPMN, Python, CI/CD.",
+    "output": "{\"id\": 242, \"name\": \"Бизнес / Системный аналитик / Technical project manager\", \"technologies\": [\"SQL\", \"API\", \"UML\", \"BPMN\", \"Python\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "246, Python Django developer Python, Django, DRF, JavaScript, React, PostgreSQL, Redis, Docker, Git, CI/CD, Linux, Pandas, Airflow.",
+    "output": "{\"id\": 246, \"name\": \"Python Django developer\", \"technologies\": [\"Python\", \"Django\", \"DRF\", \"JavaScript\", \"React\", \"PostgreSQL\", \"Redis\", \"Docker\", \"Git\", \"CI/CD\", \"Linux\", \"Pandas\", \"Airflow\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "250, Младший Python-разработчик (Junior Python Developer) Python, ООП, REST API, Django, Django REST Framework, FastAPI, SQL, PostgreSQL, Git, Pytest, Docker, Redis, Celery, RabbitMQ.",
+    "output": "{\"id\": 250, \"name\": \"Младший Python-разработчик (Junior Python Developer)\", \"technologies\": [\"Python\", \"ООП\", \"REST API\", \"Django\", \"Django REST Framework\", \"FastAPI\", \"SQL\", \"PostgreSQL\", \"Git\", \"Pytest\", \"Docker\", \"Redis\", \"Celery\", \"RabbitMQ\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "222, Python-разработчик Python 3.x, ООП, SQL, Git, Django, FastAPI, Flask, Docker, PostgreSQL, SQLite, REST API.",
+    "output": "{\"id\": 222, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3\", \"ООП\", \"SQL\", \"Git\", \"Django\", \"FastAPI\", \"Flask\", \"Docker\", \"PostgreSQL\", \"SQLite\", \"REST API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "226, Golang разработчик Golang, Python, C++, MySQL, Elasticsearch, Cassandra, Docker, Kubernetes, GitLab CI/CD, REST API, JSON-RPC, HTTP, DNS, SSL/TLS.",
+    "output": "{\"id\": 226, \"name\": \"Golang разработчик\", \"technologies\": [\"Golang\", \"Python\", \"C++\", \"MySQL\", \"Elasticsearch\", \"Cassandra\", \"Docker\", \"Kubernetes\", \"GitLab CI/CD\", \"REST API\", \"JSON-RPC\", \"HTTP\", \"DNS\", \"SSL\", \"TLS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "230, Разработчик Python (Middle) Python, FastAPI, Git, PyTorch, TensorFlow, Transformers, spaCy, LLM, Docker.",
+    "output": "{\"id\": 230, \"name\": \"Разработчик Python (Middle)\", \"technologies\": [\"Python\", \"FastAPI\", \"Git\", \"PyTorch\", \"TensorFlow\", \"Transformers\", \"spaCy\", \"LLM\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "234, Junior‑разработчик (Python) / стажёр в команду маркетплейсов Python, Claude Code (ИИ), Git, pandas, openpyxl, REST API, Telegram Bot API.",
+    "output": "{\"id\": 234, \"name\": \"Junior‑разработчик (Python) / стажёр в команду маркетплейсов\", \"technologies\": [\"Python\", \"Claude Code\", \"Git\", \"pandas\", \"openpyxl\", \"REST API\", \"Telegram Bot API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "238, Golang разработчик (middle) Go, Python, Docker, Kubernetes, Kafka, RabbitMQ, Redis, PostgreSQL, MySQL, MongoDB, CI/CD.",
+    "output": "{\"id\": 238, \"name\": \"Golang разработчик (middle)\", \"technologies\": [\"Go\", \"Python\", \"Docker\", \"Kubernetes\", \"Kafka\", \"RabbitMQ\", \"Redis\", \"PostgreSQL\", \"MySQL\", \"MongoDB\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "241, Разработчик AI-агентов (Python / LLM / Автоматизация бизнес-процессов) Python, FastAPI, asyncio, pandas, requests, LLM (OpenAI, Claude, Gemini, DeepSeek), AI Agents (LangChain, LangGraph, CrewAI, AutoGen), API, PostgreSQL, SQLite, Docker, Git, Telegram Bot API, MCP.",
+    "output": "{\"id\": 241, \"name\": \"Разработчик AI-агентов (Python / LLM / Автоматизация бизнес-процессов)\", \"technologies\": [\"Python\", \"FastAPI\", \"asyncio\", \"pandas\", \"requests\", \"LLM\", \"OpenAI\", \"Claude\", \"Gemini\", \"DeepSeek\", \"AI Agents\", \"LangChain\", \"LangGraph\", \"CrewAI\", \"AutoGen\", \"API\", \"PostgreSQL\", \"SQLite\", \"Docker\", \"Git\", \"Telegram Bot API\", \"MCP\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "245, IT-программист / AI-разработчик AI-инструменты (ChatGPT, Cursor, GitHub Copilot, Replit, Lovable, Bolt, v0), HTML, CSS, JavaScript, Python.",
+    "output": "{\"id\": 245, \"name\": \"IT-программист / AI-разработчик\", \"technologies\": [\"ChatGPT\", \"Cursor\", \"GitHub Copilot\", \"Replit\", \"Lovable\", \"Bolt\", \"v0\", \"HTML\", \"CSS\", \"JavaScript\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "249, Python-разработчик Python 3, FastAPI, Django, MySQL, PostgreSQL, RabbitMQ, Docker, Git, CI/CD.",
+    "output": "{\"id\": 249, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3\", \"FastAPI\", \"Django\", \"MySQL\", \"PostgreSQL\", \"RabbitMQ\", \"Docker\", \"Git\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "253, Senior Data Analyst ETL, ClickHouse, MySQL, Airflow, Redash, Яндекс.Метрика, Python, LLM (AI-агенты).",
+    "output": "{\"id\": 253, \"name\": \"Senior Data Analyst\", \"technologies\": [\"ETL\", \"ClickHouse\", \"MySQL\", \"Airflow\", \"Redash\", \"Яндекс.Метрика\", \"Python\", \"LLM\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "244, Middle Python Developer Python 3.12+, FastAPI, Redis, RabbitMQ, PostgreSQL, Docker, Kubernetes, GitLab CI/CD.",
+    "output": "{\"id\": 244, \"name\": \"Middle Python Developer\", \"technologies\": [\"Python 3.12\", \"FastAPI\", \"Redis\", \"RabbitMQ\", \"PostgreSQL\", \"Docker\", \"Kubernetes\", \"GitLab CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "248, Python-разработчик Python (pandas, jinja2), SQL, PostgreSQL, Git, Docker, ETL (airflow, nifi).",
+    "output": "{\"id\": 248, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"pandas\", \"jinja2\", \"SQL\", \"PostgreSQL\", \"Git\", \"Docker\", \"ETL\", \"airflow\", \"nifi\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "252, Python-разработчик Python, Docker, k8s, AI (LangChain/Graph, CrewAI, Semantic Kernel), MCP, A2A, RAG, векторные БД.",
+    "output": "{\"id\": 252, \"name\": \"Python-разработчик\", \"technologies\": [\"Python\", \"Docker\", \"Kubernetes\", \"AI\", \"LangChain\", \"CrewAI\", \"Semantic Kernel\", \"MCP\", \"A2A\", \"RAG\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "256, Стажер Python-разработчик Python, LLM.",
+    "output": "{\"id\": 256, \"name\": \"Стажер Python-разработчик\", \"technologies\": [\"Python\", \"LLM\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "251, Middle Python Developer (Django) Python 3.x, Django, DRF, PostgreSQL, Celery, Redis, Docker, Nginx, AWS, GraphQL (Strawberry).",
+    "output": "{\"id\": 251, \"name\": \"Middle Python Developer (Django)\", \"technologies\": [\"Python 3.x\", \"Django\", \"DRF\", \"PostgreSQL\", \"Celery\", \"Redis\", \"Docker\", \"Nginx\", \"AWS\", \"GraphQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "255, DevOps-инженер Linux, Ansible, GitLab, Gitlab CI/CD, Docker, docker-compose, Consul, PostgreSQL, MySQL/mariadb, Prometheus, Grafana, RabbitMQ, Bash, Python, Nginx, Haproxy, HTTP, DNS, DHCP, POP3, IMAP, iptables, firewalld, ufw.",
+    "output": "{\"id\": 255, \"name\": \"DevOps-инженер\", \"technologies\": [\"Linux\", \"Ansible\", \"GitLab\", \"Gitlab CI/CD\", \"Docker\", \"docker-compose\", \"Consul\", \"PostgreSQL\", \"MySQL\", \"mariadb\", \"Prometheus\", \"Grafana\", \"RabbitMQ\", \"Bash\", \"Python\", \"Nginx\", \"Haproxy\", \"HTTP\", \"DNS\", \"DHCP\", \"POP3\", \"IMAP\", \"iptables\", \"firewalld\", \"ufw\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "259, Junior DevOps GitLab CI, Argo CD, Argo Workflows, Docker, docker-compose, Kubernetes, kubectl, Helm, Git, Bash, Python, TCP/IP, DNS, HTTP/HTTPS, nginx, YAML, Prometheus, Grafana, ELK, Yandex Cloud, AWS, Azure, Terraform, Ansible, PostgreSQL, MongoDB, Redis, ETL/ELT, Apache Airflow, ClickHouse.",
+    "output": "{\"id\": 259, \"name\": \"Junior DevOps\", \"technologies\": [\"GitLab CI\", \"Argo CD\", \"Argo Workflows\", \"Docker\", \"docker-compose\", \"Kubernetes\", \"kubectl\", \"Helm\", \"Git\", \"Bash\", \"Python\", \"TCP/IP\", \"DNS\", \"HTTP\", \"HTTPS\", \"nginx\", \"YAML\", \"Prometheus\", \"Grafana\", \"ELK\", \"Yandex Cloud\", \"AWS\", \"Azure\", \"Terraform\", \"Ansible\", \"PostgreSQL\", \"MongoDB\", \"Redis\", \"ETL\", \"ELT\", \"Apache Airflow\", \"ClickHouse\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "263, ML-разработчик/Data Scientist (портал Рамблер) Python, LLM, RAG, PyTorch, TensorFlow, Transformers, LoRA, SQL.",
+    "output": "{\"id\": 263, \"name\": \"ML-разработчик/Data Scientist (портал Рамблер)\", \"technologies\": [\"Python\", \"LLM\", \"RAG\", \"PyTorch\", \"TensorFlow\", \"Transformers\", \"LoRA\", \"SQL\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "266, DevOps Platform Engineer Linux, Bash, Python/Go, CI/CD (GitlabCI, ArgoCD, Jenkins), IaC (Terraform, CloudFormation), Docker, Kubernetes, Helm, Kustomize, HashiCorp Vault, Prometheus, Grafana.",
+    "output": "{\"id\": 266, \"name\": \"DevOps Platform Engineer\", \"technologies\": [\"Linux\", \"Bash\", \"Python\", \"Go\", \"CI/CD\", \"GitlabCI\", \"ArgoCD\", \"Jenkins\", \"IaC\", \"Terraform\", \"CloudFormation\", \"Docker\", \"Kubernetes\", \"Helm\", \"Kustomize\", \"HashiCorp Vault\", \"Prometheus\", \"Grafana\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "269, Golang-разработчик Go, PostgreSQL, NATS / RabbitMQ, Docker, Docker Compose, Git, Redis, Linux, gRPC, CI/CD, AI.",
+    "output": "{\"id\": 269, \"name\": \"Golang-разработчик\", \"technologies\": [\"Go\", \"PostgreSQL\", \"NATS\", \"RabbitMQ\", \"Docker\", \"Docker Compose\", \"Git\", \"Redis\", \"Linux\", \"gRPC\", \"CI/CD\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "275, QA Engineer (Middle, Manual + API) REST/GraphQL, Postman, Swagger, SQL, Browser DevTools, Kibana, Grafana/OpenTelemetry, JavaScript, Python, Java, CI/CD, Qase, Jira, JMeter, AI инструментов.",
+    "output": "{\"id\": 275, \"name\": \"QA Engineer (Middle, Manual + API)\", \"technologies\": [\"REST\", \"GraphQL\", \"Postman\", \"Swagger\", \"SQL\", \"Browser DevTools\", \"Kibana\", \"Grafana\", \"OpenTelemetry\", \"JavaScript\", \"Python\", \"Java\", \"CI/CD\", \"Qase\", \"Jira\", \"JMeter\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "276, Младший AI/ML-инженер (Стажер) Python, PyTorch, Transformers, LangChain / LlamaIndex, векторные базы данных, REST API (FastAPI), Docker.",
+    "output": "{\"id\": 276, \"name\": \"Младший AI/ML-инженер (Стажер)\", \"technologies\": [\"Python\", \"PyTorch\", \"Transformers\", \"LangChain\", \"LlamaIndex\", \"векторные базы данных\", \"REST API\", \"FastAPI\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "278, Python Developer Python 3.10+, flake8, mypy, pytest, PostgreSQL, FastAPI, Django 4,5/DRF, Celery, RabbitmMQ, Kafka, Docker, k8s, Git, Trunk-Based Development, AI-помощники.",
+    "output": "{\"id\": 278, \"name\": \"Python Developer\", \"technologies\": [\"Python 3.10\", \"flake8\", \"mypy\", \"pytest\", \"PostgreSQL\", \"FastAPI\", \"Django\", \"DRF\", \"Celery\", \"RabbitMQ\", \"Kafka\", \"Docker\", \"k8s\", \"Git\", \"Trunk-Based Development\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "280, Разработчик Python Python, PostgreSQL, REST API, Git, Linux (Astra Linux SE), CAD, MES, ERP, IoT, Docker, CI/CD, Odoo.",
+    "output": "{\"id\": 280, \"name\": \"Разработчик Python\", \"technologies\": [\"Python\", \"PostgreSQL\", \"REST API\", \"Git\", \"Linux\", \"Astra Linux\", \"CAD\", \"MES\", \"ERP\", \"IoT\", \"Docker\", \"CI/CD\", \"Odoo\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "281, Project Manager / Менеджер IT-проектов Python/Django, Docker, PostgreSQL, Jira, Weeek, Trello, Notion.",
+    "output": "{\"id\": 281, \"name\": \"Project Manager / Менеджер IT-проектов\", \"technologies\": [\"Python\", \"Django\", \"Docker\", \"PostgreSQL\", \"Jira\", \"Weeek\", \"Trello\", \"Notion\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "254, ИИ разработчик Python, Telegram API, n8n, IDE, LLM, Cursor, REST API.",
+    "output": "{\"id\": 254, \"name\": \"ИИ разработчик\", \"technologies\": [\"Python\", \"Telegram API\", \"n8n\", \"IDE\", \"LLM\", \"Cursor\", \"REST API\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "258, Python developer Python 3, FastAPI, PostgreSQL, SQLAlchemy, Redis, Docker, Linux, pytest, Mypy, Black, we-make-python-styleguide, Git, JIRA, CI/CD.",
+    "output": "{\"id\": 258, \"name\": \"Python developer\", \"technologies\": [\"Python 3\", \"FastAPI\", \"PostgreSQL\", \"SQLAlchemy\", \"Redis\", \"Docker\", \"Linux\", \"pytest\", \"Mypy\", \"Black\", \"Git\", \"JIRA\", \"CI/CD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "262, Инженер-тестировщик Linux (bash), Windows (bat), Python, C++.",
+    "output": "{\"id\": 262, \"name\": \"Инженер-тестировщик\", \"technologies\": [\"Linux\", \"bash\", \"Windows\", \"Python\", \"C++\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "265, Продуктовый аналитик SQL (PostgreSQL), Airflow, dbt, BI-инструменты, Python, Yandex.Metrika.",
+    "output": "{\"id\": 265, \"name\": \"Продуктовый аналитик\", \"technologies\": [\"SQL\", \"PostgreSQL\", \"Airflow\", \"dbt\", \"BI\", \"Python\", \"Yandex.Metrika\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "268, Тестировщик Web-приложения HypeScribe Python, FastAPI, Next.js, AWS, Nginx, Celery/RabbitMQ, Linear, Postman, AI.",
+    "output": "{\"id\": 268, \"name\": \"Тестировщик Web-приложения HypeScribe\", \"technologies\": [\"Python\", \"FastAPI\", \"Next.js\", \"AWS\", \"Nginx\", \"Celery\", \"RabbitMQ\", \"Linear\", \"Postman\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "274, Python-разработчик (ETL) Python, SQL, NoSQL, Git, IDE, CI/CD, Docker, Bash, Hadoop (HDFS, Hive, Impala), Airflow, Kafka, ИИ.",
+    "output": "{\"id\": 274, \"name\": \"Python-разработчик (ETL)\", \"technologies\": [\"Python\", \"SQL\", \"NoSQL\", \"Git\", \"CI/CD\", \"Docker\", \"Bash\", \"Hadoop\", \"Airflow\", \"Kafka\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "277, Fullstack / Backend-разработчик Python, Ruby, TypeScript, React, Angular, Claude API, OpenAI, OpenCart, AI инструменты.",
+    "output": "{\"id\": 277, \"name\": \"Fullstack / Backend-разработчик\", \"technologies\": [\"Python\", \"Ruby\", \"TypeScript\", \"React\", \"Angular\", \"Claude API\", \"OpenAI\", \"OpenCart\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "279, Junior разработчик Python, REST API, PostgreSQL, Redis, Telegram Bot API, React, WebSocket, 1С, amoCRM.",
+    "output": "{\"id\": 279, \"name\": \"Junior разработчик\", \"technologies\": [\"Python\", \"REST API\", \"PostgreSQL\", \"Redis\", \"Telegram Bot API\", \"React\", \"WebSocket\", \"1С\", \"amoCRM\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "257, Python-разработчик Python 3.12+, PostgreSQL, Linux, Docker, Kubernetes, C/C++, LDAP, Kerberos, DNS (Bind9, PowerDNS), systemd.",
+    "output": "{\"id\": 257, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.12\", \"PostgreSQL\", \"Linux\", \"Docker\", \"Kubernetes\", \"C\", \"C++\", \"LDAP\", \"Kerberos\", \"DNS\", \"systemd\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "261, QA Engineer Middle (Manual)/ Инженер по тестированию YouTrack, TestOps, Confluence, XML, JSON, CSV, SQL, HTTP, Git, Python.",
+    "output": "{\"id\": 261, \"name\": \"QA Engineer Middle (Manual)/ Инженер по тестированию\", \"technologies\": [\"YouTrack\", \"TestOps\", \"Confluence\", \"XML\", \"JSON\", \"CSV\", \"SQL\", \"HTTP\", \"Git\", \"Python\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "271, Python developer (Django) Python 3, Django, DRF, pytest, PostgreSQL, Git, GitLab, Docker.",
+    "output": "{\"id\": 271, \"name\": \"Python developer (Django)\", \"technologies\": [\"Python 3\", \"Django\", \"DRF\", \"pytest\", \"PostgreSQL\", \"Git\", \"GitLab\", \"Docker\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "273, Python developer Python 3.x, SQL, Oracle, PostgreSQL, html, Git, Django, Django rest framework.",
+    "output": "{\"id\": 273, \"name\": \"Python developer\", \"technologies\": [\"Python 3\", \"SQL\", \"Oracle\", \"PostgreSQL\", \"html\", \"Git\", \"Django\", \"Django rest framework\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "260, Инженер-механик/конструктор Arduino, STM32, ROS/ROS2, Python/C++, CAD.",
+    "output": "{\"id\": 260, \"name\": \"Инженер-механик/конструктор\", \"technologies\": [\"Arduino\", \"STM32\", \"ROS\", \"ROS2\", \"Python\", \"C++\", \"CAD\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "264, Python-разработчик Python 3.10+, PostgreSQL, SQLAlchemy, FastAPI, LiteStar, Pydantic, Kafka, RabbitMQ, Elasticsearch, Docker, Git, Linux.",
+    "output": "{\"id\": 264, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3.10\", \"PostgreSQL\", \"SQLAlchemy\", \"FastAPI\", \"LiteStar\", \"Pydantic\", \"Kafka\", \"RabbitMQ\", \"Elasticsearch\", \"Docker\", \"Git\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "16, Fullstack Web-разработчик PHP (Laravel), Vue.js, React, 1С, REST API, SQL, Git.",
+    "output": "{\"id\": 16, \"name\": \"Fullstack Web-разработчик\", \"technologies\": [\"PHP\", \"Laravel\", \"Vue.js\", \"React\", \"1С\", \"REST API\", \"SQL\", \"Git\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "267, Ведущий инженер-тестировщик Python (pytest, requests, httpx), TestRail, Terraform, Ansible, Gitlab, Jenkins, Allure, Jira, Confluence, Linux, Docker, Kubernetes.",
+    "output": "{\"id\": 267, \"name\": \"Ведущий инженер-тестировщик\", \"technologies\": [\"Python\", \"pytest\", \"requests\", \"httpx\", \"TestRail\", \"Terraform\", \"Ansible\", \"Gitlab\", \"Jenkins\", \"Allure\", \"Jira\", \"Confluence\", \"Linux\", \"Docker\", \"Kubernetes\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "270, Продуктовый аналитик в Krisha.kz (Middle) SQL, Python, Google Cloud (Big Query), BI (Power BI), ETL, Airflow, ML.",
+    "output": "{\"id\": 270, \"name\": \"Продуктовый аналитик в Krisha.kz (Middle)\", \"technologies\": [\"SQL\", \"Python\", \"Google Cloud\", \"Big Query\", \"BI\", \"Power BI\", \"ETL\", \"Airflow\", \"ML\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "272, Python-разработчик Python 3, PostgreSQL, Clickhouse, RabbitMQ, Kafka, MySQL, MongoDB, WS API, REST API, RPC API, gRPC API, Django, Node.js, Go.",
+    "output": "{\"id\": 272, \"name\": \"Python-разработчик\", \"technologies\": [\"Python 3\", \"PostgreSQL\", \"Clickhouse\", \"RabbitMQ\", \"Kafka\", \"MySQL\", \"MongoDB\", \"WS API\", \"REST API\", \"RPC API\", \"gRPC API\", \"Django\", \"Node.js\", \"Go\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "282, Middle/Middle+ QA Engineer PostgreSQL, RabbitMQ, Kafka, Python, C#, C++, Spring, Kotlin, Java, Groovy, TypeScript, JS, Jira, TestRail, Jenkins, Confluence, Bitbucket, Figma, Slack, Docker, K8s.",
+    "output": "{\"id\": 282, \"name\": \"Middle/Middle+ QA Engineer\", \"technologies\": [\"PostgreSQL\", \"RabbitMQ\", \"Kafka\", \"Python\", \"C#\", \"C++\", \"Spring\", \"Kotlin\", \"Java\", \"Groovy\", \"TypeScript\", \"JavaScript\", \"Jira\", \"TestRail\", \"Jenkins\", \"Confluence\", \"Bitbucket\", \"Figma\", \"Slack\", \"Docker\", \"K8s\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "22, PHP-разработчик SQL, PHP, Bitrix, HTML, JavaScript, Interbase, Firebird, 1С, Linux.",
+    "output": "{\"id\": 22, \"name\": \"PHP-разработчик\", \"technologies\": [\"SQL\", \"PHP\", \"Bitrix\", \"HTML\", \"JavaScript\", \"Interbase\", \"Firebird\", \"1С\", \"Linux\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "288, Frontend-разработчик (React / Next.js, Middle+/Senior) React 18+, Next.js 15, TypeScript, TanStack Query, React Hook Form, Axios, Redux Toolkit, App Router, HTML5 / CSS3, Git, REST API, Docker, Figma, Python, Django, DRF, PostgreSQL, AI инструменты (Claude, Cursor, Copilot).",
+    "output": "{\"id\": 288, \"name\": \"Frontend-разработчик (React / Next.js, Middle+/Senior)\", \"technologies\": [\"React\", \"Next.js\", \"TypeScript\", \"TanStack Query\", \"React Hook Form\", \"Axios\", \"Redux Toolkit\", \"App Router\", \"HTML5\", \"CSS3\", \"Git\", \"REST API\", \"Docker\", \"Figma\", \"Python\", \"Django\", \"DRF\", \"PostgreSQL\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "286, Специалист по сопровождению сайтов CMS, Excel, Google Таблицы, AI (ChatGPT, Claude, Gemini, GigaChat, Midjourney), SEO, HTML/CSS.",
+    "output": "{\"id\": 286, \"name\": \"Специалист по сопровождению сайтов\", \"technologies\": [\"CMS\", \"Excel\", \"Google Таблицы\", \"AI\", \"SEO\", \"HTML\", \"CSS\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "291, Java-разработчик Java 8+, Spring Framework (Boot, MVC, Data), SQL (PostgreSQL), Git, Maven, REST API, SOAP, OpenAPI/Swagger, Linux, Kafka, Camunda BPM, CI/CD, Nginx, HAProxy, Apache, WebSocket, Redis, AI инструменты.",
+    "output": "{\"id\": 291, \"name\": \"Java-разработчик\", \"technologies\": [\"Java 8\", \"Spring Framework\", \"SQL\", \"PostgreSQL\", \"Git\", \"Maven\", \"REST API\", \"SOAP\", \"OpenAPI\", \"Swagger\", \"Linux\", \"Kafka\", \"Camunda BPM\", \"CI/CD\", \"Nginx\", \"HAProxy\", \"Apache\", \"WebSocket\", \"Redis\", \"AI\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "293, Frontend-разработчик TypeScript 5, React 19, Next.js 15 (App Router), FSD, Zustand, Immer, CSS Modules, Headless UI, Radix UI, Swiper, Lottie, i18next, REST API, OpenAPI, gRPC, connectrpc, protobuf, SSE, Vitest, Storybook 9, ESLint 9, Prettier, Docker, Kubernetes, LLM, React Native, Cursor / Claude Code.",
+    "output": "{\"id\": 293, \"name\": \"Frontend-разработчик\", \"technologies\": [\"TypeScript 5\", \"React 19\", \"Next.js 15\", \"FSD\", \"Zustand\", \"Immer\", \"CSS Modules\", \"Headless UI\", \"Radix UI\", \"Swiper\", \"Lottie\", \"i18next\", \"REST API\", \"OpenAPI\", \"gRPC\", \"protobuf\", \"SSE\", \"Vitest\", \"Storybook 9\", \"ESLint 9\", \"Prettier\", \"Docker\", \"Kubernetes\", \"LLM\", \"React Native\", \"Cursor\", \"Claude Code\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "295, QA Engineer (AI native) REST API, Postman, SQL, Playwright, Cypress, Selenium, AI (ChatGPT, Claude, Gemini), DevTools, Jira, Notion, GitHub.",
+    "output": "{\"id\": 295, \"name\": \"QA Engineer (AI native)\", \"technologies\": [\"REST API\", \"Postman\", \"SQL\", \"Playwright\", \"Cypress\", \"Selenium\", \"AI\", \"DevTools\", \"Jira\", \"Notion\", \"GitHub\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "297, Junior C# разработчик C#, PostgreSQL, REST API, HTTP, AI (Claude Code, Cursor, ChatGPT), Docker, Docker Compose, Rabbit/Kafka, .NET, EF Core, ASP.NET Core.",
+    "output": "{\"id\": 297, \"name\": \"Junior C# разработчик\", \"technologies\": [\"C#\", \"PostgreSQL\", \"REST API\", \"HTTP\", \"AI\", \"Claude Code\", \"Cursor\", \"ChatGPT\", \"Docker\", \"docker-compose\", \"RabbitMQ\", \"Kafka\", \".NET\", \"EF Core\", \"ASP.NET Core\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "302, Дизайнер пользовательских интерфейсов в продуктовую команду Figma, BPMN, workflow, CJM, user flows, AI (Claude), Obsidian.",
+    "output": "{\"id\": 302, \"name\": \"Дизайнер пользовательских интерфейсов в продуктовую команду\", \"technologies\": [\"Figma\", \"BPMN\", \"workflow\", \"CJM\", \"User flows\", \"AI\", \"Claude\", \"Obsidian\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "379, Product Manager AI/ML, SQL, ChatGPT.",
+    "output": "{\"id\": 379, \"name\": \"Product Manager\", \"technologies\": [\"AI\", \"ML\", \"SQL\", \"ChatGPT\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "383, DevOps-инженер (junior) Linux (Ubuntu/Debian), Bash, Python, Git, GitHub, Docker, docker-compose, CI/CD (GitHub Actions), Ansible, Grafana, PromQL, PostgreSQL, AI (ChatGPT, Copilot, Cursor, Claude Code), ClickHouse, VictoriaMetrics / Prometheus, Alertmanager, Loki, RabbitMQ, Proxmox VE, Harbor.",
+    "output": "{\"id\": 383, \"name\": \"DevOps-инженер (junior)\", \"technologies\": [\"Linux\", \"Bash\", \"Python\", \"Git\", \"GitHub\", \"Docker\", \"docker-compose\", \"CI/CD\", \"GitHub Actions\", \"Ansible\", \"Grafana\", \"PromQL\", \"PostgreSQL\", \"AI\", \"ChatGPT\", \"Copilot\", \"Cursor\", \"Claude Code\", \"ClickHouse\", \"VictoriaMetrics\", \"Prometheus\", \"Alertmanager\", \"Loki\", \"RabbitMQ\", \"Proxmox VE\", \"Harbor\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "301, Лидер направления IT и внутренних цифровых систем CI/CD, AI, LLM, API, n8n, Make, Zapier.",
+    "output": "{\"id\": 301, \"name\": \"Лидер направления IT и внутренних цифровых систем\", \"technologies\": [\"CI/CD\", \"AI\", \"LLM\", \"API\", \"n8n\", \"Make\", \"Zapier\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "307, Frontend-разработчик (Vue / Angular) Vue, Angular.",
+    "output": "{\"id\": 307, \"name\": \"Frontend-разработчик (Vue / Angular)\", \"technologies\": [\"Vue\", \"Angular\"]}"
+  },
+  {
+    "instruction": "Вытащи эти данные из текста в виде json\nid=id вакансии\nname=название вакансии\ntechnologies = Список технологий",
+    "input": "321, Middle Frontend Developer (Vue) JavaScript, TypeScript, Vue 2, Vue 3, Nuxt 2, Nuxt 3, Composition API, Pinia/Vuex, Vite, Webpack, HTML, CSS, SCSS, Docker, Git, Storybook, Cypress/Playwright, REST API, HTTP.",
+    "output": "{\"id\": 321, \"name\": \"Middle Frontend Developer (Vue)\", \"technologies\": [\"JavaScript\", \"TypeScript\", \"Vue 2\", \"Vue 3\", \"Nuxt 2\", \"Nuxt 3\", \"Composition API\", \"Pinia\", \"Vuex\", \"Vite\", \"Webpack\", \"HTML\", \"CSS\", \"SCSS\", \"Docker\", \"Git\", \"Storybook\", \"Cypress\", \"Playwright\", \"REST API\", \"HTTP\"]}"
+  }
+  
+]

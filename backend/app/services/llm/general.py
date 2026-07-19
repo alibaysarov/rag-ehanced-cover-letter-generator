@@ -15,9 +15,6 @@ class GeneralLLMClient(ABC):
             self.model = model
         else:
             self.model = model.with_structured_output(schema=schema)
-        
-    
-    
     
     
     @property
@@ -36,23 +33,6 @@ class GeneralLLMClient(ABC):
         ...
     
     
-    def count_prompt_tokens(self, body: dict) -> int:
-        messages = self.get_prompt(body)
-
-        full_prompt = ""
-
-        for msg in messages:
-            full_prompt += f"{msg.type}: {msg.content}\n"
-
-        tokens = self.model.get_num_tokens(full_prompt)
-
-        print("=" * 50)
-        print(full_prompt)
-        print("=" * 50)
-        print(f"TOKENS: {tokens}")
-
-        return tokens
-    
     
     def get_prompt(self, body: dict) -> list[BaseMessage]:
         # Подставляем переменные из body в шаблон
@@ -63,7 +43,7 @@ class GeneralLLMClient(ABC):
             self.model = self.model.with_structured_output(schema=schema)
     
     
-    @traceable(run_type="llm")
+    # @traceable(run_type="llm")
     def get_sync_response(self,body:dict={}):
         messages = self.get_prompt(body)
         return self.model.invoke(messages)

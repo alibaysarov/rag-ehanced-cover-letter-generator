@@ -38,6 +38,8 @@ services:
       dockerfile: Dockerfile
 
     container_name: app-celery-worker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
     command: >
       celery
@@ -68,9 +70,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
-
-      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
-
+      OLLAMA_HOST: http://host.docker.internal:11434
 
 
   celery-beat:
@@ -103,7 +103,7 @@ services:
 
       CELERY_BROKER_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672//
 
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD}@redis:6379/1
+      OLLAMA_HOST: ${OLLAMA_HOST}
   rabbitmq:
     image: rabbitmq:3-management
 

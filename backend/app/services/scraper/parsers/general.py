@@ -2,7 +2,12 @@ from abc import abstractmethod
 from urllib.parse import quote_plus
 from app.job_parser.hh_parser import Vacancy
 from app.decorators.browser import simple_page
+from app.schemas.vacancy.single_vacancy import SingleVacancy
 from app.helper.flatten_list import flatten_list
+from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
+
+from asyncio import Semaphore
+
 import os
 import asyncio
 import logging
@@ -20,9 +25,9 @@ from tenacity import (
 def async_retry():
     """Декоратор с exponential backoff: 3 попытки, задержки 1s → 2s → 4s."""
     return retry(
-        stop=stop_after_attempt(3),
+        stop=stop_after_attempt(4),
         wait=wait_exponential(multiplier=1, min=1, max=8),
-        retry=retry_if_exception_type(Exception),
+        retry=retry_if_exception_type(PlaywrightTimeoutError),
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
     )
@@ -43,7 +48,7 @@ class GeneralVacancyParser:
         return self._name
     
     @abstractmethod
-    def get_single_url(self)->str:
+    def get_single_url(self,vacancy_id)->str:
         """Write JS function that returns list of objects:
             {title, vacancy_id, link}
         """
@@ -78,6 +83,16 @@ class GeneralVacancyParser:
                     .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
         """
         ...
+    
+    def evaluate_vacancy_page(self)->str:
+        """
+        Write JS function that returns vacancy object:
+            {title, vacancy_id, link}
+            Example:
+            () => {job_title,job_text}
+        """
+        
+        ...
         
         
     async def get_list(self,browser,text:str,job_id: int)->list[Vacancy]:
@@ -89,6 +104,20 @@ class GeneralVacancyParser:
                     return await self._get_vacancies_by_scroll(page=page,text=text)
             except Exception as e:
                 logger.warning(f"Error getting list: {e}")    
+    
+    async def parse_single_vacancy(self,browser,vacancy_id,semaphore:Semaphore)->SingleVacancy:
+        
+        async with semaphore:
+            url = self.get_single_url(vacancy_id)
+            async with simple_page(browser,url) as page:
+                try:
+                    await page.route("**/*", self._block_resources)
+                    await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                    vacancy_dict:dict = await self._get_result_from_vacancy(page=page)
+                    vacancy:SingleVacancy = SingleVacancy.model_validate(vacancy_dict)
+                    return vacancy
+                except Exception as e:
+                    logger.warning(f"Error getting single vacancy page {vacancy_id} : {e}")
     
     async def _get_vacancies_by_scroll(self,page,text:str)->list[Vacancy]:
         try:
@@ -111,6 +140,17 @@ class GeneralVacancyParser:
             logger.error(f"Error getting list: {e}")
             raise
 
+    @async_retry()
+    async def _get_result_from_vacancy(self, page:Page)->SingleVacancy:
+        try:
+            await self._scroll_page(page)
+            await page.wait_for_timeout(500)
+            single_vacancy = await page.evaluate(self.evaluate_vacancy_page())
+        except Exception as e:
+            logger.error("Error during parsing single vacancy page")
+            raise e
+        
+        return single_vacancy
     async def _get_results_from_page(self, page)->list[Vacancy]:
         await self._scroll_page(page)
         await page.wait_for_timeout(500)
@@ -175,16 +215,7 @@ class GeneralVacancyParser:
         valid = [r for r in results if isinstance(r, list)]
         return flatten_list(valid)
     
-    # async def _get_paginated_list(self,page,text:str,job_id: int)->list[Vacancy]:
-    #     pages = await self._get_total_pages(page,text=text)
-        
-    #     logger.info(f"[job={job_id}] Total pages to scrape: {pages}")
-        
-    #     tasks = [
-    #         self._get_vacancies_by_page(page,text,i)
-    #         for i in range(pages)
-    #     ]
-    #     return flatten_list(await asyncio.gather(*tasks)) 
+    
 
     async def _scroll_page(self,page):
         await page.evaluate("""

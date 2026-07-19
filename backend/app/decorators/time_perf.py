@@ -17,18 +17,28 @@ def time_performance(func):
     @wraps(func)
     async def async_wrapper(*args, **kwargs):
         start = time.perf_counter()
-        result = await func(*args, **kwargs)
-        elapsed = time.perf_counter() - start
-        print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")
-        return result
+        try:
+            result = await func(*args, **kwargs)
+            return result
+        except Exception as e:
+            print("Ошибка во время работы",e)
+            
+        finally:        
+            elapsed = time.perf_counter() - start
+            print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")
 
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
         start = time.perf_counter()
-        result = func(*args, **kwargs)
-        elapsed = time.perf_counter() - start
-        print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")
-        return result
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except Exception as e:
+            print("Ошибка во время работы",e)
+            
+        finally:
+            elapsed = time.perf_counter() - start
+            print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")
 
     if asyncio.iscoroutinefunction(func):
         return async_wrapper

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,model_validator
 
 
 class Skill(BaseModel):
@@ -6,27 +6,15 @@ class Skill(BaseModel):
 
 
 class JobRequirement(BaseModel):
+    id: int|str = Field(..., description="id вакансии")
     name: str = Field(...,description="Название вакансии")
-    lang: str = Field(..., description="язык на котором написана вакансия (прим. RU,EN)")
-    project_name: str = Field("Название/область проекта")
-    required_technologies: list[str] = Field(
+    technologies:list[str] = Field(
         default_factory=list,
-        description="Обязательные технологии (must-have, явно требуются в вакансии).",
+        description="Список технологий",
     )
-    preferred_technologies: list[str] = Field(
-        default_factory=list,
-        description="Желательные технологии",
-    )
-    nice_to_have_technologies: list[str] = Field(
-        default_factory=list,
-        description="Опциональные/nice-to-have технологии",
-    )
-    requirements: list[str] = Field(default_factory=list, description="Требуемые навыки и компетенции")
-
-    @property
-    def technologies(self) -> list[str]:
-        return (
-            self.required_technologies
-            + self.preferred_technologies
-            + self.nice_to_have_technologies
-        )
+    @model_validator(mode="before")
+    @classmethod
+    def fill_missing_name(cls, data):
+        if isinstance(data, dict) and not data.get("name"):
+            data["name"] = "Без названия"
+        return data

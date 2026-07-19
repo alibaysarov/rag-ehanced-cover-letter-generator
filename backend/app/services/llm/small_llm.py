@@ -4,15 +4,13 @@ from app.services.llm.general import GeneralLLMClient
 from langchain_core.prompts import ChatPromptTemplate
 
 
-# _MODEL="qwen2.5:7b"
-
-# _MODEL="qwen3.5:4b"
-_MODEL="qwen3:1.7b"
-class QwenClient(GeneralLLMClient):
+_MODEL="json-parser:latest"
+# _MODEL="qwen2.5:0.5b"
+class SmallLLMClient(GeneralLLMClient):
     def __init__(self):
         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
         
-        model = ChatOllama(model=_MODEL,format="json", temperature=0.1,num_predict=400,reasoning=False, base_url=base_url)
+        model = ChatOllama(model=_MODEL,format="json",num_ctx=4096, temperature=0.1,num_predict=400,reasoning=False, base_url=base_url)
         super().__init__(model=model)
 
 

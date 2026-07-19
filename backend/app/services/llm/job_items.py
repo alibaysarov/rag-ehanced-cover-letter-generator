@@ -68,7 +68,8 @@ class CoverLetterResult(BaseModel):
     content:str = Field(...,description="Текст письма")
 
 
-_MODEL="qwen3:1.7b"
+# _MODEL="qwen3:1.7b"
+_MODEL="qwen2.5:7b"
 # _MODEL="qwen3.5:4b"
 class CoverLetterPrompt(QwenClient):
 

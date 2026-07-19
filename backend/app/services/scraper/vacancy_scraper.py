@@ -13,7 +13,7 @@ from app.services.scraper.parsers.hh import HHVacancyParser
 from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
 from app.helper.flatten_list import flatten_list
 import logging
-
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,18 @@ class VacancyScrapingService:
             HHVacancyParser(),
             GeekJobVacancyParser(),
         ]
+        
+    async def _parse_single_vacancy(self,session:Session,parser:GeneralVacancyParser,vacancy:Vacancy,job_id:int):
+        semaphore = asyncio.Semaphore(4)
+        with session as session:
+            parsing_job = session.get(ParsingJob, job_id)
+            try:
+                item = await parser.parse_single_vacancy(chromium_module.chromium,vacancy_id=vacancy.vacancy_id,semaphore=semaphore)
+                parsing_job.saved_count +=1
+                session.add(parsing_job)
+                return item
+            except Exception as e:
+                raise e
         
     async def run_parse_job(self,job_id: int, query: str, user_id: int) -> None:
         """
@@ -45,16 +57,25 @@ class VacancyScrapingService:
                     try:
                         logger.info(f"Started parsing {parser.get_name()}")
                         vacancy_items = await parser.get_list(chromium_module.chromium,query,job_id)
-                        result.append(vacancy_items)
+                        result.extend(vacancy_items)
                         with Session(engine) as session:
                             parsing_job = session.get(ParsingJob, job_id)
                             if parsing_job:
                                 parsing_job.total_found = parsing_job.total_found + len(vacancy_items)
-                                session.add(parsing_job)
                                 session.commit()
+                                results = await asyncio.gather(
+                                    *[self._parse_single_vacancy(session,parser, vacancy=vacancy,job_id=job_id) for vacancy in vacancy_items],
+                                    return_exceptions=True,
+                                )
+                                session.commit()
+                                
+                                for res in results:
+                                    if isinstance(res, Exception):
+                                        logger.warning(f"[job={job_id}] Vacancy processing error: {res}")
+                                    else:
+                                        logger.info("item completed",res)
                     except Exception as e:
                         logger.error(f"[job={job_id}] Parse failed: {e}")
-                result = flatten_list(result)
             logger.info(f"total items: {len(result)} {result}")
             
             with Session(engine) as session:

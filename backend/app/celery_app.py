@@ -1,11 +1,16 @@
 from celery import Celery
 import os
-
+from kombu import Queue
 
 celery_app = Celery(
     "app",
     broker=os.getenv("CELERY_BROKER_URL"),
-    backend=os.getenv("CELERY_RESULT_BACKEND"),
+    include=["app.tasks"]
+)
+celery_app.conf.task_default_queue = "default"
+
+celery_app.conf.task_queues = (
+    Queue("default"),
 )
 
 
@@ -17,8 +22,8 @@ celery_app.conf.update(
     timezone="UTC",
 
     task_routes={
-        "app.tasks.*": {
-            "queue": "default"
+        "app.tasks.single_generation": {
+            "queue": "default",
         }
     }
 )

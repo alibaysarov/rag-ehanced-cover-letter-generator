@@ -64,12 +64,12 @@ def qwen_test():
         
         result = prompt.get_sync_response({"job_text": text})
         print("result",result)
-        tech_tags = result.model_dump()["required_technologies"]
+        tech_tags = result.model_dump()["technologies"]
         user_id = 1
         
-        print(tech_tags)
+        # print(tech_tags)
         print("==========SQL============")
         
-        sql_search(text, tech_tags, user_id)
+        # sql_search(text, tech_tags, user_id)
 
 qwen_test()

@@ -1,0 +1,1942 @@
+[
+  {
+    "name": "Тестировщик",
+    "lang": "RU",
+    "project_name": "Департамент информационных технологий Москвы",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Lidofon.ru - CRM система для call центра",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "опыт работы в тестировании веб-приложений от 3-5 лет",
+      "знание и опыт применения методологий тестирования (Agile, Scrum)",
+      "уверенное знание PHP и/или Python",
+      "опыт работы с фреймворками для автоматизации тестирования (Selenium, PyTest, PHPUnit)",
+      "знание принципов работы веб-технологий (HTTP, HTTPS, REST API)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["postman", "swagger", "devtools", "python", "php", "jenkins", "gitlab ci", "rest api"],
+      "preferred_technologies": ["selenium", "pytest", "phpunit", "sql", "mysql", "postgresql", "mongodb", "jmeter", "soapui"],
+      "nice_to_have_technologies": ["allure testops"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Инженер по тестированию банковского процессинга",
+    "lang": "RU",
+    "project_name": "SmartVista FrontEnd",
+    "user_projects": [
+      {
+        "project_name": "Lidofon.ru - CRM система для call центра",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      },
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Коммерческий опыт тестирования OLTP или back-end приложений от 3-х лет",
+      "Наличие опыта работы в банковской сфере",
+      "Знание UNIX-like систем",
+      "Опыт работы с реляционными СУБД (Oracle, PostgreSQL), знание SQL на уровне JOIN"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "postgresql", "oracle", "unix", "tcp/ip", "jira"],
+      "preferred_technologies": ["java", "python", "bash", "ci/cd"],
+      "nice_to_have_technologies": ["c"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python разработчик (Junior / Intern)",
+    "lang": "RU",
+    "project_name": "Стажировка в корпоративных системах",
+    "user_projects": [
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "интерес к программированию и IT",
+      "базовые знания любого языка программирования",
+      "ответственность и внимательность"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python"],
+      "preferred_technologies": ["sql", "git", "html", "css", "javascript"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Junior DevOps-инженер",
+    "lang": "RU",
+    "project_name": "Авеню групп",
+    "user_projects": [
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      },
+      {
+        "project_name": "Lidofon.ru - CRM система для call центра",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Базовые знания bash/sh/python скриптинга",
+      "Знания git, docker (+compose) на среднем уровне",
+      "Глубокое понимание Debian/GNU like систем"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["bash", "sh", "python", "git", "docker", "docker-compose", "debian", "linux", "dns", "reverse proxy"],
+      "preferred_technologies": ["kubernetes", "terraform", "opentofu", "ansible", "vault", "php", "react"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик (middle)",
+    "lang": "RU",
+    "project_name": "Globerce Capital",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы с Django/FastApi",
+      "Опыт работы с DRF",
+      "Умение писать асинхронный код с использование Asyncio",
+      "Опыт работы с технологиями Redis, Kafka, RabbitMQ, Docker"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "fastapi", "drf", "asyncio", "redis", "kafka", "rabbitmq", "docker", "postgresql", "sqlalchemy"],
+      "preferred_technologies": ["soap", "rest", "git"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python разработчик, middle",
+    "lang": "RU",
+    "project_name": "Системы на Python",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы разработчиком на языках Python (от двух лет)",
+      "Опыт работы с Docker и системами контейнеризации",
+      "Знание алгоритмов, структур данных и опыт работы с многопоточностью"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "docker", "sql", "rabbitmq", "rest api"],
+      "preferred_technologies": ["golang", "solid"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Golang-разработчик",
+    "lang": "RU",
+    "project_name": "АФЛТ-Системс (Аэрофлот)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Минимум 5 лет опыта коммерческой разработки",
+      "Глубокие знания Golang и его концепций",
+      "Опыт работы с gRPC, Protobuf, REST-API, JSON-RPC, HTTP"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["golang", "grpc", "protobuf", "rest api", "json-rpc", "http", "postgres"],
+      "preferred_technologies": ["python", "docker", "k8s", "aws", "yandexcloud"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Инженер-химик",
+    "lang": "RU",
+    "project_name": "Лаборатория аккумуляторов А+",
+    "user_projects": [
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Высшее профильное образование",
+      "Опыт от 3–6 лет в аналогичной роли",
+      "Английский от B1"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "hplc-ms", "xrd"],
+      "preferred_technologies": ["iso", "iatf"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "QA Engineer",
+    "lang": "RU",
+    "project_name": "Группа Компаний Орбита (Банковский сектор)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Lidofon.ru - CRM система для call центра",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Экспертное владение SQL (сложные запросы, агрегация)",
+      "Опыт работы с СУБД (PostgreSQL, Oracle)",
+      "Опыт использования Python для автоматизации тестирования данных"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "postgresql", "oracle", "python", "git"],
+      "preferred_technologies": ["pandas", "numpy", "pytest", "ci/cd"],
+      "nice_to_have_technologies": ["greenplum"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Middle backend-разработчик Java",
+    "lang": "RU",
+    "project_name": "Escort Monitoring System Group",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Middle backend-разработчик с опытом коммерческой разработки",
+      "Уверенная база в Java или Python",
+      "Опыт использования AI-инструментов (Claude)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["java", "spring boot", "postgresql", "git"],
+      "preferred_technologies": ["python", "django", "drf", "docker", "claude"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик",
+    "lang": "RU",
+    "project_name": "ООО НПП «МетаСофт ПРО» (3D/Gaussian Splatting)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенные знания Python, PyTorch, numPy, openCV, pandas",
+      "Знание принципов оптимизации вычислительных процессов",
+      "Навыки работы с большими объемами данных"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "pytorch", "numpy", "opencv", "pandas", "colmap"],
+      "preferred_technologies": ["ml", "3d graphics", "docker"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Программист-разработчик",
+    "lang": "RU",
+    "project_name": "AUTOTIME (Автокредитование)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Road Planner in SoftTelematics",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{javascript,typescript,react,three.js,yarn,effector,chakra ui}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт коммерческой разработки на Python (от 2 лет)",
+      "Отличное знание FastAPI, SQLAlchemy, PostgreSQL",
+      "Опыт проектирования и интеграции REST API"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "sqlalchemy", "postgresql", "rabbitmq", "redis", "docker", "linux"],
+      "preferred_technologies": ["nuxt", "typescript", "nestjs", "solid"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Fullstack-разработчик",
+    "lang": "RU",
+    "project_name": "Второй пилот (AI ERP)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat - Приложение для здорового питания",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенный Python и опыт с базами данных (PostgreSQL или аналоги)",
+      "Базовое умение работать с фронтендом и внешними API",
+      "Готовность работать в связке с ИИ-ассистентами (Claude, Codex)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "postgresql", "javascript", "rest api"],
+      "preferred_technologies": ["claude", "codex", "linux", "ml", "docker"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Backend-разработчик",
+    "lang": "RU",
+    "project_name": "Positive Technologies (Positive Labs)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Понимание кода на Python, Bash",
+      "Готовность работать с K8s, легаси и нестабильной кодовой базой",
+      "Знание механизмов работы ЭВМ и ОС"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "bash", "k8s", "docker"],
+      "preferred_technologies": ["dbms", "security testing", "fuzzing"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Frontend-разработчик (верстка, деплой и поддержка сайтов)",
+    "lang": "RU",
+    "project_name": "Поддержка веб-проектов",
+    "user_projects": [
+      {
+        "project_name": "Road Planner in SoftTelematics",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{javascript,typescript,react,three.js,yarn,effector,chakra ui}"
+      },
+      {
+        "project_name": "Sweet cat shop",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{react,prisma,node.js,typescript,mysql,linux}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенные знания HTML5, CSS3",
+      "Хороший JavaScript (ES6+) и опыт с React/Vue",
+      "Практические навыки работы с VPS, Docker, Nginx"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["html5", "css3", "javascript", "react", "vue", "vps", "nginx", "docker", "git"],
+      "preferred_technologies": ["chatgpt", "portainer", "php", "python", "node.js"],
+      "nice_to_have_technologies": ["ci/cd"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Middle+/Senior Frontend-разработчик",
+    "lang": "RU",
+    "project_name": "ООО ИЦ «АЙ-ТЕКО»",
+    "user_projects": [
+      {
+        "project_name": "Road Planner in SoftTelematics",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{javascript,typescript,react,three.js,yarn,effector,chakra ui}"
+      },
+      {
+        "project_name": "Sweet cat shop",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{react,prisma,node.js,typescript,mysql,linux}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт коммерческой разработки на React от 4 лет",
+      "Уверенное владение хуками, контекстом, Redux",
+      "Опыт работы в финтехе (банки, страховые)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["javascript", "typescript", "react", "redux", "styled components", "react-router"],
+      "preferred_technologies": ["java", "python", "go", "kafka", "postgresql"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Инженер тех поддержки",
+    "lang": "RU",
+    "project_name": "EcomRobotic (Робототехника)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading - торговые боты + контент завод",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Высшее техническое образование",
+      "Первичная диагностика проблем на складах клиента",
+      "Поиск причин ошибок в навигации робота"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python"],
+      "preferred_technologies": ["c++", "opencv", "ai", "3d-scanners"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик",
+    "lang": "EN",
+    "project_name": "Internal Analytics Systems",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "2+ years of commercial Python development experience",
+      "Strong pandas skills for data processing",
+      "Experience with Dash, Plotly, or Streamlit"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "pandas", "dash", "plotly", "fastapi", "sql", "postgresql", "git"],
+      "preferred_technologies": ["docker", "llm", "ai", "streamlit"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Fullstack-разработчик",
+    "lang": "RU",
+    "project_name": "РТК ИТ (Платформа Акола)",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Знание html, css, js",
+      "Знание SQL (сложные запросы, оптимизация)",
+      "Опыт разработки web приложений от 3 лет"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["html", "css", "js", "sql", "linux", "rest api"],
+      "preferred_technologies": ["php", "python", "java", "django", "laravel", "wordpress", "docker"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Старший бэкенд разработчик (Python) / Senior backend developer (Python)",
+    "lang": "RU",
+    "project_name": "Simple Company (Промышленный сектор)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Коммерческая разработка на Python от 4 лет",
+      "Проектировать и развивать микросервисную архитектуру на FastAPI",
+      "Опыт с Kafka и событийно-ориентированными системами"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "asyncio", "sqlalchemy", "postgresql", "kafka", "docker", "kubernetes", "git"],
+      "preferred_technologies": ["redis", "s3", "helm", "opentelemetry", "go"],
+      "nice_to_have_technologies": ["janusgraph"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "PHP-разработчик",
+    "lang": "RU",
+    "project_name": "Крупная компания (филиальная сеть)",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт разработки web систем не менее 3х лет",
+      "Опыт разработки на php не менее 2х лет (bitrix)",
+      "Продвинутое знание SQL"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["php", "bitrix", "sql", "html5", "css3", "javascript", "git"],
+      "preferred_technologies": ["laravel", "vue.js", "python", "redis"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик в подразделение киберразведки",
+    "lang": "RU",
+    "project_name": "Команда киберразведки",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенная разработка сервисов и API (Django, FastAPI)",
+      "Работа с базами данных, очередями и фоновыми задачами",
+      "Базовый опыт работы с React"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "fastapi", "sqlmodel", "celery", "pandas", "selenium", "postgresql", "redis", "docker", "nginx"],
+      "preferred_technologies": ["react", "kafka", "opensearch", "linux"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Backend-разработчик Python",
+    "lang": "RU",
+    "project_name": "Финтех проект",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Коммерческий опыт разработки на Python от 3 лет",
+      "Опыт работы с фреймворком FastAPI",
+      "Опыт разработки в рамках микросервисной архитектуры"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "asyncio", "sql", "nosql", "rabbitmq", "kafka", "ci/cd"],
+      "preferred_technologies": ["fintech"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик",
+    "lang": "RU",
+    "project_name": "Группа Компаний Орбита (Крупный Банк)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенная работа с asyncio, threading, multiprocessing",
+      "Опыт работы с Kafka (партиции, топики)",
+      "Глубокое знание PostgreSQL"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "asyncio", "kafka", "postgresql", "git", "pytest"],
+      "preferred_technologies": ["mypy", "ruff", "poetry", "uv"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Senior Python Developer (Backend)",
+    "lang": "RU",
+    "project_name": "Saber Interactive (AAA игры)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенные знания и опыт работы на языке Python",
+      "Опыт разработки высоконагруженных и отказоустойчивых backend-сервисов",
+      "Опыт асинхронного программирования"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "asyncio", "rabbitmq", "postgresql", "mongodb", "sqlalchemy", "pytest"],
+      "preferred_technologies": ["unittest", "httpx"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Middle Python Developer",
+    "lang": "RU",
+    "project_name": "Удаленная работа (Беларусь)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы с Python фреймворками (Django/FastAPI)",
+      "Опыт с асинхронным программированием (AsyncIO)",
+      "Знание принципов CI/CD"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "fastapi", "asyncio", "sql", "postgresql", "kafka", "rabbitmq", "docker", "linux"],
+      "preferred_technologies": ["mongodb", "redis", "aws", "pytest", "js", "react"],
+      "nice_to_have_technologies": ["kubernetes"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Senior Python разработчик",
+    "lang": "RU",
+    "project_name": "SaluteDev (Ташкент)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт от 5-6 лет в backend-разработке на Python",
+      "Опыт работы в продуктовых командах с микросервисной архитектурой",
+      "Асинхронная работа с PostgreSQL и Redis"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "postgresql", "redis", "kubernetes", "linux", "pytest"],
+      "preferred_technologies": ["prometheus", "ansible", "elk", "helm", "jenkins"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "DevOps-инженер",
+    "lang": "RU",
+    "project_name": "Группа Компаний Орбита",
+    "user_projects": [
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы с Linux (системное администрирование)",
+      "Внедрение и настройка CI/CD (Jenkins, Ansible)",
+      "Работа со средами контейнеризации (Docker, Kubernetes)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["linux", "postgresql", "jenkins", "ansible", "git", "docker", "kubernetes", "openshift"],
+      "preferred_technologies": ["groovy", "python", "bash", "nginx", "kafka", "elk"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Backend-разработчик",
+    "lang": "RU",
+    "project_name": "Беспилотные авиационные системы",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Наличие высшего технического профильного образования",
+      "Опыт работы в HardwareIT",
+      "Опыт работы c SQL (Postgres)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["java", "spring", "postgresql", "docker", "git"],
+      "preferred_technologies": ["python", "c++", "linux", "can"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python/SQL разработчик аналитической инфраструктуры",
+    "lang": "RU",
+    "project_name": "Happy Baby (E-commerce)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Разработка и поддержка ETL-процессов на Python",
+      "Продвинутый уровень PostgreSQL",
+      "Интеграция с API маркетплейсов"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "pandas", "postgresql", "rest api", "sql", "git"],
+      "preferred_technologies": ["1c", "google sheets api", "power bi"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Fullstack-разработчик",
+    "lang": "UZ/RU",
+    "project_name": "VUM (Business Process Automation)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      }
+    ],
+    "vacancy_requirements": [
+      "ERP tizimini rivojlantirish va qo'llab-quvvatlash",
+      "Biznes jarayonlarini tahlil qilish va avtomatlashtirish",
+      "GoLang, Flutter yoki Python bo'yicha ishlash tajribasi"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "golang", "flutter", "erp"],
+      "preferred_technologies": ["sql", "network administration"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "BI-аналитик",
+    "lang": "RU",
+    "project_name": "ТехАудит Би Ай (Superset)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенно владеет SQL (агрегатные функции, джоины)",
+      "Имеет опыт визуализации данных от 6 месяцев",
+      "Способность быстро погружаться в новые задачи"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "postgresql", "superset"],
+      "preferred_technologies": ["python", "airflow", "clickhouse", "ms sql server"],
+      "nice_to_have_technologies": ["css", "jinja"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Java разработчик (Middle / Senior)",
+    "lang": "RU",
+    "project_name": "Правительство Москвы",
+    "user_projects": [
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Коммерческий опыт разработки на Java от 3 лет",
+      "Уверенное владение Java Core",
+      "Опыт работы со Spring Framework"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["java", "spring boot", "postgresql", "rest api", "git", "docker"],
+      "preferred_technologies": ["python", "c#", "grpc", "maven"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "AI Developer / ИИ-разработчик (Middle/Senior)",
+    "lang": "RU",
+    "project_name": "AI-платформа (Децентрализованная команда)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Python на уверенном уровне (Middle/Senior)",
+      "Опыт работы с LLM (OpenAI, Anthropic, Llama, Mistral)",
+      "Опыт работы с векторными базами данных"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "openai", "langchain", "llamaindex", "fastapi", "docker", "git"],
+      "preferred_technologies": ["qdrant", "pinecone", "chroma", "pytorch", "transformers"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Backend Developer (Python) в офис",
+    "lang": "RU",
+    "project_name": "Else (ITFactory)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенный опыт в Python Django и FastAPI",
+      "Владеешь SQL (Postgres)",
+      "Читаешь технический английский"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "fastapi", "sql", "postgres", "git"],
+      "preferred_technologies": ["docker", "ci/cd", "rest"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "QA-инженер (тестировщик) Института цифровой трансформации",
+    "lang": "RU/KZ",
+    "project_name": "Проект документооборота",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Практический опыт тестирования API (Postman)",
+      "Опыт функционального и регрессионного тестирования веб-приложений",
+      "Базовый SQL"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["postman", "rest api", "sql", "jira", "php", "react"],
+      "preferred_technologies": ["python", "pytest", "playwright", "docker", "ci/cd"],
+      "nice_to_have_technologies": ["jmeter"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Продуктовый аналитик (middle+)",
+    "lang": "RU",
+    "project_name": "Playerok (Маркетплейс)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт в аналитике минимум 3 года",
+      "Уверенное владение SQL, Python",
+      "Понимание метрик ecom (ARPPU, LTV, CR)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "python", "power bi", "tableau", "datalens"],
+      "preferred_technologies": ["e-commerce"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Разработчик Python (Django, DRF)",
+    "lang": "RU",
+    "project_name": "Ред Cофт",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт разработки web-проектов на Django(DRF)",
+      "Опыт работы с очередью задач (Celery, Redis)",
+      "Уверенное владение Git"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "drf", "postgresql", "celery", "redis", "docker compose", "git", "linux"],
+      "preferred_technologies": ["opencv", "kubernetes", "gitlab ci"],
+      "nice_to_have_technologies": ["websockets"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "IT специалист в Банк",
+    "lang": "RU/EN",
+    "project_name": "Shinhan Bank Uzbekistan",
+    "user_projects": [
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      },
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы в IT-сфере от 3 лет",
+      "Уверенное владение целевым стеком программирования",
+      "Понимание стандартов информационной безопасности"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["java", "javascript", "swift", "python", "sql", "postgresql", "oracle"],
+      "preferred_technologies": ["docker", "kubernetes", "agile"],
+      "nice_to_have_technologies": ["iso 27001"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Ведущий разработчик корпоративной отчетности",
+    "lang": "RU",
+    "project_name": "Разработка отчетности",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Знание MS SQL/PL SQL на уровне Senior",
+      "Уверенный опыт создания отчетов FastReport",
+      "Опыт создания дашбордов Power BI"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "fastreport", "power bi", "dax", "olap", "etl", "git"],
+      "preferred_technologies": ["python"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "ML разработчик",
+    "lang": "RU",
+    "project_name": "Департамент (LLM/NLP)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт обучения нейронных сетей и больших языковых моделей",
+      "Разработка и доработка моделей LLM",
+      "Разработка и оптимизация RAG-подходов"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "ml", "llm", "rag", "docker", "git", "sql"],
+      "preferred_technologies": ["gpt", "bert", "pytorch", "transformers"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Full-stack разработчик Python/Django",
+    "lang": "RU",
+    "project_name": "TMS «ПРО Транспорт»",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "От 4 лет коммерческой web-разработки",
+      "Уверенное знание Django, Django REST Framework",
+      "Сильный PostgreSQL"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "drf", "postgresql", "docker", "git", "linux", "ci/cd", "html5", "css3", "javascript"],
+      "preferred_technologies": ["redis", "celery", "htmx", "alpine.js", "sentry"],
+      "nice_to_have_technologies": ["typescript"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Тестировщик ПО (в офис, г. Санкт-Петербург)",
+    "lang": "RU",
+    "project_name": "Автоматизация тестирования",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы в области QA Automation",
+      "Знание и опыт применения Python3, pytest",
+      "Опыт работы с БД (Postgres, Redis)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "pytest", "postgresql", "redis", "git", "jira"],
+      "preferred_technologies": ["docker", "ci/cd"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Системный аналитик",
+    "lang": "RU",
+    "project_name": "Бизнес-приложения Enterprise",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы в роли системного аналитика от 3-х лет",
+      "Опыт работы с Camunda обязателен",
+      "Умение работать с BPMN, UML, ERD"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["camunda", "bpmn", "uml", "use-case", "erd"],
+      "preferred_technologies": ["python", "java", "react", "sql"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Fullstack Web Developer",
+    "lang": "RU",
+    "project_name": "VPN-сервис",
+    "user_projects": [
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      },
+      {
+        "project_name": "Sweet cat shop",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{react,prisma,node.js,typescript,mysql,linux}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Экспертное знание React.js и Next.js",
+      "Уверенное владение Node.js или Python",
+      "Уверенное владение SQL (MySQL)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["react.js", "next.js", "node.js", "typescript", "mysql", "solid"],
+      "preferred_technologies": ["python", "fastapi", "docker", "sentry"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Системный аналитик (Expobank)",
+    "lang": "RU",
+    "project_name": "ИТ-компания Экспобанка",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Проведение анализа по возможным интеграциям",
+      "Опыт построения интеграционных взаимодействий REST",
+      "Опыт моделирования бизнес-процессов в UML/BPMN"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["php", "python", "postgresql", "vue", "rest", "bpmn", "uml"],
+      "preferred_technologies": ["sql"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Сетевой инженер / Linux-инженер (DevOps стек)",
+    "lang": "RU",
+    "project_name": "ABARUS_IT",
+    "user_projects": [
+      {
+        "project_name": "Lidofon.ru",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,laravel,postgresql,redis,docker}"
+      },
+      {
+        "project_name": "LOKALI APP",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{node.js,typescript,nest.js,mysql,s3,ci/cd,iiko}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенная работа в Linux (CLI, процессы)",
+      "Глубокое понимание TCP/IP",
+      "Знание Python programming language"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["linux", "tcp/ip", "python", "docker", "ci/cd"],
+      "preferred_technologies": ["bash", "wireshark", "nginx", "zabbix"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик (QIWI)",
+    "lang": "RU",
+    "project_name": "Платежная система QIWI",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт промышленной разработки на Python (от 3-х лет)",
+      "Понимание принципа работы реляционных СУБД",
+      "Опыт работы с системами оркестрации контейнеров"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "flask", "postgresql", "docker", "kubernetes", "solid"],
+      "preferred_technologies": ["rabbitmq", "redis", "grafana", "airflow", "pandas"],
+      "nice_to_have_technologies": ["typescript"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Fullstack-разработчик (Automotive)",
+    "lang": "RU",
+    "project_name": "Автомобильный бизнес",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Road Planner in SoftTelematics",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{javascript,typescript,react,three.js,yarn,effector,chakra ui}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт коммерческой разработки от 2 лет",
+      "Уверенное знание PHP и JavaScript",
+      "Опыт разработки интернет-магазинов"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["php", "laravel", "javascript", "mysql", "git", "rest api", "html5", "css3"],
+      "preferred_technologies": ["vue.js", "react", "docker", "python", "ai tools"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Тестировщик (автотесты) (HeadPoint)",
+    "lang": "RU",
+    "project_name": "Платформа IoT",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Автоматизация на Python 3.x",
+      "Тестирование REST API",
+      "Умение писать SQL скрипты"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "selenium", "pytest", "allure", "rest api", "sql", "git"],
+      "preferred_technologies": ["clickhouse", "postgresql", "docker", "kafka"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "AI/LLM Analyst & Engineer",
+    "lang": "RU/EN",
+    "project_name": "AI-лаборатория",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Python middle и выше",
+      "Понимание архитектуры трансформеров",
+      "Практический опыт fine-tuning"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "llm", "rag", "qdrant", "vllm", "ollama"],
+      "preferred_technologies": ["pytorch", "transformers", "nlp"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Разработчик Python Middle ( в офис) (SMIT)",
+    "lang": "RU",
+    "project_name": "Проект SDR",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенное знание Python и Linux",
+      "Опыт использования: NumPy/ SciPy/ Matplotlib",
+      "Навык цифровой обработки сигналов (DSP)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "linux", "numpy", "scipy", "matplotlib", "git"],
+      "preferred_technologies": ["dsp", "sdr"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик (Microservices/Legendary)",
+    "lang": "RU",
+    "project_name": "Глобальная компания",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт в разработке от 5 лет",
+      "Сильный Python, уверенный async (asyncio)",
+      "Опыт проектирования сервисов в распределённой системе"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "asyncio", "grpc", "kafka", "rabbitmq"],
+      "preferred_technologies": ["grafana", "solid"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Senior QA Fullstack",
+    "lang": "RU/EN",
+    "project_name": "hirix (AI/ML продукты)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт в тестировании web-сервисов и REST API",
+      "Уверенные знания в написании автотестов на Python",
+      "Опыт работы с ML/AI-сервисами"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "rest api", "ml"],
+      "preferred_technologies": ["locust", "jmeter", "chatbots"],
+      "nice_to_have_technologies": ["llm"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Стажёр-разработчик Python",
+    "lang": "RU",
+    "project_name": "ИнфоТеКС (Информационная безопасность)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Знание Python (3.6+)",
+      "Базовые знания ОС семейства Linux"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "linux"],
+      "preferred_technologies": ["fastapi", "django", "flask", "pytest", "git"],
+      "nice_to_have_technologies": ["docker"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Аналитик-разработчик",
+    "lang": "RU",
+    "project_name": "Внедрение аналитических инструментов",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы: 5+ лет в аналитике",
+      "Python (продвинутый уровень), SQL (экспертный уровень)",
+      "Практический опыт применения ML-моделей"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "sql", "postgresql", "clickhouse", "ml", "airflow"],
+      "preferred_technologies": ["power bi", "tableau", "grafana", "bpmn", "uml"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python веб-разработчик / Backend + Web-интерфейсы",
+    "lang": "RU",
+    "project_name": "Электрик-Мастер (Внутренний портал)",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Разрабатывать новые модули внутреннего портала",
+      "Делать удобные веб-интерфейсы",
+      "Работать с базой данных, таблицами, связями"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "sqlalchemy", "postgresql", "html", "javascript", "git"],
+      "preferred_technologies": ["tailwind css", "linux", "jinja2"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Software Developer Python (Remote)",
+    "lang": "RU",
+    "project_name": "Разработка различного ПО",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенное владение Python 3 (FastAPI/ Django)",
+      "Коммерческий опыт разработки от 3-х лет",
+      "Уверенное знание SQL"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "django", "sql", "postgresql", "rabbitmq", "kafka", "git"],
+      "preferred_technologies": ["clickhouse", "redis", "aiohttp", "linux"],
+      "nice_to_have_technologies": ["go"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Senior Python-разработчик (Django/FastAPI/Docker) / Backend-инженер",
+    "lang": "RU",
+    "project_name": "Удаленная работа (ГПХ)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "От 6 лет коммерческой разработки на Python",
+      "Уверенное владение Django и/или FastAPI",
+      "Проектирование схем баз данных (PostgreSQL)"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "django", "fastapi", "postgresql", "docker", "docker compose", "git", "ci/cd"],
+      "preferred_technologies": ["kafka", "rabbitmq", "grpc", "solid"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Web-разработчик (Development company)",
+    "lang": "RU",
+    "project_name": "Стабильная девелоперская компания",
+    "user_projects": [
+      {
+        "project_name": "Monitoring of technical competencies",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{php,mysql,redis,vue,javascript,laravel}"
+      },
+      {
+        "project_name": "Sweet cat shop",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{react,prisma,node.js,typescript,mysql,linux}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Уверенное знание HTML5, CSS3, JavaScript",
+      "Опыт работы с Bitrix",
+      "Опыт или готовность активно использовать AI-инструменты"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["html5", "css3", "javascript", "git", "php", "bitrix"],
+      "preferred_technologies": ["typescript", "figma", "ai tools", "chatgpt"],
+      "nice_to_have_technologies": ["docker"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python Developer (работа в офисе Спб)",
+    "lang": "RU",
+    "project_name": "Холдинг (Интернет-провайдер + Юр. бизнес)",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      },
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Разрабатывать backend на Python",
+      "Проектировать и поддерживать REST API",
+      "Умеешь работать с Claude Code"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "postgresql", "redis", "nginx", "docker", "claude code"],
+      "preferred_technologies": ["amocrm"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Middle Frontend Developer (Data Visualization)",
+    "lang": "RU",
+    "project_name": "Информационно-аналитическая система",
+    "user_projects": [
+      {
+        "project_name": "Road Planner in SoftTelematics",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{javascript,typescript,react,three.js,yarn,effector,chakra ui}"
+      },
+      {
+        "project_name": "Sweet cat shop",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{react,prisma,node.js,typescript,mysql,linux}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Разработка фронтенда и визуализаций на базе React",
+      "Глубокое понимание принципов UI/UX",
+      "Умение работать с дизайн-макетами в Figma"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["react", "javascript", "typescript", "html", "css", "figma", "git"],
+      "preferred_technologies": ["python", "flask", "dash", "plotly", "pandas", "numpy"],
+      "nice_to_have_technologies": ["docker"]
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Программист-разработчик (Python) (3-rd Opinion)",
+    "lang": "RU",
+    "project_name": "Платформа для врачей (ИИ)",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      },
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт коммерческой разработки на Python 1-2 года",
+      "Опыт с FastAPI или FastStream",
+      "Умение в asyncio"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "fastapi", "asyncio", "pytest", "sql", "postgresql", "rabbitmq", "kafka", "docker"],
+      "preferred_technologies": ["sqlalchemy", "celery", "websockets", "dicom"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Python-разработчик (SIEM)",
+    "lang": "RU",
+    "project_name": "SIEM-платформа",
+    "user_projects": [
+      {
+        "project_name": "Midas trading",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,fastapi,mysql,playwright}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт работы с веб-фреймворками (Flask, Fastapi)",
+      "Знание прикладных технологий (Redis, Kafkа)",
+      "Опыт работы с платформами сбора и обработки данных"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["python", "flask", "fastapi", "redis", "kafka", "docker", "nginx", "ci/cd"],
+      "preferred_technologies": ["pytest", "siem"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  },
+  {
+    "name": "Младший продуктовый аналитик",
+    "lang": "RU",
+    "project_name": "Продуктовая аналитика",
+    "user_projects": [
+      {
+        "project_name": "SmartEat",
+        "skills": null,
+        "achievements": null,
+        "technologies": "{python,django,typesense,firebase,openai,ci/cd}"
+      }
+    ],
+    "vacancy_requirements": [
+      "Опыт от 1 года в продуктовой аналитике",
+      "Уверенное владение SQL и Python",
+      "Проведение A/B-тестирования"
+    ],
+    "vacancy_technologies": {
+      "required_technologies": ["sql", "python", "metabase", "gitlab"],
+      "preferred_technologies": ["airflow", "llm", "visiology"],
+      "nice_to_have_technologies": []
+    },
+    "user_first_name": "Ali",
+    "user_last_name": "Baisarov"
+  }
+]
