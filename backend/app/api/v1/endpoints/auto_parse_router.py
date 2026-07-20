@@ -3,9 +3,8 @@ import json
 import logging
 from typing import AsyncIterator
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import desc, select
 
 from app.cache.redis import async_client
@@ -22,10 +21,9 @@ from app.models.parsing_job import ParsingJob
 from app.repository.auto_parse_job_repository import AutoParseJobRepository
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 from app.schemas.api.auto_parse import MarkAppliedRequest, StartParseRequest
+from app.services import VacancyScrapingService
 from app.services.auto_generate import start_batch, stream_gen_events
-from app.services.jwt import JwtService
 from app.services.scraper.hh_scraper import launch_parse_job
-from app.services.scraper.vacancy_scraper import VacancyScrapingService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

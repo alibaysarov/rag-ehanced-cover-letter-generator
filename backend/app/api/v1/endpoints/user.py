@@ -7,8 +7,7 @@ from fastapi.exceptions import HTTPException
 from app.dependencies import get_cv_service, get_user_service
 from app.schemas.general import Option
 from app.schemas.letter import GeneralResponse
-from app.services.cv import CVService
-from app.services.user import UserService
+from app.services import CVService, UserService
 
 logger = logging.getLogger(__name__)
 

@@ -1,19 +1,24 @@
 from typing import Annotated
 
 from fastapi import Depends
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.readers.file import PDFReader
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.repository import AutoParseJobRepository, CVRepository, UserRepository
+from app.repository import AutoParseJobRepository, CVRepository, UserRepository,ProjectRepository
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
-from app.services.cover_letter import CoverLetterService
-from app.services.cv import CVService
-from app.services.jwt import JwtService
-from app.services.letter import LetterService
-from app.services.password import PasswordService
-from app.services.projects import ProjectStorageService, get_projects_service
-from app.services.scraper.vacancy_scraper import VacancyScrapingService
-from app.services.user import UserService
+from app.services import (
+    CoverLetterService,
+    CVService,
+    JwtService,
+    LetterService,
+    PasswordService,
+    ProjectStorageService,
+    VacancyScrapingService,
+    UserService,
+)
+from app.services.projects import get_projects_service
 
 DBSession = Annotated[AsyncSession, Depends(get_db)]
 
@@ -25,6 +30,9 @@ def get_user_repository(session: AsyncSession = Depends(get_db))->UserRepository
 def get_sent_letter_repository(session: AsyncSession = Depends(get_db)) -> SentCoverLetterRepository:
     return SentCoverLetterRepository(session)
 
+
+def get_project_repository(session: AsyncSession = Depends(get_db)) ->ProjectRepository:
+    return ProjectRepository(session)
 
 def get_cv_repository(session: AsyncSession = Depends(get_db)) -> CVRepository:
     """Dependency to get CVRepository with database session"""
@@ -69,6 +77,14 @@ def get_password_service() -> PasswordService:
 
 def get_projects_storage_service() -> ProjectStorageService:
     return get_projects_service()
+
+
+def get_pdf_reader() -> PDFReader:
+    return PDFReader()
+
+
+def get_sentence_splitter() -> SentenceSplitter:
+    return SentenceSplitter(chunk_size=1000, chunk_overlap=0)
 
 
 def get_vacancy_scraping_service() -> VacancyScrapingService:

@@ -3,23 +3,25 @@ import os
 import uuid
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.readers.file import PDFReader
 
-from app.dependencies import get_cv_service, get_projects_storage_service, get_user_repository
+from app.dependencies import (
+    get_cv_service,
+    get_pdf_reader,
+    get_projects_storage_service,
+    get_sentence_splitter,
+    get_user_repository,
+)
 from app.repository.user_repository import UserRepository
 from app.schemas.letter import CVUploadResponse, GeneralResponse
 from app.schemas.llm_outputs.cv_parse import CVImportModel
-from app.services.cv import CVService
+from app.services import CVService, ProjectStorageService
 from app.services.llm.job_requirements import CVImportPrompt
-from app.services.projects import ProjectStorageService
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.readers.file import PDFReader
 from validator.pdf import validate_pdf_and_get_path
 
-_pdf_reader = PDFReader()
-_splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=0)
-
-
 logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 
@@ -30,6 +32,8 @@ async def cv_import(
     source_id: str = Form(None, description="Optional source identifier; generated if not provided"),
     user_repo: UserRepository = Depends(get_user_repository),
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
+    pdf_reader: PDFReader = Depends(get_pdf_reader),
+    sentence_splitter: SentenceSplitter = Depends(get_sentence_splitter),
 ):
     user_email = request.state.user_email
     user = user_repo.get_user_by_email(user_email)
@@ -38,11 +42,11 @@ async def cv_import(
 
     file_data = await validate_pdf_and_get_path(file)
     try:
-        docs = _pdf_reader.load_data(file=file_data["temp_file_path"])
+        docs = pdf_reader.load_data(file=file_data["temp_file_path"])
         texts = [d.text for d in docs if getattr(d, "text", None)]
         chunks = []
         for t in texts:
-            chunks.extend(_splitter.split_text(t))
+            chunks.extend(sentence_splitter.split_text(t))
         cv_text = " ".join(chunks)
 
         cv_import_prompt = CVImportPrompt()

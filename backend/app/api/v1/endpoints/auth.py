@@ -12,8 +12,7 @@ from app.dependencies import (
 )
 from app.helper.user import CurrentUser
 from app.repository.user_repository import UserRepository
-from app.services.jwt import JwtService
-from app.services.password import PasswordService
+from app.services import JwtService, PasswordService
 
 
 # Pydantic models
@@ -65,7 +64,6 @@ async def register(
     user_repo: UserRepo,
     jwt_service: JwtService = Depends(get_jwt_service),
     password_service: PasswordService = Depends(get_password_service),
-    db: DBSession,
 ):
     """Register a new user"""
     # Check if user already exists
@@ -108,7 +106,6 @@ async def login(
     user_repo: UserRepo,
     jwt_service: JwtService = Depends(get_jwt_service),
     password_service: PasswordService = Depends(get_password_service),
-    db: DBSession,
 ):
     """Login user and return JWT tokens"""
     # Find user by email
@@ -230,11 +227,10 @@ async def update_current_user_info(
 
 @router.post("/change-password")
 async def change_password(
+    user:CurrentUser,
     payload: ChangePasswordRequest,
     user_repo: UserRepo,
     password_service: PasswordService = Depends(get_password_service),
-    user:CurrentUser,
-    db: DBSession,
 ):
     """Change current user password"""
 

@@ -2,7 +2,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.services.jwt import JwtService
+from app.services import JwtService
 
 jwt_service = JwtService()
 UNPROTECTED_ROUTES=[

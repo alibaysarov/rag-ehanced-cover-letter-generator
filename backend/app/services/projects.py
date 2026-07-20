@@ -1,14 +1,10 @@
-import uuid
-
-from qdrant_client.models import FieldCondition, Filter, MatchAny, MatchValue
+from qdrant_client.models import FieldCondition, Filter, MatchValue
 
 from app.repository import ProjectRepository
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.embeddings import BaseEmbedder, LocalMistralEmbedder
 from app.storage.repository.qdrant import QdrantStorage, get_projects_storage
-
-_PROJECT_NAMESPACE = uuid.NAMESPACE_DNS
 
 
 class ProjectStorageService:
@@ -35,49 +31,9 @@ class ProjectStorageService:
     async def delete(self,user_id:int,id:int):
         return await self.repository.delete(id,user_id)
     
-    def save_projects(
-        self,
-        user_id: int,
-        source_id: str,
-        projects: list[ProjectFromCVModel],
-    ) -> int:
-        if not projects:
-            self.storage.delete_by_source_id(source_id)
-            return 0
-
-        texts = [self._build_project_text(p) for p in projects]
-        vectors = self.embedder.embed_texts(texts)
-
-        ids = [
-            str(uuid.uuid5(_PROJECT_NAMESPACE, f"{user_id}:{source_id}:{p.name}"))
-            for p in projects
-        ]
-        payloads = [
-            {
-                "user_id": user_id,
-                "source_id": source_id,
-                "project_name": p.name,
-                "website": p.website,
-                "start_month": p.start_month,
-                "start_year": p.start_year,
-                "end_month": p.end_month,
-                "end_year": p.end_year,
-                "currently_working": p.currently_working,
-                "skills": p.skills,
-                "achievements": p.achievements,
-                "technologies": p.technologies,
-                "tech_normalized": [t.lower().strip() for t in p.technologies],
-                "text": texts[i],
-            }
-            for i, p in enumerate(projects)
-        ]
-
-        self.storage.delete_by_source_id(source_id)
-        self.storage.upsert(ids=ids, vectors=vectors, payloads=payloads)
-        return len(projects)
-
-    def list_user_projects(self, user_id: int) -> list[dict]:
-        projects = self.repository.get_by_user(user_id)
+    
+    async def list_user_projects(self, user_id: int) -> list[dict]:
+        projects = await self.repository.get_by_user(user_id)
         result = []
         for project in projects:
             result.append({
@@ -95,27 +51,6 @@ class ProjectStorageService:
                 "technologies": project.technologies
             })
         return result
-        
-    # def list_user_projects(self, user_id: int) -> list[dict]:
-    #     points = self.storage.list_by_user_id(user_id)
-    #     result = []
-    #     for p in points:
-    #         payload = p["payload"]
-    #         result.append({
-    #             "id": p["id"],
-    #             "source_id": payload.get("source_id", ""),
-    #             "name": payload.get("project_name", ""),
-    #             "website": payload.get("website"),
-    #             "start_month": payload.get("start_month"),
-    #             "start_year": payload.get("start_year"),
-    #             "end_month": payload.get("end_month"),
-    #             "end_year": payload.get("end_year"),
-    #             "currently_working": payload.get("currently_working", False),
-    #             "skills": payload.get("skills", []),
-    #             "achievements": payload.get("achievements", []),
-    #             "technologies": payload.get("technologies", []),
-    #         })
-    #     return result
 
     def update_project(
         self,
@@ -170,57 +105,6 @@ class ProjectStorageService:
         self.storage.delete_by_point_id(project_id)
         return True
 
-    def rank_projects(
-        self,
-        user_id: int,
-        vacancy: JobRequirement,
-        top_k: int = 5,
-    ) -> list[dict]:
-        query_text = self._build_vacancy_text(vacancy)
-        query_vector = self.embedder.embed_query(query_text)
-        techs = [i.lower() for i in vacancy.technologies]
-        query_filter = Filter(
-            must=[
-                FieldCondition(
-                    key="user_id",
-                    match=MatchValue(value=user_id),
-                ),
-                FieldCondition(
-                    key="tech_normalized",
-                    match=MatchAny(any=techs)
-                )
-            ]
-        )
-
-        found = []
-        
-        found = self._search(
-            query_vector=query_vector,
-            top_k=top_k,
-            query_filter=query_filter,
-        )
-        if len(found) == 0: 
-            print("using default filtering")
-            backup_query_filter = [
-                Filter(
-                    must=[
-                        FieldCondition(
-                            key="user_id",
-                            match=MatchValue(value=user_id),
-                        )
-                    ]
-                )
-            ]
-            found = self._search(
-                query_vector=query_vector,
-                top_k=top_k,
-                query_filter=backup_query_filter,
-            )
-        
-        ranked = []
-        for payload, score in zip(found["sources"], found.get("scores", [])):
-            ranked.append({"score": score, "payload": payload})
-        return ranked
     
     def rank_projects_overlap(
         self,
@@ -319,13 +203,3 @@ class ProjectStorageService:
             lines.append("Технологии:")
             lines.extend(f"- {t}" for t in all_techs)
         return "\n".join(lines)
-
-
-_projects_service: ProjectStorageService | None = None
-
-
-def get_projects_service() -> ProjectStorageService:
-    global _projects_service
-    if _projects_service is None:
-        _projects_service = ProjectStorageService()
-    return _projects_service

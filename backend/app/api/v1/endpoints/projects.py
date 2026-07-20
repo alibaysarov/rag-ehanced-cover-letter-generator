@@ -9,10 +9,10 @@ from app.api.dto.projects import (
     SaveProjectsResponse,
     UpdateProjectRequest,
 )
+from app.dependencies import get_projects_storage_service
 from app.helper.user import CurrentUser
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
-from app.dependencies import get_projects_storage_service
-from app.services.projects import ProjectStorageService
+from app.services import ProjectStorageService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -37,7 +37,7 @@ async def list_projects(
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
     
-    projects = projects_service.list_user_projects(user_id=user.id)
+    projects =await projects_service.list_user_projects(user_id=user.id)
     return ListProjectsResponse(projects=[ProjectResponse(**p) for p in projects])
 
 

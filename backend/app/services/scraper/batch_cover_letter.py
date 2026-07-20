@@ -10,7 +10,7 @@ from app.database import async_session_maker, engine
 from app.models.auto_parsed_job import AutoParsedJob
 from app.repository import ProjectRepository
 from app.repository.user_repository import UserRepository
-from app.services.cover_letter import CoverLetterService
+from app.services import CoverLetterService
 
 logger = logging.getLogger(__name__)
 

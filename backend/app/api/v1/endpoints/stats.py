@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from app.dependencies import DBSession, get_sent_letter_repository
+from app.dependencies import get_sent_letter_repository
 from app.helper.user import CurrentUser
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 

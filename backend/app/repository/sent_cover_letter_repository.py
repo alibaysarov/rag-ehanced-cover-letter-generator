@@ -2,7 +2,7 @@ import logging
 from datetime import date, datetime
 from typing import Optional
 
-from sqlmodel import Session, col, func, select
+from sqlmodel import col, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.sent_cover_letter import SentCoverLetter

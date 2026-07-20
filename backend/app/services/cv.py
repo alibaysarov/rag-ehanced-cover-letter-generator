@@ -4,7 +4,7 @@ from datetime import datetime
 from qdrant_client.models import PointStruct
 
 from app.repository.cv_repository import CVRepository
-from app.services.pdf import PdfService
+from app.services import PdfService
 from app.storage.repository.qdrant import get_vector_storage
 
 logger = logging.getLogger(__name__)
