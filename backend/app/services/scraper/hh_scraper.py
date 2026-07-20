@@ -5,9 +5,9 @@ from datetime import datetime
 from typing import Optional
 
 from playwright.async_api import Page
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.database import engine
+from app.database import async_session_maker as DbSession
 from app.decorators.time_perf import with_timer
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
@@ -160,13 +160,19 @@ async def _phase2_fetch_details(
         if result is None:
             logger.info(f"vacancy with {vacancy_id} is None")
             return
-        with Session(engine) as session:
-            existing = session.exec(
-                select(AutoParsedJob).where(
-                    AutoParsedJob.user_id == user_id,
-                    AutoParsedJob.vacancy_id == result["vacancy_id"],
+        async with DbSession() as session:
+            existing = (
+                (
+                    await session.execute(
+                        select(AutoParsedJob).where(
+                            AutoParsedJob.user_id == user_id,
+                            AutoParsedJob.vacancy_id == result["vacancy_id"],
+                        )
+                    )
                 )
-            ).first()
+                .scalars()
+                .first()
+            )
             if existing:
                 return
 
@@ -181,11 +187,11 @@ async def _phase2_fetch_details(
             )
             session.add(job_row)
 
-            parsing_job = session.get(ParsingJob, job_id)
+            parsing_job = await session.get(ParsingJob, job_id)
             if parsing_job:
                 parsing_job.saved_count += 1
                 session.add(parsing_job)
-            session.commit()
+            await session.commit()
 
     # return_exceptions=True so one failed vacancy never aborts the whole parse.
     results = await asyncio.gather(
@@ -201,42 +207,42 @@ async def run_parse_job(job_id: int, query: str, user_id: int) -> None:
     """Run a full parse in the background. Progress is persisted to the
     ParsingJob row in the DB; SSE clients read it from there, so the parse is
     fully decoupled from any connected browser and survives page reloads."""
-    with Session(engine) as session:
-        parsing_job = session.get(ParsingJob, job_id)
+    async with DbSession() as session:
+        parsing_job = await session.get(ParsingJob, job_id)
         if parsing_job:
             parsing_job.status = "running"
             session.add(parsing_job)
-            session.commit()
+            await session.commit()
 
     try:
         async with with_timer("browser"):
             vacancy_items = await _get_list(chromium_module.chromium, query, job_id)
-            with Session(engine) as session:
-                parsing_job = session.get(ParsingJob, job_id)
+            async with DbSession() as session:
+                parsing_job = await session.get(ParsingJob, job_id)
                 if parsing_job:
                     parsing_job.total_found = len(vacancy_items)
                     session.add(parsing_job)
-                    session.commit()
+                    await session.commit()
 
             await _phase2_fetch_details(
                 chromium_module.chromium, vacancy_items, job_id, user_id
             )
 
-        with Session(engine) as session:
-            parsing_job = session.get(ParsingJob, job_id)
+        async with DbSession() as session:
+            parsing_job = await session.get(ParsingJob, job_id)
             if parsing_job:
                 parsing_job.status = "done"
                 parsing_job.finished_at = datetime.utcnow()
                 session.add(parsing_job)
-                session.commit()
+                await session.commit()
 
     except Exception as e:
         logger.error(f"[job={job_id}] Parse failed: {e}")
-        with Session(engine) as session:
-            parsing_job = session.get(ParsingJob, job_id)
+        async with DbSession() as session:
+            parsing_job = await session.get(ParsingJob, job_id)
             if parsing_job:
                 parsing_job.status = "failed"
                 parsing_job.error = str(e)
                 parsing_job.finished_at = datetime.utcnow()
                 session.add(parsing_job)
-                session.commit()
+                await session.commit()

@@ -183,38 +183,18 @@ async def start_test_generation(
     if job.status != "done":
         raise HTTPException(status_code=400, detail="Parsing job is not done yet")
 
-    vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
-    start_batch(parsing_job_id, vacancies, user.first_name, user.last_name)
-    return {
-        "status": "started",
-    }
-
-
-# @router.post("/jobs/{parsing_job_id}/generate")
-# async def start_generate(
-#     parsing_job_id: int,
-#     request: Request,
-#     db: Session = Depends(get_db),
-#     user_repo: UserRepository = Depends(get_user_repository),
-# ):
-#     from app.services.scraper.batch_cover_letter import (
-#         mark_generating, get_or_create_gen_progress, launch_batch_generation
-#     )
-
-#     user_id = _get_user_id_from_request(request, user_repo)
-#     job = db.get(ParsingJob, parsing_job_id)
-#     if not job or job.user_id != user_id:
-#         raise HTTPException(status_code=404, detail="Parsing job not found")
-#     if job.status != "done":
-#         raise HTTPException(status_code=400, detail="Parsing job is not done yet")
-
-#     if not mark_generating(parsing_job_id):
-#         raise HTTPException(status_code=409, detail="Generation already in progress")
-
-#     get_or_create_gen_progress(parsing_job_id)
-#     launch_batch_generation(parsing_job_id, user_id)
-
-#     return {"status": "started"}
+    try:
+        vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
+        vacancy_ids: list[int] = [item.id for item in vacancies]
+        start_batch(parsing_job_id, vacancy_ids, user.first_name, user.last_name)
+        return {
+            "status": "started",
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Возникла ошибка попробуйте позже",
+        )
 
 
 @router.get("/jobs/{parsing_job_id}/generate-status")

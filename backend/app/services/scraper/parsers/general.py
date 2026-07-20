@@ -5,7 +5,6 @@ from abc import abstractmethod
 from urllib.parse import urlencode
 
 from playwright.async_api import Page
-from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from tenacity import (
     before_sleep_log,
     retry,
@@ -25,7 +24,7 @@ def async_retry():
     return retry(
         stop=stop_after_attempt(4),
         wait=wait_exponential(multiplier=1, min=1, max=8),
-        retry=retry_if_exception_type(PlaywrightTimeoutError | Exception),
+        retry=retry_if_exception_type(Exception),
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
     )
@@ -40,7 +39,7 @@ class GeneralVacancyParser:
     def __init__(self, name: str, base_url: str, has_pagination: bool):
         self._name = name
         self._base_url = base_url
-        self._has_pagination: str = has_pagination
+        self._has_pagination = has_pagination
 
     def get_name(self) -> str:
         return self._name
@@ -102,7 +101,8 @@ class GeneralVacancyParser:
                 else:
                     return await self._get_vacancies_by_scroll(page=page, text=text)
             except Exception as e:
-                logger.warning(f"Error getting list: {e}")
+                logger.warning(f"Error getting list: {e}", exc_info=True)
+                raise
 
     async def parse_single_vacancy(self, page: Page, vacancy_id) -> SingleVacancy:
 
@@ -113,7 +113,10 @@ class GeneralVacancyParser:
             vacancy = await self._get_result_from_vacancy(page=page)
             return vacancy
         except Exception as e:
-            logger.warning(f"Error getting single vacancy page {vacancy_id} : {e}")
+            logger.warning(
+                f"Error getting single vacancy page {vacancy_id} : {e}", exc_info=True
+            )
+            raise
 
     async def _get_vacancies_by_scroll(self, page, text: str) -> list[Vacancy]:
         try:
@@ -122,7 +125,8 @@ class GeneralVacancyParser:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             return await self._get_results_from_page(page)
         except Exception as e:
-            logger.error(f"Error getting list: {e}")
+            logger.error(f"Error getting list: {e}", exc_info=True)
+            raise
 
     @async_retry()
     async def _get_vacancies_by_page(

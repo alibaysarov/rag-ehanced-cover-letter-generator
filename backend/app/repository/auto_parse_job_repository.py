@@ -21,10 +21,10 @@ class AutoParseJobRepository:
         job = result.one_or_none()
         return job
 
-    async def get_by_job_id(self, job_id: int):
+    async def get_by_job_id(self, job_id: int) -> list[AutoParsedJob]:
         statement = select(AutoParsedJob).where(AutoParsedJob.parsing_job_id == job_id)
         result = await self._session.execute(statement)
-        return list(result.all())
+        return list(result.scalars().all())
 
     async def update_vacancy(
         self, id: int, letter_text: str, is_generated: bool

@@ -2,9 +2,9 @@ import asyncio
 import logging
 from datetime import datetime
 
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import engine
+from app.database import async_session_maker as DbSession
 from app.decorators.time_perf import with_timer
 from app.job_parser.hh_parser import Vacancy
 from app.models.parsing_job import ParsingJob
@@ -30,12 +30,12 @@ class VacancyScrapingService:
         fully decoupled from any connected browser and survives page reloads.
         """
         try:
-            with Session(engine) as session:
-                parsing_job = session.get(ParsingJob, job_id)
+            async with DbSession() as session:
+                parsing_job = await session.get(ParsingJob, job_id)
                 if parsing_job:
                     parsing_job.status = "running"
                     session.add(parsing_job)
-                    session.commit()
+                    await session.commit()
 
             result: list[Vacancy] = []
             async with with_timer("browser"):
@@ -47,13 +47,13 @@ class VacancyScrapingService:
                             chromium_module.chromium, query, job_id
                         )
                         result.extend(vacancy_items)
-                        with Session(engine) as session:
-                            parsing_job = session.get(ParsingJob, job_id)
+                        async with DbSession() as session:
+                            parsing_job = await session.get(ParsingJob, job_id)
                             if parsing_job:
                                 parsing_job.total_found = parsing_job.total_found + len(
                                     vacancy_items
                                 )
-                                session.commit()
+                                await session.commit()
 
                                 results = await asyncio.gather(
                                     *[
@@ -68,7 +68,7 @@ class VacancyScrapingService:
                                     ],
                                     return_exceptions=True,
                                 )
-                                session.commit()
+                                await session.commit()
 
                                 for res in results:
                                     if isinstance(res, Exception):
@@ -81,35 +81,35 @@ class VacancyScrapingService:
                         logger.error(f"[job={job_id}] Parse failed: {e}")
             logger.info(f"total items: {len(result)} {result}")
 
-            with Session(engine) as session:
-                parsing_job = session.get(ParsingJob, job_id)
+            async with DbSession() as session:
+                parsing_job = await session.get(ParsingJob, job_id)
                 if parsing_job:
                     parsing_job.status = "done"
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
-                    session.commit()
+                    await session.commit()
 
         except Exception as e:
             logger.error(f"[job={job_id}] Parse failed: {e}")
-            with Session(engine) as session:
-                parsing_job = session.get(ParsingJob, job_id)
+            async with DbSession() as session:
+                parsing_job = await session.get(ParsingJob, job_id)
                 if parsing_job:
                     parsing_job.status = "failed"
                     parsing_job.error = str(e)
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
-                    session.commit()
+                    await session.commit()
 
     async def _parse_single_vacancy(
         self,
         semaphore: asyncio.Semaphore,
-        session: Session,
+        session: AsyncSession,
         parser: GeneralVacancyParser,
         vacancy: Vacancy,
         job_id: int,
     ):
         async with semaphore:
-            parsing_job = session.get(ParsingJob, job_id)
+            parsing_job = await session.get(ParsingJob, job_id)
             page = await chromium_module.chromium.new_page()
             try:
                 item = await parser.parse_single_vacancy(
