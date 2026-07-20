@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from app.cache import redis as redis_db
 from app.dependencies import get_projects_storage_service
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services import ProjectStorageService
 from app.services.llm.agents.tools.fetch_url import parse_hh

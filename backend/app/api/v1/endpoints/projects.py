@@ -10,7 +10,7 @@ from app.api.dto.projects import (
     UpdateProjectRequest,
 )
 from app.dependencies import get_projects_storage_service
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
 from app.services import ProjectStorageService
 

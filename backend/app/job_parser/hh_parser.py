@@ -71,6 +71,7 @@ class AutoParserHH:
 
         except Exception as e:
             logger.error(f"Error getting list: {e}")
+            return result
 
     async def _scroll_page(self, page):
         await page.evaluate("""

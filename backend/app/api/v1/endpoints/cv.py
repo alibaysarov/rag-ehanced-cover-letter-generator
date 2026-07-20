@@ -11,10 +11,9 @@ from app.dependencies import (
     get_pdf_reader,
     get_projects_storage_service,
     get_sentence_splitter,
-    get_user_repository,
 )
-from app.repository.user_repository import UserRepository
-from app.schemas.letter import CVUploadResponse, GeneralResponse
+from app.helper import CurrentUser
+from app.schemas.letter import CVUploadResponse
 from app.schemas.llm_outputs.cv_parse import CVImportModel
 from app.services import CVService, ProjectStorageService
 from app.services.llm.job_requirements import CVImportPrompt
@@ -27,21 +26,15 @@ router = APIRouter()
 
 @router.post("/import")
 async def cv_import(
-    request: Request,
+    user: CurrentUser,
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
     source_id: str = Form(
         None, description="Optional source identifier; generated if not provided"
     ),
-    user_repo: UserRepository = Depends(get_user_repository),
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
     pdf_reader: PDFReader = Depends(get_pdf_reader),
     sentence_splitter: SentenceSplitter = Depends(get_sentence_splitter),
 ):
-    user_email = request.state.user_email
-    user = user_repo.get_user_by_email(user_email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
     file_data = await validate_pdf_and_get_path(file)
     try:
         docs = pdf_reader.load_data(file=file_data["temp_file_path"])
@@ -86,7 +79,7 @@ async def update_cv(
             cv_id=cv_id,
             source_id=source_id,
             pdf_path=file_data["temp_file_path"],
-            filename=file.filename,
+            filename=file.filename or "",
             original_filename=file.filename,
             file_size=len(file_data["file_content"]),
             content_type=file.content_type or "application/pdf",
@@ -117,9 +110,7 @@ async def delete_cv(
     """Delete CV by id with rollback support."""
     try:
         await cv_service.delete_cv(cv_id)
-        return GeneralResponse(
-            success=True, message=f"CV with id {cv_id} deleted successfully"
-        )
+        return {"message": f"CV with id {cv_id} deleted successfully"}
     except Exception as e:
         logging.error("Error retrieving CVs", exc_info=True)
         raise HTTPException(status_code=500, detail="Error retrieving CVs")

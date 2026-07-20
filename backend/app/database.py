@@ -1,5 +1,5 @@
 import logging
-from typing import Generator
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlmodel import text
@@ -30,7 +30,7 @@ async def check_db_connection() -> bool:
         return False
 
 
-async def get_db() -> Generator[AsyncSession, None, None]:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Dependency to get database session"""
     async with async_session_maker() as session:
         try:

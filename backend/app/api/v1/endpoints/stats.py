@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.dependencies import get_sent_letter_repository
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 
 logger = logging.getLogger(__name__)

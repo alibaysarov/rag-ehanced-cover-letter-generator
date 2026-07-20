@@ -10,7 +10,7 @@ from app.dependencies import (
     get_password_service,
     get_user_repository,
 )
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.repository.user_repository import UserRepository
 from app.services import JwtService, PasswordService
 

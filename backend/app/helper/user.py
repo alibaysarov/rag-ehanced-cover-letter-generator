@@ -4,7 +4,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.dependencies import get_jwt_service, get_user_repository
-from app.models.user import User
 from app.repository.user_repository import UserRepository
 from app.schemas.api.user import AuthenticatedUser
 from app.services import JwtService
@@ -16,7 +15,7 @@ async def get_current_user(
     auth_credentials: HTTPAuthorizationCredentials = Depends(security),
     jwt_service: JwtService = Depends(get_jwt_service),
     user_repo: UserRepository = Depends(get_user_repository),
-) -> User:
+) -> AuthenticatedUser:
     """Get current user from JWT token in Authorization header"""
     try:
         if auth_credentials is None:

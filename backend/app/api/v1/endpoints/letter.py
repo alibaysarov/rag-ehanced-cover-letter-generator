@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import HttpUrl
 
 from app.dependencies import get_cover_letter_service, get_letter_service
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.schemas.letter import CVUploadResponse, LetterResponse
 from app.services import LetterService
 

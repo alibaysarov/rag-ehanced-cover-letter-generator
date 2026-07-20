@@ -15,7 +15,7 @@ from app.dependencies import (
     get_sent_letter_repository,
     get_vacancy_scraping_service,
 )
-from app.helper.user import CurrentUser
+from app.helper import CurrentUser
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.repository.auto_parse_job_repository import AutoParseJobRepository
