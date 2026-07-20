@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import async_session_maker as DbSession
 from app.decorators.time_perf import with_timer
 from app.job_parser.hh_parser import Vacancy
+from app.models import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.pw_instances import chromium as chromium_module
 from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
@@ -23,7 +24,7 @@ class VacancyScrapingService:
             GeekJobVacancyParser(),
         ]
 
-    async def run_parse_job(self, job_id: int, query: str, user_id: int) -> None:
+    async def run_parse_job(self, job_id: int, query: str, user_id: int) -> int | None:
         """
         Run a full parse in the background. Progress is persisted to the
         ParsingJob row in the DB; SSE clients read it from there, so the parse is
@@ -57,14 +58,15 @@ class VacancyScrapingService:
 
                                 results = await asyncio.gather(
                                     *[
-                                        self._parse_single_vacancy(
+                                        self.__parse_single_vacancy(
                                             semaphore,
                                             session,
                                             parser,
                                             vacancy=vacancy,
                                             job_id=job_id,
+                                            user_id=user_id,
                                         )
-                                        for vacancy in vacancy_items[0:10]
+                                        for vacancy in vacancy_items
                                     ],
                                     return_exceptions=True,
                                 )
@@ -76,7 +78,7 @@ class VacancyScrapingService:
                                             f"[job={job_id}] Vacancy processing error: {res}"
                                         )
                                     else:
-                                        logger.info("item completed", res)
+                                        logger.info("item completed")
                     except Exception as e:
                         logger.error(f"[job={job_id}] Parse failed: {e}")
             logger.info(f"total items: {len(result)} {result}")
@@ -88,7 +90,7 @@ class VacancyScrapingService:
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
                     await session.commit()
-
+            return parsing_job.id
         except Exception as e:
             logger.error(f"[job={job_id}] Parse failed: {e}")
             async with DbSession() as session:
@@ -99,14 +101,16 @@ class VacancyScrapingService:
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
                     await session.commit()
+                    return parsing_job.id
 
-    async def _parse_single_vacancy(
+    async def __parse_single_vacancy(
         self,
         semaphore: asyncio.Semaphore,
         session: AsyncSession,
         parser: GeneralVacancyParser,
         vacancy: Vacancy,
         job_id: int,
+        user_id: int,
     ):
         async with semaphore:
             parsing_job = await session.get(ParsingJob, job_id)
@@ -115,7 +119,23 @@ class VacancyScrapingService:
                 item = await parser.parse_single_vacancy(
                     page, vacancy_id=vacancy.vacancy_id
                 )
+                url = parser.get_single_url(vacancy.vacancy_id)
+
                 parsing_job.saved_count += 1
+                auto_parsed_job = AutoParsedJob(
+                    cover_letter_text="",
+                    is_applied=False,
+                    job_text=item.job_text,
+                    job_title=item.job_title,
+                    vacancy_id=vacancy.vacancy_id,
+                    parsing_job_id=parsing_job.id,
+                    web_site="",
+                    user_id=user_id,
+                    url=url,
+                    is_viewed=False,
+                    is_generated=True,
+                )
+                session.add(auto_parsed_job)
                 session.add(parsing_job)
                 return item
             except Exception as e:

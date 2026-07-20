@@ -23,13 +23,12 @@ from app.repository.sent_cover_letter_repository import SentCoverLetterRepositor
 from app.schemas.api.auto_parse import MarkAppliedRequest, StartParseRequest
 from app.services import VacancyScrapingService
 from app.services.auto_generate import start_batch, stream_gen_events
-from app.services.scraper.hh_scraper import launch_parse_job
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/start/test")
+@router.post("/start")
 async def start_parse_test(
     user: CurrentUser,
     body: StartParseRequest,
@@ -49,35 +48,36 @@ async def start_parse_test(
             detail="Возникла ошибка попробуйте позже",
         )
 
+    # TODO:Сделать выполнение в фоне (RabbitMQ+ разделение на воркеры + sse/websocket)
     await vacancy_scraping_service.run_parse_job(
         parsing_job.id, query=body.query, user_id=user.id
     )
 
-    return {"status": "Success"}
-
-
-@router.post("/start")
-async def start_parse(
-    user: CurrentUser,
-    body: StartParseRequest,
-    request: Request,
-    db: DBSession,
-):
-    parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
-    db.add(parsing_job)
-    await db.commit()
-    await db.refresh(parsing_job)
-
-    if parsing_job.id is None:
-        logger.error("failed to create parsing job")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Возникла ошибка попробуйте позже",
-        )
-
-    launch_parse_job(parsing_job.id, body.query, user.id)
-
     return {"parsing_job_id": parsing_job.id}
+
+
+# @router.post("/start")
+# async def start_parse(
+#     user: CurrentUser,
+#     body: StartParseRequest,
+#     request: Request,
+#     db: DBSession,
+# ):
+#     parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
+#     db.add(parsing_job)
+#     await db.commit()
+#     await db.refresh(parsing_job)
+
+#     if parsing_job.id is None:
+#         logger.error("failed to create parsing job")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Возникла ошибка попробуйте позже",
+#         )
+
+#     launch_parse_job(parsing_job.id, body.query, user.id)
+
+#     return {"parsing_job_id": parsing_job.id}
 
 
 @router.get("/status/{parsing_job_id}")
@@ -108,7 +108,9 @@ async def get_vacancies(
         .where(AutoParsedJob.parsing_job_id == parsing_job_id)
         .order_by(AutoParsedJob.id)
     )
-    return result.scalars().all()
+    vacancies = result.scalars().all()
+    print("List \n", vacancies)
+    return list(vacancies)
 
 
 @router.patch("/vacancies/{vacancy_id}/applied")
