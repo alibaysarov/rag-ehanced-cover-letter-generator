@@ -1,10 +1,12 @@
-import uuid
-from app.cache import sync_client
-from app.tasks import single_generation
-from app.cache.redis import async_client 
-from typing import AsyncIterator
-from fastapi import Request
 import json
+from typing import AsyncIterator
+
+from fastapi import Request
+
+from app.cache import sync_client
+from app.cache.redis import async_client
+from app.tasks import single_generation
+
 
 def start_batch(parsing_job_id:int,vacancies:list[int], first_name, last_name):
     

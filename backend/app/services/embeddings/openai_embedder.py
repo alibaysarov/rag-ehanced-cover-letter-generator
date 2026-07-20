@@ -1,4 +1,5 @@
 from openai import OpenAI
+
 from app.services.embeddings.base import BaseEmbedder
 
 _MODEL = "text-embedding-3-large"

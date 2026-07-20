@@ -1,24 +1,23 @@
-from abc import abstractmethod
-from urllib.parse import quote_plus
-from app.job_parser.hh_parser import Vacancy
-from app.decorators.browser import simple_page
-from app.schemas.vacancy.single_vacancy import SingleVacancy
-from app.helper.flatten_list import flatten_list
-from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
-
-
-import os
 import asyncio
 import logging
-from urllib.parse import urlencode, urljoin
+import os
+from abc import abstractmethod
+from urllib.parse import urlencode
 
+from playwright.async_api import Page
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from tenacity import (
+    before_sleep_log,
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
-    before_sleep_log,
 )
+
+from app.decorators.browser import simple_page
+from app.helper.flatten_list import flatten_list
+from app.job_parser.hh_parser import Vacancy
+from app.schemas.vacancy.single_vacancy import SingleVacancy
 
 
 def async_retry():

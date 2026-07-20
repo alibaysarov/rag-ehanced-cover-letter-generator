@@ -1,8 +1,7 @@
-from pydantic import BaseModel, HttpUrl, Field
 from typing import Optional
+
 from fastapi import UploadFile
-
-
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class LetterFromUrlRequest(BaseModel):

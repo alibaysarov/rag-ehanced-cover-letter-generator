@@ -1,14 +1,16 @@
-from openai import OpenAI, AsyncOpenAI
+from typing import AsyncGenerator
+
+from openai import AsyncOpenAI, OpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.pdf import PdfService
-from app.schemas.rag import RAGSearchResult
-from app.storage.repository.qdrant import QdrantStorage
+
 from app.repository.cv_repository import CVRepository
 from app.repository.letter_repository import LetterRepository
-from typing import AsyncGenerator
-from app.services.llm.open_ai import OpenAiClient
-from app.services.llm.mistral import MistralClient
+from app.schemas.rag import RAGSearchResult
 from app.services.llm.agents.job_requirement import JobRequirementAgent
+from app.services.llm.mistral import MistralClient
+from app.services.pdf import PdfService
+from app.storage.repository.qdrant import QdrantStorage
+
 
 class LetterService():
     def __init__(self, session: AsyncSession = None):

@@ -1,7 +1,14 @@
 import logging
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, PointIdsList
+from qdrant_client.models import (
+    Distance,
+    Filter,
+    PointIdsList,
+    PointStruct,
+    VectorParams,
+)
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -78,7 +85,7 @@ class QdrantStorage():
     
     def delete_by_source_id(self, source_id: int):
         """Delete all points with given source_id"""
-        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
         
         self.client.delete(
             collection_name=self.collection,
@@ -94,7 +101,7 @@ class QdrantStorage():
 
     def get_points_by_source_id(self, source_id: int):
         """Get all points for potential rollback"""
-        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
 
         results = self.client.scroll(
             collection_name=self.collection,
@@ -113,7 +120,7 @@ class QdrantStorage():
         return results[0]
 
     def list_by_user_id(self, user_id: int) -> list[dict]:
-        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
 
         points, _ = self.client.scroll(
             collection_name=self.collection,

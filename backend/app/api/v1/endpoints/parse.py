@@ -1,15 +1,16 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from app.helper.user import get_user_repository
-from app.repository.user_repository import UserRepository
+from app.cache import redis as redis_db
+from app.helper.user import CurrentUser
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.services.llm.job_requirements import JobParsePrompt
-from app.services.projects import ProjectStorageService, get_projects_service
-from app.cache import redis as redis_db
+from app.dependencies import get_projects_storage_service
+from app.services.projects import ProjectStorageService
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -18,21 +19,15 @@ class ParseDto(BaseModel):
     url: str
 
 
-def get_projects_storage_service() -> ProjectStorageService:
-    return get_projects_service()
 
 
 @router.post("")
 async def parse(
+    user:CurrentUser,
     body: ParseDto,
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
-    user_email = request.state.user_email
-    user = user_repo.get_user_by_email(user_email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    
     cached = await redis_db.redis_client.get(body.url)
     if cached is None:
         text = await parse_hh(body.url)

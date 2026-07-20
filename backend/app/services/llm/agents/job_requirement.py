@@ -1,8 +1,9 @@
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel,Field
-from .base import BaseAiAgent
+from pydantic import BaseModel, Field
+
 from ..mistral import MistralClient
-from .tools.fetch_url import fetch_webpage,parse_hh
+from .base import BaseAiAgent
+from .tools.fetch_url import parse_hh
 
 
 class JobRequirements(BaseModel):

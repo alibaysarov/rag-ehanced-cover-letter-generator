@@ -4,38 +4,16 @@ from typing import List
 from fastapi import APIRouter, Depends, Request
 from fastapi.exceptions import HTTPException
 
-from app.database import get_db
-from app.helper.user import get_user_repository
-from app.repository.user_repository import UserRepository
-from app.services.user import UserService
-from sqlalchemy.ext.asyncio import AsyncSession
-
-
-from app.repository.cv_repository import CVRepository
-from app.services.cv import CVService
+from app.dependencies import get_cv_service, get_user_service
 from app.schemas.general import Option
 from app.schemas.letter import GeneralResponse
+from app.services.cv import CVService
+from app.services.user import UserService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-def get_user_service(
-    user_repo: UserRepository = Depends(get_user_repository)
-) -> UserService:
-    """Dependency to get UserService instance with database session"""
-    return UserService(repo=user_repo)
-
-
-def get_cv_repository(session: AsyncSession = Depends(get_db)) -> CVRepository:
-    """Dependency to get CVRepository with database session"""
-    return CVRepository(session)
-
-def get_cv_service(
-    cv_repo: CVRepository = Depends(get_cv_repository)
-) -> CVService:
-    """Dependency to get CVService instance with database session"""
-    return CVService(repo=cv_repo)
 
 
 @router.get("/cvs")

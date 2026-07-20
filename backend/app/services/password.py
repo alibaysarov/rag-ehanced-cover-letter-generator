@@ -1,6 +1,4 @@
 # from app.models.user import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.security import OAuth2PasswordBearer
 
 from passlib.context import CryptContext
 

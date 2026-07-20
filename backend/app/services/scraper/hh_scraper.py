@@ -1,23 +1,17 @@
 import asyncio
 import logging
 import os
-import random
-import re
-import time
 from datetime import datetime
 from typing import Optional
-from urllib.parse import quote_plus
 
-from playwright.async_api import async_playwright
+from playwright.async_api import Page
 from sqlmodel import Session, select
 
 from app.database import engine
+from app.decorators.time_perf import with_timer
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
-from app.decorators.time_perf import time_performance,with_timer
-from playwright.async_api import Page
 from app.pw_instances import chromium as chromium_module
-
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +45,6 @@ async def _block_resources(route, request):
 
 
 from app.job_parser.hh_parser import AutoParserHH
-
 
 hh_parser = AutoParserHH()
 

@@ -2,26 +2,22 @@ import logging
 import os
 import uuid
 
-from fastapi import APIRouter, Depends, File, Form, Request, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.readers.file import PDFReader
 
-from app.api.v1.endpoints.user import get_cv_service
-from app.services.cv import CVService
+from app.dependencies import get_cv_service, get_projects_storage_service, get_user_repository
+from app.repository.user_repository import UserRepository
 from app.schemas.letter import CVUploadResponse, GeneralResponse
 from app.schemas.llm_outputs.cv_parse import CVImportModel
+from app.services.cv import CVService
 from app.services.llm.job_requirements import CVImportPrompt
-from app.services.projects import ProjectStorageService, get_projects_service
-from app.helper.user import get_user_repository
-from app.repository.user_repository import UserRepository
+from app.services.projects import ProjectStorageService
 from validator.pdf import validate_pdf_and_get_path
 
 _pdf_reader = PDFReader()
 _splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=0)
 
-
-def get_projects_storage_service() -> ProjectStorageService:
-    return get_projects_service()
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -54,7 +50,7 @@ async def cv_import(
         result: CVImportModel = chain.invoke({"cv_text": cv_text})
 
         effective_source_id = source_id or str(uuid.uuid4())
-        saved = projects_service.create_many(
+        saved = await projects_service.create_many(
             user_id=user.id,
             projects=result.projects,
         )

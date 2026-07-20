@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import letter, auth, user, cv, projects, parse
-from app.api.v1.endpoints.stats import router as stats_router
+
+from app.api.v1.endpoints import auth, cv, letter, parse, projects, user
 from app.api.v1.endpoints.auto_parse_router import router as auto_parse_router
+from app.api.v1.endpoints.stats import router as stats_router
 
 api_router = APIRouter()
 

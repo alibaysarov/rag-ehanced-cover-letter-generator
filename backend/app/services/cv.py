@@ -1,13 +1,12 @@
 import logging
 from datetime import datetime
 
-from requests import session
-from app.repository.cv_repository import CVRepository
-from app.storage.repository.qdrant import get_vector_storage
 from qdrant_client.models import PointStruct
 
+from app.repository.cv_repository import CVRepository
 from app.services.pdf import PdfService
-from pydantic import BaseModel
+from app.storage.repository.qdrant import get_vector_storage
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,8 +1,10 @@
-from app.services.llm.job_items import CoverLetterPrompt
+import json
+import os
+
+from backend.app.services.llm.cover_letter_prompt import CoverLetterPrompt
 
 from app.decorators.time_perf import time_performance
-import os
-import json
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 test_file_path = os.path.join(BASE_DIR, "vacancy_dataset.json")
 

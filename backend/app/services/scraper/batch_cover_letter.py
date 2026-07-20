@@ -6,8 +6,9 @@ from typing import AsyncIterator
 
 from sqlmodel import Session, select
 
-from app.database import engine
+from app.database import async_session_maker, engine
 from app.models.auto_parsed_job import AutoParsedJob
+from app.repository import ProjectRepository
 from app.repository.user_repository import UserRepository
 from app.services.cover_letter import CoverLetterService
 
@@ -90,9 +91,13 @@ async def _generate_one(
     semaphore = _get_gpu_semaphore()
     async with semaphore:
         try:
-            with Session(engine) as db:
+            async with async_session_maker() as db:
                 user_repo = UserRepository(db)
-                service = CoverLetterService(user_repo)
+                project_repository = ProjectRepository(db)
+                service = CoverLetterService(
+                    user_repo=user_repo,
+                    project_repository=project_repository
+                )
 
                 full_text = ""
                 async for delta in service.stream_by_text(job_title, job_text, user_id):

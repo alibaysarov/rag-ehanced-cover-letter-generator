@@ -1,14 +1,8 @@
-import os
-
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
-from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel, Field
+
 from .general import GeneralLLMClient
-from .qwen import QwenClient
-from pydantic import BaseModel,Field
-
-_MODEL="qwen2.5:7b"
-
+from .models.ollama import OllamaModel
 
 # "Добрый день меня заинтересовала ваша вакансия. Думаю мой релевантный опыт подойдет под ваши требования и нужды."
 
@@ -53,16 +47,14 @@ class CoverLetterResult(BaseModel):
     content:str = Field(...,description="Текст письма")
 
 
-# _MODEL="qwen3:1.7b"
+
 _MODEL="qwen2.5:7b"
-# _MODEL="qwen3.5:4b"
-class CoverLetterPrompt(QwenClient):
+class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
 
     def __init__(self):
-        base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
         
-        model = ChatOllama(model=_MODEL,num_ctx=8192,num_predict=1024, temperature=0.1,reasoning=False, base_url=base_url)
-        model = model.with_structured_output(CoverLetterResult)
+        model = OllamaModel(model=_MODEL,num_ctx=8192,num_predict=1024, temperature=0.1,reasoning=False)
+        super().__init__(model.model)
         self.model = model
     def get_schema(self):
         return CoverLetterResult

@@ -1,16 +1,18 @@
 # repository/user_repository.py
-from sqlmodel import Session, select
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
 from app.models.user import User
 
 
 class UserRepository:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, session: AsyncSession):
+        self._session:AsyncSession = session
 
-    def create_user(
+    async def create_user(
         self, 
         email: str, 
         password_hash: str, 
@@ -24,23 +26,25 @@ class UserRepository:
             first_name=first_name,
             last_name=last_name
         )
-        self.session.add(user)
-        self.session.commit()
-        self.session.refresh(user)
+        self._session.add(user)
+        await self._session.commit()
+        await self._session.refresh(user)
         return user
 
-    def get_user_by_email(self, email: str) -> Optional[User]:
+    async def get_user_by_email(self, email: str) -> Optional[User]:
         """Get user by email"""
         statement = select(User).where(User.email == email)
-        return self.session.exec(statement).first()
+        result = await self._session.execute(statement)
+        
+        return result.scalar_one_or_none()
 
-    def get_user_by_id(self, user_id: int) -> Optional[User]:
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
         """Get user by ID"""
-        return self.session.get(User, user_id)
+        return await self._session.get(User, user_id)
 
-    def update_user(self, user_id: int, **kwargs) -> Optional[User]:
+    async def update_user(self, user_id: int, **kwargs) -> Optional[User]:
         """Update user fields"""
-        user = self.get_user_by_id(user_id)
+        user = await self.get_user_by_id(user_id)
         if user:
             for key, value in kwargs.items():
                 if hasattr(user, key):
@@ -49,39 +53,17 @@ class UserRepository:
             # Update timestamp
             user.updated_at = datetime.utcnow()
             
-            self.session.add(user)
-            self.session.commit()
-            self.session.refresh(user)
+            self._session.add(user)
+            await self._session.commit()
+            await self._session.refresh(user)
             return user
         return None
 
-    def delete_user(self, user_id: int) -> bool:
+    async def delete_user(self, user_id: int) -> bool:
         """Delete user"""
-        user = self.get_user_by_id(user_id)
+        user =await self.get_user_by_id(user_id)
         if user:
-            self.session.delete(user)
-            self.session.commit()
+            await self._session.delete(user)
+            await self._session.commit()
             return True
         return False
-
-    def deactivate_user(self, user_id: int) -> Optional[User]:
-        """Deactivate user account"""
-        return self.update_user(user_id, is_active=False)
-
-    def activate_user(self, user_id: int) -> Optional[User]:
-        """Activate user account"""
-        return self.update_user(user_id, is_active=True)
-
-    def verify_user(self, user_id: int) -> Optional[User]:
-        """Mark user as verified"""
-        return self.update_user(user_id, is_verified=True)
-
-    def get_all_users(self, skip: int = 0, limit: int = 100) -> list[User]:
-        """Get all users with pagination"""
-        statement = select(User).offset(skip).limit(limit)
-        return self.session.exec(statement).all()
-
-    def get_active_users(self, skip: int = 0, limit: int = 100) -> list[User]:
-        """Get all active users"""
-        statement = select(User).where(User.is_active == True).offset(skip).limit(limit)
-        return self.session.exec(statement).all()

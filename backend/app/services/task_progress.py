@@ -1,4 +1,5 @@
 import json
+
 import redis as sync_redis
 
 REDIS_URL = "redis://:pass@redis:6379/0"

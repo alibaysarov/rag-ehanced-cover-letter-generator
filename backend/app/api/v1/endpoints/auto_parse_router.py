@@ -3,69 +3,50 @@ import json
 import logging
 from typing import AsyncIterator
 
-
-from app.services.auto_generate import start_batch,stream_gen_events
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from sqlmodel import Session, select, desc
-from app.database import engine, get_db
-from app.helper.user import get_user_repository, CurrentUser
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import desc, select
+
+from app.cache.redis import async_client
+from app.database import async_session_maker
+from app.dependencies import (
+    DBSession,
+    get_auto_parse_repository,
+    get_sent_letter_repository,
+    get_vacancy_scraping_service,
+)
+from app.helper.user import CurrentUser
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
-from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
-from app.repository.user_repository import UserRepository
 from app.repository.auto_parse_job_repository import AutoParseJobRepository
-from app.dependencies import get_auto_parse_repository,get_vacancy_scraping_service
+from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
+from app.schemas.api.auto_parse import MarkAppliedRequest, StartParseRequest
+from app.services.auto_generate import start_batch, stream_gen_events
 from app.services.jwt import JwtService
 from app.services.scraper.hh_scraper import launch_parse_job
-from app.models import User
 from app.services.scraper.vacancy_scraper import VacancyScrapingService
-from app.cache.redis import async_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-jwt_service = JwtService()
-
-
-def _get_user_id_from_request(request: Request, user_repo: UserRepository) -> int:
-    email = request.state.user_email
-    user = user_repo.get_user_by_email(email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user.id
-
-def _get_user_from_request(request: Request, user_repo: UserRepository) -> User:
-    email = request.state.user_email
-    user = user_repo.get_user_by_email(email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
-class StartParseRequest(BaseModel):
-    query: str
-
-
-class MarkAppliedRequest(BaseModel):
-    letter_text: str = ""
 
 
 @router.post("/start/test")
-async def start_parse(
+async def start_parse_test(
+    user: CurrentUser,
     body: StartParseRequest,
-    request: Request,
-    vacancy_scraping_service:VacancyScrapingService = Depends(get_vacancy_scraping_service),
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
+    vacancy_scraping_service: VacancyScrapingService = Depends(get_vacancy_scraping_service),
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    
-    parsing_job = ParsingJob(user_id=user_id, query=body.query, status="pending")
+    parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
     db.add(parsing_job)
-    db.commit()
-    db.refresh(parsing_job)
-    await vacancy_scraping_service.run_parse_job(parsing_job.id,query=body.query,user_id=user_id)
+    await db.commit()
+    await db.refresh(parsing_job)
+    if parsing_job.id is None:
+        logger.error("failed to create parsing job")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Возникла ошибка попробуйте позже")
+    
+    await vacancy_scraping_service.run_parse_job(parsing_job.id,query=body.query,user_id=user.id)
     
     return {
         "status":"Success"
@@ -73,140 +54,130 @@ async def start_parse(
     
 @router.post("/start")
 async def start_parse(
+    user: CurrentUser,
     body: StartParseRequest,
     request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-
-    parsing_job = ParsingJob(user_id=user_id, query=body.query, status="pending")
+    parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
     db.add(parsing_job)
-    db.commit()
-    db.refresh(parsing_job)
+    await db.commit()
+    await db.refresh(parsing_job)
+    
+    if parsing_job.id is None:
+        logger.error("failed to create parsing job")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Возникла ошибка попробуйте позже")
 
-    launch_parse_job(parsing_job.id, body.query, user_id)
+    launch_parse_job(parsing_job.id, body.query, user.id)
 
     return {"parsing_job_id": parsing_job.id}
 
 
 @router.get("/status/{parsing_job_id}")
-def get_status(
+async def get_status(
+    user: CurrentUser,
     parsing_job_id: int,
     request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    job = db.get(ParsingJob, parsing_job_id)
-    if not job or job.user_id != user_id:
+    job = await db.get(ParsingJob, parsing_job_id)
+    if not job or job.user_id != user.id:
         raise HTTPException(status_code=404, detail="Parsing job not found")
     return job
 
 
 @router.get("/jobs/{parsing_job_id}/vacancies")
-def get_vacancies(
+async def get_vacancies(
+    user: CurrentUser,
     parsing_job_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    job = db.get(ParsingJob, parsing_job_id)
-    if not job or job.user_id != user_id:
+    job = await db.get(ParsingJob, parsing_job_id)
+    if not job or job.user_id != user.id:
         raise HTTPException(status_code=404, detail="Parsing job not found")
 
-    vacancies = db.exec(
+    result = await db.execute(
         select(AutoParsedJob)
         .where(AutoParsedJob.parsing_job_id == parsing_job_id)
         .order_by(AutoParsedJob.id)
-    ).all()
-    return vacancies
+    )
+    return result.scalars().all()
 
 
 @router.patch("/vacancies/{vacancy_id}/applied")
-def mark_applied(
+async def mark_applied(
+    user: CurrentUser,
     vacancy_id: int,
     body: MarkAppliedRequest,
     request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    vacancy = db.get(AutoParsedJob, vacancy_id)
-    if not vacancy or vacancy.user_id != user_id:
+    vacancy = await db.get(AutoParsedJob, vacancy_id)
+    if not vacancy or vacancy.user_id != user.id:
         raise HTTPException(status_code=404, detail="Vacancy not found")
 
     vacancy.is_applied = True
     db.add(vacancy)
 
-    sent_repo = SentCoverLetterRepository(db)
-    sent_repo.create(
-        user_id=user_id,
+    await repo.create(
+        user_id=user.id,
         url=vacancy.url,
         job_name=vacancy.job_title,
         letter_text=body.letter_text or vacancy.job_title,
     )
 
-    db.commit()
-    db.refresh(vacancy)
+    await db.commit()
+    await db.refresh(vacancy)
     return vacancy
 
 
 @router.patch("/vacancies/{vacancy_id}/viewed")
-def mark_viewed(
+async def mark_viewed(
+    user: CurrentUser,
     vacancy_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    vacancy = db.get(AutoParsedJob, vacancy_id)
-    if not vacancy or vacancy.user_id != user_id:
+    vacancy = await db.get(AutoParsedJob, vacancy_id)
+    if not vacancy or vacancy.user_id != user.id:
         raise HTTPException(status_code=404, detail="Vacancy not found")
 
     if not vacancy.is_viewed:
         vacancy.is_viewed = True
         db.add(vacancy)
-        db.commit()
-        db.refresh(vacancy)
+        await db.commit()
+        await db.refresh(vacancy)
     return vacancy
 
 
 @router.get("/history")
-def get_history(
-    request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
+async def get_history(
+    user: CurrentUser,
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    jobs = db.exec(
+    result = await db.execute(
         select(ParsingJob)
-        .where(ParsingJob.user_id == user_id)
+        .where(ParsingJob.user_id == user.id)
         .order_by(desc(ParsingJob.id))
-    ).all()
-    return jobs
+    )
+    return result.scalars().all()
 
 
 @router.post("/jobs/{parsing_job_id}/generate")
 async def start_test_generation(
-    parsing_job_id:int,
-    request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository),
-    auto_parse_job_repo:AutoParseJobRepository = Depends(get_auto_parse_repository)
+    parsing_job_id: int,
+    user: CurrentUser,
+    db: DBSession,
+    auto_parse_job_repo: AutoParseJobRepository = Depends(get_auto_parse_repository),
 ):
-    from app.tasks.single_generation import single_generation
-    user = _get_user_from_request(request, user_repo)
-    
-    job = db.get(ParsingJob, parsing_job_id)
+    job = await db.get(ParsingJob, parsing_job_id)
     if not job or job.user_id != user.id:
         raise HTTPException(status_code=404, detail="Parsing job not found")
     if job.status != "done":
         raise HTTPException(status_code=400, detail="Parsing job is not done yet")
     
-    vacancies = auto_parse_job_repo.get_by_job_id(parsing_job_id)
-    start_batch(parsing_job_id,vacancies,user.first_name,user.last_name)
+    vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
+    start_batch(parsing_job_id, vacancies, user.first_name, user.last_name)
     return {
         "status": "started",
     }
@@ -243,19 +214,18 @@ async def start_test_generation(
 @router.get("/jobs/{parsing_job_id}/generate-status")
 async def get_generate_status(
     parsing_job_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    user_repo: UserRepository = Depends(get_user_repository)
+    user: CurrentUser,
+    db: DBSession,
 ):
-    user_id = _get_user_id_from_request(request, user_repo)
-    job = db.get(ParsingJob, parsing_job_id)
-    if not job or job.user_id != user_id:
+    job = await db.get(ParsingJob, parsing_job_id)
+    if not job or job.user_id != user.id:
         raise HTTPException(status_code=404, detail="Parsing job not found")
 
-    vacancies = db.exec(
+    result = await db.execute(
         select(AutoParsedJob)
         .where(AutoParsedJob.parsing_job_id == parsing_job_id)
-    ).all()
+    )
+    vacancies = result.scalars().all()
 
     total = len(vacancies)
     generated = sum(1 for v in vacancies if v.is_generated)
@@ -290,10 +260,10 @@ async def get_generate_status(
 async def stream_generation(
     request: Request,
     parsing_job_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = CurrentUser,
+    db: DBSession,
+    current_user: CurrentUser,
 ):
-    job = db.get(ParsingJob, parsing_job_id)
+    job = await db.get(ParsingJob, parsing_job_id)
     if not job or job.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Parsing job not found")
 
@@ -309,23 +279,14 @@ async def stream_generation(
 
 @router.get("/stream/{parsing_job_id}")
 async def stream_progress(
+    user: CurrentUser,
     parsing_job_id: int,
-    token: str = Query(...),
 ):
-    # Auth via query param (EventSource can't set headers)
-    try:
-        payload = jwt_service.decode_jwt(token)
-        email = payload.get("email")
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
+    # Auth is handled by the CurrentUser dependency, including query-token auth
     # Short-lived session for auth only — the stream itself must not hold a
     # DB connection open for its whole (possibly minutes-long) lifetime.
-    with Session(engine) as session:
-        user = UserRepository(session).get_user_by_email(email)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        job = session.get(ParsingJob, parsing_job_id)
+    async with async_session_maker() as session:
+        job = await session.get(ParsingJob, parsing_job_id)
         if not job or job.user_id != user.id:
             raise HTTPException(status_code=404, detail="Parsing job not found")
 
@@ -347,8 +308,8 @@ async def stream_progress(
         # status once the background parse finishes.
         last_payload: str | None = None
         while True:
-            with Session(engine) as session:
-                job = session.get(ParsingJob, parsing_job_id)
+            async with async_session_maker() as session:
+                job = await session.get(ParsingJob, parsing_job_id)
                 if job is None:
                     break
                 payload = _serialize(job)

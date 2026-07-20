@@ -1,7 +1,7 @@
+import asyncio
+import time
 from contextlib import asynccontextmanager
 from functools import wraps
-import time
-import asyncio
 
 
 @asynccontextmanager

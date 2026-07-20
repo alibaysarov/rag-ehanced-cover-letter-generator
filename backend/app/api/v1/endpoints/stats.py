@@ -4,15 +4,13 @@ import logging
 from datetime import date, datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from sqlmodel import Session
 
-from app.database import get_db
-from app.helper.user import get_user_repository
+from app.dependencies import DBSession, get_sent_letter_repository
+from app.helper.user import CurrentUser
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
-from app.repository.user_repository import UserRepository
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -61,34 +59,17 @@ class SummaryRow(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Dependencies
-# ---------------------------------------------------------------------------
-
-def get_sent_letter_repo(db: Session = Depends(get_db)) -> SentCoverLetterRepository:
-    return SentCoverLetterRepository(db)
-
-
-def _get_current_user(request: Request, user_repo: UserRepository):
-    user_email = request.state.user_email
-    user = user_repo.get_user_by_email(user_email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
-# ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
 
 @router.post("/sent-letters", response_model=SentCoverLetterRead, status_code=201)
-def create_sent_letter(
+async def create_sent_letter(
+    user:CurrentUser,
     body: SentCoverLetterCreate,
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
-    repo: SentCoverLetterRepository = Depends(get_sent_letter_repo),
+    
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user = _get_current_user(request, user_repo)
-    record = repo.create(
+    record = await repo.create(
         user_id=user.id,
         url=body.url,
         job_name=body.job_name,
@@ -99,18 +80,18 @@ def create_sent_letter(
 
 
 @router.get("/sent-letters", response_model=SentCoverLetterListResponse)
-def list_sent_letters(
-    request: Request,
+async def list_sent_letters(
+    user:CurrentUser,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     date_from: Optional[date] = Query(default=None),
     date_to: Optional[date] = Query(default=None),
     type: Optional[str] = Query(default=None),
-    user_repo: UserRepository = Depends(get_user_repository),
-    repo: SentCoverLetterRepository = Depends(get_sent_letter_repo),
+    
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user = _get_current_user(request, user_repo)
-    items, total = repo.get_list(
+    
+    items, total = await repo.get_list(
         user_id=user.id,
         page=page,
         page_size=page_size,
@@ -127,30 +108,27 @@ def list_sent_letters(
 
 
 @router.put("/sent-letters/{record_id}", response_model=SentCoverLetterRead)
-def update_sent_letter(
+async def update_sent_letter(
+    user:CurrentUser,
     record_id: int,
     body: SentCoverLetterUpdate,
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
-    repo: SentCoverLetterRepository = Depends(get_sent_letter_repo),
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user = _get_current_user(request, user_repo)
-    record = repo.update_accepted(record_id=record_id, user_id=user.id, is_accepted=body.is_accepted)
+    
+    record = await repo.update_accepted(record_id=record_id, user_id=user.id, is_accepted=body.is_accepted)
     if not record:
         raise HTTPException(status_code=404, detail="Record not found")
     return SentCoverLetterRead.model_validate(record)
 
 
 @router.get("/sent-letters/export-csv")
-def export_sent_letters_csv(
-    request: Request,
+async def export_sent_letters_csv(
+    user:CurrentUser,
     date_from: Optional[date] = Query(default=None),
     date_to: Optional[date] = Query(default=None),
-    user_repo: UserRepository = Depends(get_user_repository),
-    repo: SentCoverLetterRepository = Depends(get_sent_letter_repo),
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user = _get_current_user(request, user_repo)
-    rows = repo.get_summary(user_id=user.id, date_from=date_from, date_to=date_to)
+    rows = await repo.get_summary(user_id=user.id, date_from=date_from, date_to=date_to)
 
     buffer = io.StringIO()
     writer = csv.writer(buffer)
@@ -167,13 +145,11 @@ def export_sent_letters_csv(
 
 
 @router.get("/sent-letters/summary", response_model=list[SummaryRow])
-def sent_letters_summary(
-    request: Request,
+async def sent_letters_summary(
+    user:CurrentUser,
     date_from: Optional[date] = Query(default=None),
     date_to: Optional[date] = Query(default=None),
-    user_repo: UserRepository = Depends(get_user_repository),
-    repo: SentCoverLetterRepository = Depends(get_sent_letter_repo),
+    repo: SentCoverLetterRepository = Depends(get_sent_letter_repository),
 ):
-    user = _get_current_user(request, user_repo)
-    rows = repo.get_summary(user_id=user.id, date_from=date_from, date_to=date_to)
+    rows = await repo.get_summary(user_id=user.id, date_from=date_from, date_to=date_to)
     return [SummaryRow(**row) for row in rows]

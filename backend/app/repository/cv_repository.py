@@ -1,10 +1,11 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from typing import Optional
 
-from app.schemas.general import Option
-from ..models.cv import CV
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.schemas.general import Option
+
+from ..models.cv import CV
 
 
 class CVRepository:

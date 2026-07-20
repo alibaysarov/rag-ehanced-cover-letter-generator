@@ -1,10 +1,10 @@
-from app.repository.auto_parse_job_repository import AutoParseJobRepository
+from itertools import chain
+
+from app.decorators.time_perf import time_performance
 from app.repository import ProjectRepository
+from app.repository.auto_parse_job_repository import AutoParseJobRepository
 from app.services.llm.job_requirements import JobParsePrompt
 from app.services.llm.relevant_projects import RelevantProjectsPrompt
-from itertools import chain
-from app.decorators.time_perf import time_performance
-
 
 job_parse_promt = JobParsePrompt()
 

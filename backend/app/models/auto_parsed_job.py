@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+
 from sqlalchemy import Column, Text
 from sqlmodel import Field, SQLModel
 
@@ -9,8 +10,8 @@ class AutoParsedJob(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True, nullable=False)
-    parsing_job_id: int = Field(foreign_key="parsing_jobs.id", index=True, nullable=False)
-    vacancy_id: str = Field(nullable=False)
+    parsing_job_id: int = Field(foreign_key="parsing_jobs.id", index=True, nullable=True)
+    vacancy_id: str = Field(nullable=True)
     url: str = Field(nullable=False)
     job_title: str = Field(nullable=False)
     job_text: str = Field(nullable=False)

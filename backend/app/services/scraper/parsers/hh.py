@@ -1,5 +1,6 @@
-from app.services.scraper.parsers.general import GeneralVacancyParser
 from urllib.parse import urlencode
+
+from app.services.scraper.parsers.general import GeneralVacancyParser
 
 
 class HHVacancyParser(GeneralVacancyParser):

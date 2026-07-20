@@ -1,8 +1,9 @@
 import os
-from langchain_ollama import ChatOllama
-from app.services.llm.general import GeneralLLMClient
-from langchain_core.prompts import ChatPromptTemplate
 
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+
+from app.services.llm.general import GeneralLLMClient
 
 # _MODEL="qwen2.5:7b"
 

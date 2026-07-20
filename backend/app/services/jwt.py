@@ -1,7 +1,8 @@
-from datetime import timedelta, datetime, timezone
-import jwt
-from app.core.config import settings
+from datetime import datetime, timedelta, timezone
 
+import jwt
+
+from app.core.config import settings
 
 
 class JwtService:

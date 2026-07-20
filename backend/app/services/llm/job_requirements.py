@@ -1,15 +1,22 @@
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
-
-import os
-
-from .qwen import QwenClient
 
 from app.schemas.llm_outputs.job_requirements import JobRequirement
+
 from ...schemas.llm_outputs.cv_parse import CVImportModel
-from .small_llm import SmallLLMClient
-class JobParsePrompt(SmallLLMClient):
+from .general import GeneralLLMClient
+from .models.json_parse_model import JsonParseModel
+from .qwen import QwenClient
+
+
+class JobParsePrompt(GeneralLLMClient[JobRequirement]):
+
+    def __init__(self):
+        
+        
+        model = JsonParseModel()
+        super().__init__(model=model.model)
+        
     def get_schema(self):
         return JobRequirement
 

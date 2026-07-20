@@ -1,16 +1,20 @@
 # api/v1/auth.py
-from fastapi import APIRouter, HTTPException, Depends, Request, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr, Field
-from sqlmodel import Session
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, EmailStr, Field
+
+from app.dependencies import (
+    DBSession,
+    get_jwt_service,
+    get_password_service,
+    get_user_repository,
+)
+from app.helper.user import CurrentUser
+from app.repository.user_repository import UserRepository
 from app.services.jwt import JwtService
 from app.services.password import PasswordService
-from app.database import get_db
-from app.repository.user_repository import UserRepository
-from app.models.user import User
-from app.helper.user import CurrentUser, get_current_user, get_user_repository
+
 
 # Pydantic models
 class LoginRequest(BaseModel):
@@ -49,23 +53,19 @@ class UserResponse(BaseModel):
     is_verified: bool
     created_at: str
 
-# Router and services
+# Router
 router = APIRouter()
-jwt_service = JwtService()
-password_service = PasswordService()
-# security = HTTPBearer()
-
-# Dependencies
-
-
 
 # Type alias for cleaner code
 UserRepo = Annotated[UserRepository, Depends(get_user_repository)]
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-def register(
+async def register(
     register_data: RegisterRequest,
-    user_repo: UserRepo
+    user_repo: UserRepo,
+    jwt_service: JwtService = Depends(get_jwt_service),
+    password_service: PasswordService = Depends(get_password_service),
+    db: DBSession,
 ):
     """Register a new user"""
     # Check if user already exists
@@ -81,7 +81,7 @@ def register(
 
     # Create user
     try:
-        user = user_repo.create_user(
+        user = await user_repo.create_user(
             email=register_data.email,
             password_hash=password_hash,
             first_name=register_data.first_name,
@@ -103,13 +103,16 @@ def register(
     )
 
 @router.post("/login", response_model=TokenResponse)
-def login(
+async def login(
     login_data: LoginRequest,
-    user_repo: UserRepo
+    user_repo: UserRepo,
+    jwt_service: JwtService = Depends(get_jwt_service),
+    password_service: PasswordService = Depends(get_password_service),
+    db: DBSession,
 ):
     """Login user and return JWT tokens"""
     # Find user by email
-    user = user_repo.get_user_by_email(login_data.email)
+    user = await user_repo.get_user_by_email(login_data.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -142,7 +145,10 @@ def login(
     )
 
 @router.post("/refresh", response_model=TokenResponse)
-def refresh_token(refresh_data: RefreshTokenRequest):
+async def refresh_token(
+    refresh_data: RefreshTokenRequest,
+    jwt_service: JwtService = Depends(get_jwt_service),
+):
     """Refresh access token using refresh token"""
     try:
         payload = jwt_service.decode_jwt(refresh_data.refresh_token)
@@ -173,53 +179,45 @@ def refresh_token(refresh_data: RefreshTokenRequest):
 
 @router.get("/me", response_model=UserResponse)
 def get_current_user_info(
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
+    user:CurrentUser
 ):
     """Get current user information"""
 
-    user_email = request.state.user_email
-    current_user = _get_user_by_mail(user_email,user_repo)
-
     return UserResponse(
-        id=current_user.id,
-        email=current_user.email,
-        first_name=current_user.first_name,
-        last_name=current_user.last_name,
-        is_active=current_user.is_active,
-        is_verified=current_user.is_verified,
-        created_at=current_user.created_at.isoformat()
+        id=user.id,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        is_active=user.is_active,
+        is_verified=user.is_verified,
+        created_at=user.created_at.strftime("%Y-%m-%d %H:%M:%S")
     )
 
 @router.put("/me", response_model=UserResponse)
-def update_current_user_info(
-    request: Request,
+async def update_current_user_info(
     update_data: UpdateProfileRequest,
     user_repo: UserRepo,
+    user:CurrentUser,
+    db: DBSession,
 ):
-    """Update current user profile"""
-    user_email = request.state.user_email
-    current_user = _get_user_by_mail(user_email, user_repo)
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
     fields = update_data.model_dump(exclude_unset=True)
 
     new_email = fields.get("email")
-    if new_email and new_email != current_user.email:
-        existing = user_repo.get_user_by_email(new_email)
-        if existing and existing.id != current_user.id:
+    if new_email and new_email != user.email:
+        existing = await user_repo.get_user_by_email(new_email)
+        if existing and existing.id != user.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email is already taken",
             )
 
-    updated_user = user_repo.update_user(current_user.id, **fields) if fields else current_user
-
+    updated_user = await user_repo.update_user(user.id, **fields)
+    if updated_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"   
+        )
     return UserResponse(
         id=updated_user.id,
         email=updated_user.email,
@@ -231,39 +229,27 @@ def update_current_user_info(
     )
 
 @router.post("/change-password")
-def change_password(
-    request: Request,
+async def change_password(
     payload: ChangePasswordRequest,
     user_repo: UserRepo,
+    password_service: PasswordService = Depends(get_password_service),
+    user:CurrentUser,
+    db: DBSession,
 ):
     """Change current user password"""
-    user_email = request.state.user_email
-    current_user = _get_user_by_mail(user_email, user_repo)
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
-    if not password_service.verify_password(payload.current_password, current_user.password_hash):
+    if not password_service.verify_password(payload.current_password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid current password",
         )
 
     new_hash = password_service.hash_password(payload.new_password)
-    user_repo.update_user(current_user.id, password_hash=new_hash)
+    await user_repo.update_user(user.id, password_hash=new_hash)
 
     return {"message": "Password updated successfully"}
 
 @router.post("/logout")
-def logout(current_user: CurrentUser):
+def logout(user:CurrentUser):
     """Logout user (client should discard tokens)"""
     return {"message": "Logged out successfully"}
-
-
-
-def _get_user_by_mail(email:str,user_repo: UserRepository):
-    current_user = user_repo.get_user_by_email(email)
-    return current_user

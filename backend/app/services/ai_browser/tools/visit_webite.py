@@ -1,10 +1,5 @@
-from app.pw_instances import chromium as chromium_module
-from playwright.sync_api import Browser,Page
 from app.decorators.browser import simple_page
-from langchain.tools import tool
 from app.pw_instances.chromium import chromium
-
-from langsmith import traceable
 
 TIMEOUT=30_000
 

@@ -1,5 +1,6 @@
 import os
-from typing import List, Optional
+from typing import List
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,6 +34,8 @@ class Settings:
 
     # Database URL (constructed from individual vars or override)
     DATABASE_URL: str = os.getenv("DATABASE_URL")
+    
+    OLLAMA_HOST:str = os.getenv("OLLAMA_HOST", "http://localhost:11434") 
 
     # OpenAI
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")

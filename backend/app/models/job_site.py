@@ -1,6 +1,6 @@
-from datetime import datetime
-from typing import Optional, List
-from sqlmodel import Field, Relationship, SQLModel
+from typing import Optional
+
+from sqlmodel import Field, SQLModel
 
 
 class JobSite(SQLModel, table=True):

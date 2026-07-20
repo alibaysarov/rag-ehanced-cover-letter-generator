@@ -1,18 +1,21 @@
-from .qwen import QwenClient
-from app.schemas.llm_outputs.relevant_projects import RelevantProjects
 from langchain_core.prompts import ChatPromptTemplate
-
 from langchain_ollama import ChatOllama
-import os
 
-_MODEL = "qwen2.5:0.5b"
-class RelevantProjectsPrompt(QwenClient):
+from app.core.config import settings
+from app.schemas.llm_outputs.relevant_projects import RelevantProjects
+
+from .general import GeneralLLMClient
+
+
+class RelevantProjectsPrompt(GeneralLLMClient[RelevantProjects]):
     
     def __init__(self):
-        base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        model = ChatOllama(model=_MODEL, temperature=0.1,reasoning=False,num_ctx=4096, base_url=base_url)
+        _MODEL = "qwen2.5:0.5b"
+        
+        model = ChatOllama(model=_MODEL, temperature=0.1,reasoning=False,num_ctx=4096, base_url=settings.OLLAMA_HOST)
         
         self.model = model.with_structured_output(RelevantProjects)
+        
     def get_schema(self):
         return RelevantProjects
     @property

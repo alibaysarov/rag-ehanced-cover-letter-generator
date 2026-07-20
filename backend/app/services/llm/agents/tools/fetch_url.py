@@ -2,7 +2,7 @@ import httpx
 from bs4 import BeautifulSoup
 from langchain_core.tools import tool
 from playwright.async_api import async_playwright
-import asyncio
+
 
 async def parse_hh(url: str):
     """

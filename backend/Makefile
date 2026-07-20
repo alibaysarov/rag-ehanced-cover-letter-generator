@@ -13,25 +13,15 @@ alembic-init:
 	@echo "Initializing Alembic..."
 	uv run alembic init alembic
 
-alembic-revision:
-	@echo "Creating new migration..."
-	python scripts/alembic_docker.py revision --autogenerate -m "$(msg)"
 
-alembic-upgrade:
-	@echo "Applying migrations..."
-	python scripts/alembic_docker.py upgrade head
+lint:
+	uv run pyright app/
 
-alembic-current:
-	@echo "Current migration status..."
-	python scripts/alembic_docker.py current
+sort-imports:
+	ruff check --select I --fix .
 
-alembic-history:
-	@echo "Migration history..."
-	python scripts/alembic_docker.py history
-
-alembic-downgrade:
-	@echo "Rolling back last migration..."
-	python scripts/alembic_docker.py downgrade -1
+ruff-remove-imports:
+	ruff check --select F401 --fix .
 
 # Database shell
 dbshell:

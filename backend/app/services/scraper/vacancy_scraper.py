@@ -1,19 +1,17 @@
-from abc import abstractmethod
-from app.job_parser.hh_parser import Vacancy
-from app.decorators.browser import pw_browser,managed_page
-from app.services.scraper.parsers.general import GeneralVacancyParser
-from app.pw_instances import chromium as chromium_module
-from sqlmodel import Session
-from datetime import datetime
-from app.models.parsing_job import ParsingJob
-from app.decorators.time_perf import with_timer
-from app.database import engine
-from app.pw_instances import chromium as chromium_module
-from app.services.scraper.parsers.hh import HHVacancyParser
-from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
-from app.helper.flatten_list import flatten_list
-import logging
 import asyncio
+import logging
+from datetime import datetime
+
+from sqlmodel import Session
+
+from app.database import engine
+from app.decorators.time_perf import with_timer
+from app.job_parser.hh_parser import Vacancy
+from app.models.parsing_job import ParsingJob
+from app.pw_instances import chromium as chromium_module
+from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
+from app.services.scraper.parsers.general import GeneralVacancyParser
+from app.services.scraper.parsers.hh import HHVacancyParser
 
 logger = logging.getLogger(__name__)
 

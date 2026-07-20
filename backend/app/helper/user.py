@@ -1,38 +1,33 @@
-from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr, HttpUrl
-from sqlmodel import Session
 from typing import Annotated
 
-from app.services.jwt import JwtService
-from app.services.password import PasswordService
-from app.database import get_db
-from app.repository.user_repository import UserRepository
-from app.models.user import User
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.dependencies import get_jwt_service, get_user_repository
+from app.models.user import User
+from app.repository.user_repository import UserRepository
+from app.schemas.api.user import AuthenticatedUser
+from app.services.jwt import JwtService
 
 security = HTTPBearer()
 
 
-def get_jwt_service() -> JwtService:
-    """Dependency to get JwtService instance"""
-    return JwtService()
-
-
-def get_user_repository(session: Session = Depends(get_db)) -> UserRepository:
-    """Dependency to get UserRepository with database session"""
-    return UserRepository(session)
-
-def get_security()->HTTPAuthorizationCredentials:
-    return HTTPBearer()
-
-def get_current_user(
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
     jwt_service: JwtService = Depends(get_jwt_service),
     user_repo: UserRepository = Depends(get_user_repository),
 ) -> User:
-    """Get current user from JWT token"""
+    """Get current user from JWT token in Authorization header"""
     try:
-        payload = jwt_service.decode_jwt(security.credentials)
+        if credentials is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not authenticated",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+
+        payload = jwt_service.decode_jwt(credentials)
         email = payload.get("email")
         if not email:
             raise HTTPException(
@@ -41,7 +36,7 @@ def get_current_user(
                 headers={"WWW-Authenticate": "Bearer"}
             )
         
-        user = user_repo.get_user_by_email(email)
+        user = await user_repo.get_user_by_email(email)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,7 +50,7 @@ def get_current_user(
                 detail="Account is deactivated"
             )
         
-        return user
+        return AuthenticatedUser.model_validate(user)
     except HTTPException:
         raise
     except Exception as e:
@@ -67,4 +62,4 @@ def get_current_user(
         )
 
 
-CurrentUser = Annotated[User, Depends(get_current_user)]
+CurrentUser = Annotated[AuthenticatedUser, Depends(get_current_user)]

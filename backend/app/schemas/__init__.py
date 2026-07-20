@@ -1,3 +1,3 @@
-from .api.auto_parse import AutoParseResponse
+from .api.auto_parse import AutoParseResponse, StartParseRequest, MarkAppliedRequest
 
-__all__=["AutoParseResponse"]
+__all__=["AutoParseResponse", "StartParseRequest", "MarkAppliedRequest"]

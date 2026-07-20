@@ -1,11 +1,11 @@
-import time
-from llama_index.readers.file import PDFReader
-from llama_index.core.node_parser import SentenceSplitter
 from dotenv import load_dotenv
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.readers.file import PDFReader
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.storage.repository.qdrant import QdrantStorage
+
 from app.repository.cv_repository import CVRepository
 from app.services.embeddings import BaseEmbedder, OpenAIEmbedder
+from app.storage.repository.qdrant import QdrantStorage
 
 load_dotenv()
 

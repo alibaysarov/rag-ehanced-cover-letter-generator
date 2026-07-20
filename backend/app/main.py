@@ -1,17 +1,15 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+
 from app.api.v1.api import api_router
-from app.core.config import settings
-from app.middleware.auth import AuthMiddleware
-from app.database import init_db, check_db_connection
-
-from app.pw_instances.chromium import start_browser,close_browser
-import logging
-
-
-
 from app.cache import redis as redis_db
+from app.core.config import settings
+from app.database import check_db_connection
+from app.middleware.auth import AuthMiddleware
+from app.pw_instances.chromium import close_browser, start_browser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,17 +24,11 @@ async def lifespan(app: FastAPI):
     await start_browser()
     
     # Check database connection
-    if not check_db_connection():
+    conn_result = await check_db_connection()
+    if not conn_result:
         logger.error("Failed to connect to database on startup")
         raise Exception("Database connection failed")
     
-    # Initialize database
-    try:
-        init_db()
-        logger.info("Database initialized successfully")
-    except Exception as e:
-        logger.error(f"Failed to initialize database: {e}")
-        raise
     
     yield
     

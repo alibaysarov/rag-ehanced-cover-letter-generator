@@ -1,7 +1,8 @@
 import os
 
-import redis.asyncio as redis
 import redis as sync_redis
+import redis.asyncio as redis
+
 redis_client = None
 
 

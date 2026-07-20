@@ -1,39 +1,37 @@
-from sqlmodel import Session, select,text
+import json
 from typing import List
-from app.database import engine
-from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
-from app.models import Project
 
 from sqlalchemy import cast, func
 from sqlalchemy.dialects.postgresql import ARRAY, VARCHAR
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select, text
 
-import json
+from app.models import Project
+from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
+
 
 class ProjectRepository:
-    def __init__(self):
-        self._session = Session(engine)
+    def __init__(self,session:AsyncSession):
+        self._session = session
     
-    def create_many(
+    async def create_many(
         self,
         user_id: int,
         projects: list[ProjectFromCVModel],
     )->int:
-        with self._session as session:
-            items = [self._create_project(session,project,user_id) for project in projects]
-            session.add_all(items)
-            session.commit()
+            items = [self._create_project(project,user_id) for project in projects]
+            self._session.add_all(items)
+            self._session.commit()
             return len(items)
         
-    def get_by_user(self,user_id:int)->list[Project]:
+    async def get_by_user(self,user_id:int)->list[Project]:
         statement = select(Project).where(Project.user_id == user_id)
-        return list(self._session.exec(statement).all())
+        result = await self._session.execute(statement)
+        return list(result.all())
 
     
-    def search_by_technologies(self,user_id:int, techs: list[str])->list[Project]:
-        statement = select(Project).where(Project.technologies.overlap(techs)).where(Project.user_id == user_id)
-        return list(self._session.exec(statement).all())
     
-    def get_relevant_by_vacancy_data(self,vacancy_data:list[dict]):
+    async def get_relevant_by_vacancy_data(self,vacancy_data:list[dict]):
         query = text("""
             WITH input_data AS (
                 SELECT
@@ -52,13 +50,13 @@ class ProjectRepository:
             WHERE p.technologies && i.expected_technologies
         """)
         
-        result = self._session.exec(
+        result = await self._session.execute(
             query,
             params={"vacancy_data":json.dumps(vacancy_data)}
-        ).all()
-        return result
+        )
+        return list(result.all())
     
-    def get_relevant(self, user_id: int, techs: list[str]):
+    async def get_relevant(self, user_id: int, techs: list[str]):
         techs_array = cast(techs, ARRAY(VARCHAR))
 
         inner = (
@@ -78,17 +76,18 @@ class ProjectRepository:
             .order_by(match_count.desc())
         )
 
-        rows = self._session.exec(statement).all()
+        result = await self._session.execute(statement)
+        rows = result.all()
         return [(project, count) for project, count in rows]
     
-    def delete(self,id:int,user_id:int)->None:
-        with Session(engine) as session:
-            statement = select(Project).where(Project.id ==id).where(Project.user_id == user_id)
-            results = session.exec(statement)
-            hero = results.one()
-            session.delete(hero)
+    async def delete(self,id:int,user_id:int)->None:
+        
+        statement = select(Project).where(Project.id ==id).where(Project.user_id == user_id)
+        results = await self._session.execute(statement)
+        hero = results.one()
+        await self._session.delete(hero)
 
-    def _create_project(self,session,dto:ProjectFromCVModel,user_id:int):
+    def _create_project(self,dto:ProjectFromCVModel,user_id:int):
         
         normalized_tech:List[str] = [item.lower() for item in dto.technologies] 
         

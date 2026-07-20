@@ -1,5 +1,7 @@
 import os
+
 from langchain_ollama import OllamaEmbeddings
+
 from app.services.embeddings.base import BaseEmbedder
 
 # Модель должна быть предварительно загружена через `ollama pull nomic-embed-text`.

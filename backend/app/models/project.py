@@ -1,8 +1,9 @@
 from datetime import datetime
-from sqlmodel import Field, Relationship, SQLModel,Column
+from typing import List, Optional
+
+from sqlalchemy import Index, String
 from sqlalchemy.dialects.postgresql import ARRAY
-from typing import Optional, List
-from sqlalchemy import String,Index
+from sqlmodel import Column, Field, Relationship, SQLModel
 
 
 class Project(SQLModel,table=True):

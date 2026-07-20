@@ -1,35 +1,21 @@
-import logging
-import json
 import asyncio
-from typing import Annotated, AsyncGenerator, Optional
-from fastapi import APIRouter, Request, UploadFile, File, Form, HTTPException, Depends
+import json
+import logging
+from typing import AsyncGenerator, Optional
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.letter import (
-    LetterResponse,
-    CVUploadResponse
-)
-from app.services.letter import LetterService
-from app.services.cover_letter import CoverLetterService
+
 from app.database import get_db
-from app.helper.user import CurrentUser, get_current_user, get_user_repository
-from app.models.user import User
-from app.repository.user_repository import UserRepository
+from app.dependencies import DBSession, get_cover_letter_service, get_letter_service
+from app.helper.user import CurrentUser
+from app.schemas.letter import CVUploadResponse, LetterResponse
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-def get_letter_service(db: AsyncSession = Depends(get_db)) -> LetterService:
-    """Dependency to get LetterService instance with database session"""
-    return LetterService(db)
-
-
-def get_cover_letter_service(
-    user_repo: UserRepository = Depends(get_user_repository),
-) -> CoverLetterService:
-    return CoverLetterService(user_repo=user_repo)
 
 
 async def _sse_wrap(
@@ -52,7 +38,7 @@ async def _sse_wrap(
         yield f"data: {json.dumps({'error': 'Internal streaming error'})}\n\n"
 
 
-CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 async def fetch(name, delay):
     print(f"{name}: начало")
@@ -62,13 +48,11 @@ async def fetch(name, delay):
 
 @router.post("/async-test",response_model=CVUploadResponse)
 async def load_test(
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
+    user:CurrentUser,
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
     source_id: str = Form(..., description="Unique identifier for the CV source"),
     
     letter_service: LetterService = Depends(get_letter_service),
-    db: AsyncSession = Depends(get_db)
 ):
     try:
         # Validate file type
@@ -81,18 +65,18 @@ async def load_test(
             raise HTTPException(status_code=400, detail="File size must be less than 10MB")
 
         # Save file temporarily
-        import tempfile
         import os
+        import tempfile
 
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
             temp_file.write(file_content)
             temp_file_path = temp_file.name
 
         try:
-            user_email = request.state.user_email
-            current_user = _get_user_by_mail(user_email,user_repo)
+            
+            
             await letter_service.parse_cv(
-                user_id=current_user.id,
+                user_id=user.id,
                 pdf_path=temp_file_path,
                 source_id=source_id,
                 filename=file.filename,
@@ -129,7 +113,6 @@ async def create_letter_from_url(
     url: str = Form(..., description="URL to extract content from"),
     source_id: int = Form(..., description="Source ID of the CV in the database"),
     letter_service: LetterService = Depends(get_letter_service),
-    db: AsyncSession = Depends(get_db)
 ):
     """
     Create a cover letter from a URL source.
@@ -165,20 +148,15 @@ async def create_letter_from_url(
 
 @router.post("/url/stream")
 async def stream_letter_from_url(
-    request: Request,
+    user:CurrentUser,
     url: str = Form(...),
-    user_repo: UserRepository = Depends(get_user_repository),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
     http_url = HttpUrl(url)
 
-    user_email = request.state.user_email
-    current_user = user_repo.get_user_by_email(user_email)
-    if not current_user:
-        raise HTTPException(status_code=404, detail="User not found")
 
     return StreamingResponse(
-        _sse_wrap(cover_letter_service.stream_by_url(str(http_url), current_user.id)),
+        _sse_wrap(cover_letter_service.stream_by_url(str(http_url), user.id)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -189,20 +167,14 @@ async def stream_letter_from_url(
 
 @router.post("/url/test")
 async def create_letter_from_url_test(
-    request: Request,
+    user:CurrentUser,
     url: str = Form(..., description="URL to extract content from"),
-    user_repo: UserRepository = Depends(get_user_repository),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
     try:
         http_url = HttpUrl(url)
 
-        user_email = request.state.user_email
-        current_user = user_repo.get_user_by_email(user_email)
-        if not current_user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        result = await cover_letter_service.sync_by_url(str(http_url), current_user.id)
+        result = await cover_letter_service.sync_by_url(str(http_url), user.id)
         return {"result": result}
 
     except HTTPException:
@@ -219,7 +191,6 @@ async def create_letter_from_text(
     description: str = Form(..., min_length=1, description="Job description"),
     source_id: int = Form(..., description="Source ID of the CV in the database"),
     letter_service: LetterService = Depends(get_letter_service),
-    db: AsyncSession = Depends(get_db)
 ):
     """
     Create a cover letter from job title and description.
@@ -257,20 +228,15 @@ async def create_letter_from_text(
 
 @router.post("/text/stream")
 async def stream_letter_from_text(
-    request: Request,
+    user:CurrentUser,
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form(..., min_length=1),
     lang: Optional[str] = Form(None, max_length=50),
-    user_repo: UserRepository = Depends(get_user_repository),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
-    user_email = request.state.user_email
-    current_user = user_repo.get_user_by_email(user_email)
-    if not current_user:
-        raise HTTPException(status_code=404, detail="User not found")
 
     return StreamingResponse(
-        _sse_wrap(cover_letter_service.stream_by_text(name, description, current_user.id, lang=lang)),
+        _sse_wrap(cover_letter_service.stream_by_text(name, description, user.id, lang=lang)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -281,7 +247,6 @@ async def stream_letter_from_text(
 
 @router.post("/translate/stream")
 async def stream_translate_letter(
-    current_user: CurrentUser,
     text: str = Form(..., max_length=10_000, description="Letter content to translate"),
     target_language: str = Form(..., max_length=50, description="Target language, e.g. 'Russian'"),
     letter_service: LetterService = Depends(get_letter_service),
@@ -298,13 +263,11 @@ async def stream_translate_letter(
 
 @router.post("/upload-cv", response_model=CVUploadResponse)
 async def upload_cv(
-    request: Request,
-    user_repo: UserRepository = Depends(get_user_repository),
+    user:CurrentUser,
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
     source_id: str = Form(..., description="Unique identifier for the CV source"),
     
     letter_service: LetterService = Depends(get_letter_service),
-    db: AsyncSession = Depends(get_db)
 ):
     """
     Upload a CV/resume PDF file to the vector database.
@@ -323,18 +286,16 @@ async def upload_cv(
             raise HTTPException(status_code=400, detail="File size must be less than 10MB")
 
         # Save file temporarily
-        import tempfile
         import os
+        import tempfile
 
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
             temp_file.write(file_content)
             temp_file_path = temp_file.name
 
         try:
-            user_email = request.state.user_email
-            current_user = _get_user_by_mail(user_email,user_repo)
             await letter_service.add_cv(
-                user_id=current_user.id,
+                user_id=user.id,
                 pdf_path=temp_file_path,
                 source_id=source_id,
                 filename=file.filename,
@@ -364,8 +325,3 @@ async def upload_cv(
     except Exception as e:
         logging.error("Error uploading CV", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error uploading CV: {str(e)}")
-
-
-def _get_user_by_mail(email:str,user_repo: UserRepository):
-    current_user = user_repo.get_user_by_email(email)
-    return current_user

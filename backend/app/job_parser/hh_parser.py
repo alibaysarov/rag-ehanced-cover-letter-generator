@@ -3,15 +3,15 @@
 https://hh.ru/search/vacancy?text=php+%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA&area=1&page=0&search_session_id=14c18ffd-9fa9-4ea2-9271-f2dde06ea175
 '''
 
-from app.pw_instances.chromium import start_browser,close_browser,get_browser
-from app.decorators.time_perf import time_performance
-from urllib.parse import quote_plus
-from pydantic import BaseModel
-from itertools import chain
-from app.helper.flatten_list import flatten_list
 import asyncio
-import os
 import logging
+import os
+from urllib.parse import quote_plus
+
+from pydantic import BaseModel
+
+from app.helper.flatten_list import flatten_list
+from app.pw_instances.chromium import get_browser
 
 logger = logging.getLogger(__name__)
 HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))

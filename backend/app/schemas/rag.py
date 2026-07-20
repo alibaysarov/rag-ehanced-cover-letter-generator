@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class RAGChunkAndSrc(BaseModel):
     chunks:list[str]
     source_id:str=None
