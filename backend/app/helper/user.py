@@ -3,18 +3,29 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.dependencies import get_jwt_service, get_user_repository
 from app.repository.user_repository import UserRepository
 from app.schemas.api.user import AuthenticatedUser
-from app.services import JwtService
+from app.services.jwt import JwtService
 
 security = HTTPBearer()
 
 
+def get_jwt_service_dependency() -> JwtService:
+    from app.dependencies import get_jwt_service as dependency_get_jwt_service
+
+    return dependency_get_jwt_service()
+
+
+def get_user_repository_dependency() -> UserRepository:
+    from app.dependencies import get_user_repository as dependency_get_user_repository
+
+    return dependency_get_user_repository()
+
+
 async def get_current_user(
     auth_credentials: HTTPAuthorizationCredentials = Depends(security),
-    jwt_service: JwtService = Depends(get_jwt_service),
-    user_repo: UserRepository = Depends(get_user_repository),
+    jwt_service: JwtService = Depends(get_jwt_service_dependency),
+    user_repo: UserRepository = Depends(get_user_repository_dependency),
 ) -> AuthenticatedUser:
     """Get current user from JWT token in Authorization header"""
     try:
