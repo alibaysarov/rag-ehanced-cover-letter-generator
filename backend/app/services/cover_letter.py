@@ -159,7 +159,7 @@ class CoverLetterService:
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name":vacancy.name,
-            "lang":vacancy.lang,
+            "lang":"ru",
             "project_name":vacancy.project_name,
             "user_projects":user_projects,
             "vacancy_requirements":vacancy.requirements,
