@@ -27,7 +27,6 @@ async def _block_resources(route, request):
 
 
 # @tool
-@traceable(name="fetch_html")
 async def get_html(url:str):
     """
     Use this tool to extract html and markup for further use of different tools
@@ -48,7 +47,6 @@ async def get_html(url:str):
             raise e
 
 # @tool
-@traceable(name="visit_website")
 async def visit_website(url:str,jsFn:str):
     """
     visit_website tool for sraping page by url and executing JS code on it to get useful info 

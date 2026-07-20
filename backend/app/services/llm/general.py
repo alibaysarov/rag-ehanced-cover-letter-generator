@@ -43,13 +43,11 @@ class GeneralLLMClient(ABC):
             self.model = self.model.with_structured_output(schema=schema)
     
     
-    # @traceable(run_type="llm")
     def get_sync_response(self,body:dict={}):
         messages = self.get_prompt(body)
         return self.model.invoke(messages)
     
     
-    @traceable(run_type="llm")
     async def get_stream_response(self,body:dict={})-> AsyncIterator[str]:
         messages = self.get_prompt(body)
         # self.count_prompt_tokens(body)
