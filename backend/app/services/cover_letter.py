@@ -85,7 +85,7 @@ class CoverLetterService:
     #         buffer = self._STRIP_LABEL.sub("", buffer)
     #         yield buffer.lstrip("\n ")
     
-    @traceable(run_type="llm",name="Cover letter generate")
+    
     async def _clean_stream(self, body: dict):
         result = await (self.llm.prompt_template | self.llm.get_model).ainvoke(body)
         text = result.content
@@ -171,12 +171,12 @@ class CoverLetterService:
 
     def _get_ranked_projects(self, user_id,vacancy_text:str, job_requirement:JobRequirement):
         
-        relevant_projects = self.project_repository.get_relevant(user_id,job_requirement.required_technologies)
+        relevant_projects = self.project_repository.get_relevant(user_id,job_requirement.technologies)
         if len(relevant_projects) > 2:
             relevant_project_promt = RelevantProjectsPrompt()
             model_response = relevant_project_promt.get_sync_response({
                 "job_text":vacancy_text,
-                "technologies":job_requirement.required_technologies,
+                "technologies":job_requirement.technologies,
                 "projects":relevant_projects
             })
             projects = model_response.projects

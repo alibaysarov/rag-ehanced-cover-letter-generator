@@ -6,7 +6,6 @@ from app.schemas.vacancy.single_vacancy import SingleVacancy
 from app.helper.flatten_list import flatten_list
 from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
 
-from asyncio import Semaphore
 
 import os
 import asyncio
@@ -27,7 +26,7 @@ def async_retry():
     return retry(
         stop=stop_after_attempt(4),
         wait=wait_exponential(multiplier=1, min=1, max=8),
-        retry=retry_if_exception_type(PlaywrightTimeoutError),
+        retry=retry_if_exception_type(PlaywrightTimeoutError|Exception),
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
     )
@@ -105,19 +104,16 @@ class GeneralVacancyParser:
             except Exception as e:
                 logger.warning(f"Error getting list: {e}")    
     
-    async def parse_single_vacancy(self,browser,vacancy_id,semaphore:Semaphore)->SingleVacancy:
+    async def parse_single_vacancy(self,page:Page,vacancy_id)->SingleVacancy:
         
-        async with semaphore:
-            url = self.get_single_url(vacancy_id)
-            async with simple_page(browser,url) as page:
-                try:
-                    await page.route("**/*", self._block_resources)
-                    await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                    vacancy_dict:dict = await self._get_result_from_vacancy(page=page)
-                    vacancy:SingleVacancy = SingleVacancy.model_validate(vacancy_dict)
-                    return vacancy
-                except Exception as e:
-                    logger.warning(f"Error getting single vacancy page {vacancy_id} : {e}")
+        url = self.get_single_url(vacancy_id)
+        try:
+            await page.route("**/*", self._block_resources)
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            vacancy = await self._get_result_from_vacancy(page=page)
+            return vacancy
+        except Exception as e:
+            logger.warning(f"Error getting single vacancy page {vacancy_id} : {e}")
     
     async def _get_vacancies_by_scroll(self,page,text:str)->list[Vacancy]:
         try:
@@ -145,12 +141,13 @@ class GeneralVacancyParser:
         try:
             await self._scroll_page(page)
             await page.wait_for_timeout(500)
-            single_vacancy = await page.evaluate(self.evaluate_vacancy_page())
+            vacancy_dict = await page.evaluate(self.evaluate_vacancy_page())
+            vacancy:SingleVacancy = SingleVacancy.model_validate(vacancy_dict)
+            return vacancy
         except Exception as e:
             logger.error("Error during parsing single vacancy page")
             raise e
         
-        return single_vacancy
     async def _get_results_from_page(self, page)->list[Vacancy]:
         await self._scroll_page(page)
         await page.wait_for_timeout(500)

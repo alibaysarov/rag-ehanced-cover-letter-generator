@@ -20,8 +20,8 @@ class GeekJobVacancyParser(GeneralVacancyParser):
     def evaluate_vacancy_page(self):
         return """
         ()=>{
-            const job_title = document.querySelector("h1")?.textContent?.trim() || null;
-            const job_text = document.querySelector('div.description')?.textContent?.trim() || null;
+            const job_title = document.querySelector("h1")?.textContent?.trim() || '';
+            const job_text = document.querySelector('div.description')?.textContent?.trim() || '';
             
             return {
                 job_title,

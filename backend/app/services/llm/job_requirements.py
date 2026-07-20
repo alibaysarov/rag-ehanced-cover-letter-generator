@@ -5,7 +5,7 @@ from langchain_ollama import ChatOllama
 import os
 
 from .qwen import QwenClient
-from .gemini import GeminiClient
+
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from ...schemas.llm_outputs.cv_parse import CVImportModel
 from .small_llm import SmallLLMClient

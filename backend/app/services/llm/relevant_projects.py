@@ -1,5 +1,4 @@
 from .qwen import QwenClient
-from .gemini import GeminiClient
 from app.schemas.llm_outputs.relevant_projects import RelevantProjects
 from langchain_core.prompts import ChatPromptTemplate
 

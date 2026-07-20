@@ -25,17 +25,7 @@ class VacancyScrapingService:
             GeekJobVacancyParser(),
         ]
         
-    async def _parse_single_vacancy(self,session:Session,parser:GeneralVacancyParser,vacancy:Vacancy,job_id:int):
-        semaphore = asyncio.Semaphore(4)
-        with session as session:
-            parsing_job = session.get(ParsingJob, job_id)
-            try:
-                item = await parser.parse_single_vacancy(chromium_module.chromium,vacancy_id=vacancy.vacancy_id,semaphore=semaphore)
-                parsing_job.saved_count +=1
-                session.add(parsing_job)
-                return item
-            except Exception as e:
-                raise e
+    
         
     async def run_parse_job(self,job_id: int, query: str, user_id: int) -> None:
         """
@@ -53,6 +43,7 @@ class VacancyScrapingService:
 
             result:list[Vacancy] = []
             async with with_timer("browser"):
+                semaphore = asyncio.Semaphore(4)
                 for parser in self._parsers:
                     try:
                         logger.info(f"Started parsing {parser.get_name()}")
@@ -63,8 +54,9 @@ class VacancyScrapingService:
                             if parsing_job:
                                 parsing_job.total_found = parsing_job.total_found + len(vacancy_items)
                                 session.commit()
+                                
                                 results = await asyncio.gather(
-                                    *[self._parse_single_vacancy(session,parser, vacancy=vacancy,job_id=job_id) for vacancy in vacancy_items],
+                                    *[self._parse_single_vacancy(semaphore,session,parser, vacancy=vacancy,job_id=job_id) for vacancy in vacancy_items[0:10]],
                                     return_exceptions=True,
                                 )
                                 session.commit()
@@ -96,3 +88,18 @@ class VacancyScrapingService:
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
                     session.commit()
+    
+    
+    async def _parse_single_vacancy(self,semaphore:asyncio.Semaphore,session:Session,parser:GeneralVacancyParser,vacancy:Vacancy,job_id:int):
+        async with semaphore:
+            parsing_job = session.get(ParsingJob, job_id)
+            page = await chromium_module.chromium.new_page()
+            try:
+                item = await parser.parse_single_vacancy(page,vacancy_id=vacancy.vacancy_id)
+                parsing_job.saved_count +=1
+                session.add(parsing_job)
+                return item
+            except Exception as e:
+                raise e
+            finally:
+                await page.close()

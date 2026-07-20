@@ -4,25 +4,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .general import GeneralLLMClient
-from .gemini import GeminiClient
 from .qwen import QwenClient
 from pydantic import BaseModel,Field
 
 _MODEL="qwen2.5:7b"
-_GEMINI_MODEL = "gemini-3.5-flash"
-# class CoverLetterPrompt(GeneralLLMClient):
-# def __init__(self):
-#         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        
-#         gemini_model = ChatGoogleGenerativeAI(
-#             model=_GEMINI_MODEL,
-#             temperature=0,
-#             max_tokens=4096,
-#         )
-        
-#         ollama_model = ChatOllama(model=_MODEL, temperature=0, base_url=base_url,top_k=5)
-#         model = gemini_model.with_fallbacks([ollama_model])
-#         super().__init__(model=model)
 
 
 # "Добрый день меня заинтересовала ваша вакансия. Думаю мой релевантный опыт подойдет под ваши требования и нужды."

@@ -27,8 +27,8 @@ class HHVacancyParser(GeneralVacancyParser):
     def evaluate_vacancy_page(self):
         return """
         ()=>{
-            const job_title = document.querySelector('[data-qa="vacancy-title"]')?.textContent?.trim() || null;
-            const job_text = document.querySelector('[data-qa="vacancy-description"]')?.textContent?.trim() || null;
+            const job_title = document.querySelector('[data-qa="vacancy-title"]')?.textContent?.trim() || '';
+            const job_text = document.querySelector('[data-qa="vacancy-description"]')?.textContent?.trim() || '';
             return {
                 job_title,
                 job_text,
