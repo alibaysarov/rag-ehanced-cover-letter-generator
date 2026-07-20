@@ -7,6 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 class CV(SQLModel, table=True):
     """CV/Resume model"""
+
     __tablename__ = "cvs"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -30,8 +31,7 @@ class CV(SQLModel, table=True):
     # Relationships
     user: Optional["User"] = Relationship(back_populates="cvs")
     letters: List["Letter"] = Relationship(
-        back_populates="cv", 
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+        back_populates="cv", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
     )
 
     def __repr__(self):

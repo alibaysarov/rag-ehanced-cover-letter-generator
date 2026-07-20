@@ -2,8 +2,8 @@ from pydantic import BaseModel
 
 
 class AutoParseResponse(BaseModel):
-    total:int
-    generated:int
+    total: int
+    generated: int
 
 
 class StartParseRequest(BaseModel):

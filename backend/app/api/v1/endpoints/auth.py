@@ -20,28 +20,34 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+
 class RegisterRequest(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     email: EmailStr
     password: str
 
+
 class UpdateProfileRequest(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     email: EmailStr | None = None
 
+
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=8)
+
 
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
 
+
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
 
 class UserResponse(BaseModel):
     id: int
@@ -52,13 +58,17 @@ class UserResponse(BaseModel):
     is_verified: bool
     created_at: str
 
+
 # Router
 router = APIRouter()
 
 # Type alias for cleaner code
 UserRepo = Annotated[UserRepository, Depends(get_user_repository)]
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(
     register_data: RegisterRequest,
     user_repo: UserRepo,
@@ -71,7 +81,7 @@ async def register(
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with this email already exists"
+            detail="User with this email already exists",
         )
 
     # Hash password
@@ -83,22 +93,20 @@ async def register(
             email=register_data.email,
             password_hash=password_hash,
             first_name=register_data.first_name,
-            last_name=register_data.last_name
+            last_name=register_data.last_name,
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create user: {str(e)}"
+            detail=f"Failed to create user: {str(e)}",
         )
 
     # Generate tokens
     access_token = jwt_service.create_access_token(user.email)
     refresh_token = jwt_service.create_refresh_token(user.email)
 
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
@@ -114,14 +122,13 @@ async def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     # Check if user is active
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is deactivated"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Account is deactivated"
         )
 
     # Verify password
@@ -129,17 +136,15 @@ async def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     # Generate tokens
     access_token = jwt_service.create_access_token(user.email)
     refresh_token = jwt_service.create_refresh_token(user.email)
 
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(
@@ -149,35 +154,37 @@ async def refresh_token(
     """Refresh access token using refresh token"""
     try:
         payload = jwt_service.decode_jwt(refresh_data.refresh_token)
+        if payload is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         email = payload.get("email")
 
         if not email:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid refresh token",
-                headers={"WWW-Authenticate": "Bearer"}
+                headers={"WWW-Authenticate": "Bearer"},
             )
 
         access_token = jwt_service.create_access_token(email)
         refresh_token = jwt_service.create_refresh_token(email)
 
-        return TokenResponse(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token)
     except HTTPException:
         raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
+
 @router.get("/me", response_model=UserResponse)
-def get_current_user_info(
-    user:CurrentUser
-):
+def get_current_user_info(user: CurrentUser):
     """Get current user information"""
 
     return UserResponse(
@@ -187,14 +194,15 @@ def get_current_user_info(
         last_name=user.last_name,
         is_active=user.is_active,
         is_verified=user.is_verified,
-        created_at=user.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        created_at=user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
+
 
 @router.put("/me", response_model=UserResponse)
 async def update_current_user_info(
     update_data: UpdateProfileRequest,
     user_repo: UserRepo,
-    user:CurrentUser,
+    user: CurrentUser,
     db: DBSession,
 ):
 
@@ -212,8 +220,7 @@ async def update_current_user_info(
     updated_user = await user_repo.update_user(user.id, **fields)
     if updated_user is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"   
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
     return UserResponse(
         id=updated_user.id,
@@ -225,16 +232,19 @@ async def update_current_user_info(
         created_at=updated_user.created_at.isoformat(),
     )
 
+
 @router.post("/change-password")
 async def change_password(
-    user:CurrentUser,
+    user: CurrentUser,
     payload: ChangePasswordRequest,
     user_repo: UserRepo,
     password_service: PasswordService = Depends(get_password_service),
 ):
     """Change current user password"""
 
-    if not password_service.verify_password(payload.current_password, user.password_hash):
+    if not password_service.verify_password(
+        payload.current_password, user.password_hash
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid current password",
@@ -245,7 +255,8 @@ async def change_password(
 
     return {"message": "Password updated successfully"}
 
+
 @router.post("/logout")
-def logout(user:CurrentUser):
+def logout(user: CurrentUser):
     """Logout user (client should discard tokens)"""
     return {"message": "Logged out successfully"}

@@ -18,14 +18,12 @@ logger = logging.getLogger(__name__)
 
 class VacancyScrapingService:
     def __init__(self):
-        self._parsers:list[GeneralVacancyParser] = [
+        self._parsers: list[GeneralVacancyParser] = [
             HHVacancyParser(),
             GeekJobVacancyParser(),
         ]
-        
-    
-        
-    async def run_parse_job(self,job_id: int, query: str, user_id: int) -> None:
+
+    async def run_parse_job(self, job_id: int, query: str, user_id: int) -> None:
         """
         Run a full parse in the background. Progress is persisted to the
         ParsingJob row in the DB; SSE clients read it from there, so the parse is
@@ -39,35 +37,50 @@ class VacancyScrapingService:
                     session.add(parsing_job)
                     session.commit()
 
-            result:list[Vacancy] = []
+            result: list[Vacancy] = []
             async with with_timer("browser"):
                 semaphore = asyncio.Semaphore(4)
                 for parser in self._parsers:
                     try:
                         logger.info(f"Started parsing {parser.get_name()}")
-                        vacancy_items = await parser.get_list(chromium_module.chromium,query,job_id)
+                        vacancy_items = await parser.get_list(
+                            chromium_module.chromium, query, job_id
+                        )
                         result.extend(vacancy_items)
                         with Session(engine) as session:
                             parsing_job = session.get(ParsingJob, job_id)
                             if parsing_job:
-                                parsing_job.total_found = parsing_job.total_found + len(vacancy_items)
+                                parsing_job.total_found = parsing_job.total_found + len(
+                                    vacancy_items
+                                )
                                 session.commit()
-                                
+
                                 results = await asyncio.gather(
-                                    *[self._parse_single_vacancy(semaphore,session,parser, vacancy=vacancy,job_id=job_id) for vacancy in vacancy_items[0:10]],
+                                    *[
+                                        self._parse_single_vacancy(
+                                            semaphore,
+                                            session,
+                                            parser,
+                                            vacancy=vacancy,
+                                            job_id=job_id,
+                                        )
+                                        for vacancy in vacancy_items[0:10]
+                                    ],
                                     return_exceptions=True,
                                 )
                                 session.commit()
-                                
+
                                 for res in results:
                                     if isinstance(res, Exception):
-                                        logger.warning(f"[job={job_id}] Vacancy processing error: {res}")
+                                        logger.warning(
+                                            f"[job={job_id}] Vacancy processing error: {res}"
+                                        )
                                     else:
-                                        logger.info("item completed",res)
+                                        logger.info("item completed", res)
                     except Exception as e:
                         logger.error(f"[job={job_id}] Parse failed: {e}")
             logger.info(f"total items: {len(result)} {result}")
-            
+
             with Session(engine) as session:
                 parsing_job = session.get(ParsingJob, job_id)
                 if parsing_job:
@@ -75,7 +88,7 @@ class VacancyScrapingService:
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
                     session.commit()
-            
+
         except Exception as e:
             logger.error(f"[job={job_id}] Parse failed: {e}")
             with Session(engine) as session:
@@ -86,15 +99,23 @@ class VacancyScrapingService:
                     parsing_job.finished_at = datetime.utcnow()
                     session.add(parsing_job)
                     session.commit()
-    
-    
-    async def _parse_single_vacancy(self,semaphore:asyncio.Semaphore,session:Session,parser:GeneralVacancyParser,vacancy:Vacancy,job_id:int):
+
+    async def _parse_single_vacancy(
+        self,
+        semaphore: asyncio.Semaphore,
+        session: Session,
+        parser: GeneralVacancyParser,
+        vacancy: Vacancy,
+        job_id: int,
+    ):
         async with semaphore:
             parsing_job = session.get(ParsingJob, job_id)
             page = await chromium_module.chromium.new_page()
             try:
-                item = await parser.parse_single_vacancy(page,vacancy_id=vacancy.vacancy_id)
-                parsing_job.saved_count +=1
+                item = await parser.parse_single_vacancy(
+                    page, vacancy_id=vacancy.vacancy_id
+                )
+                parsing_job.saved_count += 1
                 session.add(parsing_job)
                 return item
             except Exception as e:

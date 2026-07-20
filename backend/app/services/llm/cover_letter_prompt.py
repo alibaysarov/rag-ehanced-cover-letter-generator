@@ -7,13 +7,13 @@ from .models.ollama import OllamaModel
 # "Добрый день меня заинтересовала ваша вакансия. Думаю мой релевантный опыт подойдет под ваши требования и нужды."
 
 
-'''
+"""
 Шаг 1 (маленькая модель): классифицируй роль вакансии → "backend"
 Шаг 2 (маленькая модель): классифицируй каждый проект → ["backend", "frontend", "backend"]
 Шаг 3 (код, не LLM): отфильтруй проекты программно по совпадению категорий
 Шаг 4 (код, не LLM): найди пересечение technologies через set intersection
 Шаг 5 (LLM, любого размера): сгенерируй текст письма на основе уже отфильтрованных, готовых данных
-'''
+"""
 
 """
 TECH_CATEGORY_MAP = {
@@ -42,23 +42,29 @@ keywords vector search
 """
 
 
-
 class CoverLetterResult(BaseModel):
-    content:str = Field(...,description="Текст письма")
+    content: str = Field(..., description="Текст письма")
 
 
+_MODEL = "qwen2.5:7b"
 
-_MODEL="qwen2.5:7b"
+
 class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
-
     def __init__(self):
-        
-        model = OllamaModel(model=_MODEL,num_ctx=8192,num_predict=1024, temperature=0.1,reasoning=False)
+
+        model = OllamaModel(
+            model=_MODEL,
+            num_ctx=8192,
+            num_predict=1024,
+            temperature=0.1,
+            reasoning=False,
+        )
         super().__init__(model.model)
         self.model = model
+
     def get_schema(self):
         return CoverLetterResult
-    
+
     @property
     def prompt_template(self):
 
@@ -92,7 +98,7 @@ class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
 - Если второго проекта в данных нет — не добавляй его.
 - Если есть имя и фамилия кандидата — напиши "С уважением, Имя Фамилия". Если имени нет — напиши одно предложение о готовности к интервью вместо подписи.
 """
-        
+
         # system_message = """Ты пишешь короткое сопроводительное письмо от лица IT-специалиста.
 
         #     Пиши от первого лица, на языке из поля lang (если пусто — по-русски).
@@ -105,11 +111,10 @@ class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
         #     Мои достижения и проекты:
 
         #     [Название проекта]:
-        #     - [что сделал], используя [технология из списка технологий вакансии]. 
-        #     - [Второе предложение с результатом — используй число, например RPS, мс или % прироста]. 
+        #     - [что сделал], используя [технология из списка технологий вакансии].
+        #     - [Второе предложение с результатом — используй число, например RPS, мс или % прироста].
         #     Стек: [2-3 технологии из списка технологий вакансии].
 
-            
         #     [Если есть имя и фамилия — напиши "С уважением, Имя Фамилия". Если имени нет — напиши одно предложение о готовности к интервью.]
 
         #     Правила:
@@ -129,5 +134,5 @@ class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
 
             Напиши письмо по шаблону выше.
         """
-        
-        return ChatPromptTemplate.from_messages([system_message,human_message])
+
+        return ChatPromptTemplate.from_messages([system_message, human_message])

@@ -16,9 +16,10 @@ n=30
 """
 
 
-def get_chunks(data,n:int=3):
+def get_chunks(data, n: int = 3):
     chunks = [data[i : i + n] for i in range(0, len(data), n)]
     return chunks
+
 
 @time_performance
 def main():
@@ -26,21 +27,15 @@ def main():
     with open(test_file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
-
     if data is not None:
         result = []
         data = data[0:20]
         data_chunks = get_chunks(data)
         for chunk in data_chunks:
-            messages = [
-                llm.prompt_template.invoke(item)
-                for item in chunk
-            ]
-            items = llm.get_model.batch(messages,config={
-                "max_concurrency": 4
-            })
+            messages = [llm.prompt_template.invoke(item) for item in chunk]
+            items = llm.get_model.batch(messages, config={"max_concurrency": 4})
             result.append(items)
-        print("RESULT\n",len(data), result)
+        print("RESULT\n", len(data), result)
 
 
 @time_performance
@@ -49,15 +44,15 @@ def loop():
     with open(test_file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
-
     if data is not None:
         result = []
         data = data
         for item in data:
             response = llm.get_sync_response(item)
             result.append(response)
-        
-        print("RESULT\n",len(data), result)
+
+        print("RESULT\n", len(data), result)
+
 
 # loop()
 main()

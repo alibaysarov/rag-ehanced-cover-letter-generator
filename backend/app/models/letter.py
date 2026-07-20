@@ -7,6 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 class Letter(SQLModel, table=True):
     """Generated cover letter model"""
+
     __tablename__ = "letters"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -21,7 +22,9 @@ class Letter(SQLModel, table=True):
 
     # Generated content
     letter_content: str = Field(nullable=False)
-    job_requirements: Optional[str] = Field(default=None)  # Extracted/analyzed requirements
+    job_requirements: Optional[str] = Field(
+        default=None
+    )  # Extracted/analyzed requirements
 
     # Generation metadata
     generation_time: Optional[int] = Field(default=None)  # Time in seconds
@@ -36,5 +39,9 @@ class Letter(SQLModel, table=True):
     cv: Optional["CV"] = Relationship(back_populates="letters")
 
     def __repr__(self):
-        title_preview = self.job_title[:30] if len(self.job_title) > 30 else self.job_title
-        return f"<Letter(id={self.id}, cv_id={self.cv_id}, job_title={title_preview}...)>"
+        title_preview = (
+            self.job_title[:30] if len(self.job_title) > 30 else self.job_title
+        )
+        return (
+            f"<Letter(id={self.id}, cv_id={self.cv_id}, job_title={title_preview}...)>"
+        )

@@ -41,7 +41,9 @@ _gen_progress: dict[int, GenProgress] = {}
 def _get_gpu_semaphore() -> asyncio.Semaphore:
     global _GPU_SEMAPHORE
     if _GPU_SEMAPHORE is None:
-        _GPU_SEMAPHORE = asyncio.Semaphore(2)  # RTX 4060 8GB, max 2 concurrent mistral:7b
+        _GPU_SEMAPHORE = asyncio.Semaphore(
+            2
+        )  # RTX 4060 8GB, max 2 concurrent mistral:7b
     return _GPU_SEMAPHORE
 
 
@@ -95,8 +97,7 @@ async def _generate_one(
                 user_repo = UserRepository(db)
                 project_repository = ProjectRepository(db)
                 service = CoverLetterService(
-                    user_repo=user_repo,
-                    project_repository=project_repository
+                    user_repo=user_repo, project_repository=project_repository
                 )
 
                 full_text = ""
@@ -112,16 +113,22 @@ async def _generate_one(
                     db.commit()
 
         except Exception as e:
-            logger.error(f"Failed to generate cover letter for vacancy {vacancy_id}: {e}")
+            logger.error(
+                f"Failed to generate cover letter for vacancy {vacancy_id}: {e}"
+            )
 
         finally:
             counter["generated"] += 1
-            progress.events.append(json.dumps({
-                "generated": counter["generated"],
-                "total": total,
-                "status": "running",
-                "vacancy_id": vacancy_id,
-            }))
+            progress.events.append(
+                json.dumps(
+                    {
+                        "generated": counter["generated"],
+                        "total": total,
+                        "status": "running",
+                        "vacancy_id": vacancy_id,
+                    }
+                )
+            )
 
 
 async def run_batch_generation(parsing_job_id: int, user_id: int) -> None:
@@ -136,23 +143,31 @@ async def run_batch_generation(parsing_job_id: int, user_id: int) -> None:
 
         total = len(vacancies)
         if total == 0:
-            progress.events.append(json.dumps({"generated": 0, "total": 0, "status": "done"}))
+            progress.events.append(
+                json.dumps({"generated": 0, "total": 0, "status": "done"})
+            )
             return
 
         counter = {"generated": 0}
         tasks = [
             asyncio.create_task(
-                _generate_one(v.id, v.job_title, v.job_text, user_id, progress, counter, total)
+                _generate_one(
+                    v.id, v.job_title, v.job_text, user_id, progress, counter, total
+                )
             )
             for v in vacancies
         ]
         await asyncio.gather(*tasks)
 
-        progress.events.append(json.dumps({"generated": total, "total": total, "status": "done"}))
+        progress.events.append(
+            json.dumps({"generated": total, "total": total, "status": "done"})
+        )
 
     except Exception as e:
         logger.error(f"Batch generation failed for parsing_job {parsing_job_id}: {e}")
-        progress.events.append(json.dumps({"generated": 0, "total": 0, "status": "failed"}))
+        progress.events.append(
+            json.dumps({"generated": 0, "total": 0, "status": "failed"})
+        )
 
     finally:
         _running_generations.discard(parsing_job_id)

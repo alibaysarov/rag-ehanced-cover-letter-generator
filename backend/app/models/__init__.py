@@ -8,4 +8,14 @@ from .project import Project
 from .sent_cover_letter import SentCoverLetter
 from .user import User
 
-__all__ = ["Base", "BaseModel", "User", "CV", "Letter", "SentCoverLetter", "ParsingJob", "AutoParsedJob","Project"]
+__all__ = [
+    "Base",
+    "BaseModel",
+    "User",
+    "CV",
+    "Letter",
+    "SentCoverLetter",
+    "ParsingJob",
+    "AutoParsedJob",
+    "Project",
+]

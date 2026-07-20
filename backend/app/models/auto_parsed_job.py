@@ -10,7 +10,9 @@ class AutoParsedJob(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True, nullable=False)
-    parsing_job_id: int = Field(foreign_key="parsing_jobs.id", index=True, nullable=True)
+    parsing_job_id: int = Field(
+        foreign_key="parsing_jobs.id", index=True, nullable=True
+    )
     vacancy_id: str = Field(nullable=True)
     url: str = Field(nullable=False)
     job_title: str = Field(nullable=False)
@@ -20,4 +22,6 @@ class AutoParsedJob(SQLModel, table=True):
     is_viewed: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_generated: bool = Field(default=False)
-    cover_letter_text: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
+    cover_letter_text: Optional[str] = Field(
+        default=None, sa_column=Column(Text, nullable=True)
+    )

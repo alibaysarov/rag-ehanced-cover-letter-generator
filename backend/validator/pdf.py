@@ -1,12 +1,10 @@
-
-
 from http.client import HTTPException
 
 from fastapi import UploadFile
 
 
 async def validate_pdf_and_get_path(file: UploadFile) -> dict:
-    if not file.filename.lower().endswith('.pdf'):
+    if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
     # Validate file size (max 10MB)
@@ -17,7 +15,7 @@ async def validate_pdf_and_get_path(file: UploadFile) -> dict:
     # Save file temporarily
     import tempfile
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
         temp_file.write(file_content)
         temp_file_path = temp_file.name
     return {"temp_file_path": temp_file_path, "file_content": file_content}

@@ -29,6 +29,7 @@ async def check_db_connection() -> bool:
         logger.error(f"Database connection check failed: {e}")
         return False
 
+
 async def get_db() -> Generator[AsyncSession, None, None]:
     """Dependency to get database session"""
     async with async_session_maker() as session:

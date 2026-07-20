@@ -19,20 +19,20 @@ class ParseDto(BaseModel):
     url: str
 
 
-
-
 @router.post("")
 async def parse(
-    user:CurrentUser,
+    user: CurrentUser,
     body: ParseDto,
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
-    
+
     cached = await redis_db.redis_client.get(body.url)
     if cached is None:
         text = await parse_hh(body.url)
         if not text:
-            raise HTTPException(status_code=502, detail="Не удалось распарсить вакансию по URL")
+            raise HTTPException(
+                status_code=502, detail="Не удалось распарсить вакансию по URL"
+            )
         await redis_db.redis_client.set(body.url, text, ex=3600)
     else:
         text = cached

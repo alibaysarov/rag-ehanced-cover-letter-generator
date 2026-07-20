@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.post("/save", response_model=SaveProjectsResponse)
 async def save_projects(
-    user:CurrentUser,
+    user: CurrentUser,
     body: SaveProjectsRequest,
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
@@ -33,17 +33,17 @@ async def save_projects(
 
 @router.get("/", response_model=ListProjectsResponse)
 async def list_projects(
-    user:CurrentUser,
+    user: CurrentUser,
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):
-    
-    projects =await projects_service.list_user_projects(user_id=user.id)
+
+    projects = await projects_service.list_user_projects(user_id=user.id)
     return ListProjectsResponse(projects=[ProjectResponse(**p) for p in projects])
 
 
 @router.put("/{project_id}", response_model=ProjectResponse)
 async def update_project(
-    user:CurrentUser,
+    user: CurrentUser,
     project_id: str,
     body: UpdateProjectRequest,
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
@@ -67,7 +67,7 @@ async def update_project(
 
 @router.delete("/{project_id}")
 async def delete_project(
-    user:CurrentUser,
+    user: CurrentUser,
     project_id: str,
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
 ):

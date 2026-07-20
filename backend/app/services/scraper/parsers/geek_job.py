@@ -5,19 +5,18 @@ from app.services.scraper.parsers.general import GeneralVacancyParser
 
 class GeekJobVacancyParser(GeneralVacancyParser):
     def __init__(self):
-        super().__init__("geek_job","https://geekjob.ru/vacancies", False)
-    
-    def get_single_url(self,vacancy_id)->str:
+        super().__init__("geek_job", "https://geekjob.ru/vacancies", False)
+
+    def get_single_url(self, vacancy_id) -> str:
         return f"https://geekjob.ru/vacancy/{vacancy_id}"
-    
-    def evaluate_pagination(self)->str:
+
+    def evaluate_pagination(self) -> str:
         return """
         () => [...document.querySelectorAll('[data-qa="pager-page"]')]
                 .map(item => item.textContent?.trim() || null)
                 .filter(v => v != null)
         """
-    
-    
+
     def evaluate_vacancy_page(self):
         return """
         ()=>{
@@ -30,8 +29,7 @@ class GeekJobVacancyParser(GeneralVacancyParser):
             }
         }
         """
-    
-    
+
     def format_url(self, url: str, **kwargs) -> str:
         q_params = {
             "qs": kwargs["text"],
@@ -39,8 +37,8 @@ class GeekJobVacancyParser(GeneralVacancyParser):
         if "page" in kwargs:
             q_params["page"] = kwargs["page"]
         return f"{url}?{urlencode(q_params)}"
-    
-    def evaluate_vacancy_list(self)->str:
+
+    def evaluate_vacancy_list(self) -> str:
         return """
         
             () => [...document.querySelectorAll('ul.collection.serp-list li')]

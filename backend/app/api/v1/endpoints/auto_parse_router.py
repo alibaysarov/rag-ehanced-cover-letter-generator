@@ -34,7 +34,9 @@ async def start_parse_test(
     user: CurrentUser,
     body: StartParseRequest,
     db: DBSession,
-    vacancy_scraping_service: VacancyScrapingService = Depends(get_vacancy_scraping_service),
+    vacancy_scraping_service: VacancyScrapingService = Depends(
+        get_vacancy_scraping_service
+    ),
 ):
     parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
     db.add(parsing_job)
@@ -42,14 +44,18 @@ async def start_parse_test(
     await db.refresh(parsing_job)
     if parsing_job.id is None:
         logger.error("failed to create parsing job")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Возникла ошибка попробуйте позже")
-    
-    await vacancy_scraping_service.run_parse_job(parsing_job.id,query=body.query,user_id=user.id)
-    
-    return {
-        "status":"Success"
-    }
-    
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Возникла ошибка попробуйте позже",
+        )
+
+    await vacancy_scraping_service.run_parse_job(
+        parsing_job.id, query=body.query, user_id=user.id
+    )
+
+    return {"status": "Success"}
+
+
 @router.post("/start")
 async def start_parse(
     user: CurrentUser,
@@ -61,10 +67,13 @@ async def start_parse(
     db.add(parsing_job)
     await db.commit()
     await db.refresh(parsing_job)
-    
+
     if parsing_job.id is None:
         logger.error("failed to create parsing job")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Возникла ошибка попробуйте позже")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Возникла ошибка попробуйте позже",
+        )
 
     launch_parse_job(parsing_job.id, body.query, user.id)
 
@@ -173,13 +182,12 @@ async def start_test_generation(
         raise HTTPException(status_code=404, detail="Parsing job not found")
     if job.status != "done":
         raise HTTPException(status_code=400, detail="Parsing job is not done yet")
-    
+
     vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
     start_batch(parsing_job_id, vacancies, user.first_name, user.last_name)
     return {
         "status": "started",
     }
-
 
 
 # @router.post("/jobs/{parsing_job_id}/generate")
@@ -220,8 +228,7 @@ async def get_generate_status(
         raise HTTPException(status_code=404, detail="Parsing job not found")
 
     result = await db.execute(
-        select(AutoParsedJob)
-        .where(AutoParsedJob.parsing_job_id == parsing_job_id)
+        select(AutoParsedJob).where(AutoParsedJob.parsing_job_id == parsing_job_id)
     )
     vacancies = result.scalars().all()
 
@@ -289,15 +296,17 @@ async def stream_progress(
             raise HTTPException(status_code=404, detail="Parsing job not found")
 
     def _serialize(job: ParsingJob) -> str:
-        return json.dumps({
-            "id": job.id,
-            "query": job.query,
-            "status": job.status,
-            "saved_count": job.saved_count,
-            "total_found": job.total_found,
-            "created_at": job.created_at.isoformat() if job.created_at else None,
-            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
-        })
+        return json.dumps(
+            {
+                "id": job.id,
+                "query": job.query,
+                "status": job.status,
+                "saved_count": job.saved_count,
+                "total_found": job.total_found,
+                "created_at": job.created_at.isoformat() if job.created_at else None,
+                "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+            }
+        )
 
     async def event_generator() -> AsyncIterator[str]:
         # Poll the DB row, which the background worker keeps up to date. This

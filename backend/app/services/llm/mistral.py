@@ -9,10 +9,11 @@ from app.services.llm.general import GeneralLLMClient
 class MistralClient(GeneralLLMClient):
     def __init__(self):
         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        
-        model = ChatOllama(model="mistral:7b",format="json", temperature=0.7, base_url=base_url)
-        super().__init__(model=model)
 
+        model = ChatOllama(
+            model="mistral:7b", format="json", temperature=0.7, base_url=base_url
+        )
+        super().__init__(model=model)
 
     def get_schema(self):
         return None
@@ -35,7 +36,12 @@ class MistralClient(GeneralLLMClient):
         - {language_instruction} Объём 200-300 слов.
         """
 
-        return ChatPromptTemplate.from_messages([
-            ("system", "You are a professional HR specialist. Write the cover letter in the language of the job requirements."),
-            ("human", human),
-        ])
+        return ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "You are a professional HR specialist. Write the cover letter in the language of the job requirements.",
+                ),
+                ("human", human),
+            ]
+        )

@@ -2,8 +2,8 @@ import logging
 from datetime import date, datetime
 from typing import Optional
 
-from sqlmodel import col, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col, func, select
 
 from app.models.sent_cover_letter import SentCoverLetter
 
@@ -24,7 +24,14 @@ class SentCoverLetterRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, user_id: int, url: Optional[str], job_name: Optional[str], letter_text: str, generation_time_ms: Optional[int] = None) -> SentCoverLetter:
+    async def create(
+        self,
+        user_id: int,
+        url: Optional[str],
+        job_name: Optional[str],
+        letter_text: str,
+        generation_time_ms: Optional[int] = None,
+    ) -> SentCoverLetter:
         record = SentCoverLetter(
             user_id=user_id,
             url=url,
@@ -51,15 +58,17 @@ class SentCoverLetterRepository:
         stmt = self._apply_filters(stmt, date_from, date_to, type_filter)
 
         count_stmt = select(func.count()).select_from(stmt.subquery())
-        total: int =await self.session.execute(count_stmt).one()
-
+        res = await self.session.execute(count_stmt)
+        total: int = res.scalar_one()
         stmt = stmt.order_by(col(SentCoverLetter.created_at).desc())
         stmt = stmt.offset((page - 1) * page_size).limit(page_size)
         result = await self.session.execute(stmt)
-        items = list(result.all())
+        items = list(result.scalars().all())
         return items, total
 
-    async def update_accepted(self, record_id: int, user_id: int, is_accepted: bool) -> Optional[SentCoverLetter]:
+    async def update_accepted(
+        self, record_id: int, user_id: int, is_accepted: bool
+    ) -> Optional[SentCoverLetter]:
         stmt = select(SentCoverLetter).where(
             SentCoverLetter.id == record_id,
             SentCoverLetter.user_id == user_id,
@@ -85,7 +94,7 @@ class SentCoverLetterRepository:
         stmt = self._apply_filters(stmt, date_from, date_to, type_filter)
         stmt = stmt.order_by(col(SentCoverLetter.created_at).asc())
         result = await self.session.execute(stmt)
-        return list(result.all())
+        return list(result.scalars().all())
 
     async def get_summary(
         self,
@@ -94,7 +103,9 @@ class SentCoverLetterRepository:
         date_to: Optional[date] = None,
     ) -> list[dict]:
         """Return per-day counts grouped by type, sorted by date ascending."""
-        records = await self.get_for_export(user_id, date_from, date_to, type_filter=None)
+        records = await self.get_for_export(
+            user_id, date_from, date_to, type_filter=None
+        )
 
         # Python-side aggregation: group by date + type
         aggregated: dict[str, dict] = {}
@@ -141,11 +152,23 @@ class SentCoverLetterRepository:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _apply_filters(self, stmt, date_from: Optional[date], date_to: Optional[date], type_filter: Optional[str]):
+    def _apply_filters(
+        self,
+        stmt,
+        date_from: Optional[date],
+        date_to: Optional[date],
+        type_filter: Optional[str],
+    ):
         if date_from:
-            stmt = stmt.where(SentCoverLetter.created_at >= datetime.combine(date_from, datetime.min.time()))
+            stmt = stmt.where(
+                SentCoverLetter.created_at
+                >= datetime.combine(date_from, datetime.min.time())
+            )
         if date_to:
-            stmt = stmt.where(SentCoverLetter.created_at <= datetime.combine(date_to, datetime.max.time()))
+            stmt = stmt.where(
+                SentCoverLetter.created_at
+                <= datetime.combine(date_to, datetime.max.time())
+            )
         if type_filter:
             stmt = stmt.where(SentCoverLetter.type == type_filter)
         return stmt

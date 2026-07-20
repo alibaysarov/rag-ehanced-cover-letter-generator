@@ -23,6 +23,12 @@ sort-imports:
 ruff-remove-imports:
 	ruff check --select F401 --fix .
 
+format:
+	ruff format .
+
+pre-commit-fix: sort-imports ruff-remove-imports format
+	git add -u
+
 # Database shell
 dbshell:
 	docker-compose exec postgres psql -U cover_letter_user -d cover_letter_db

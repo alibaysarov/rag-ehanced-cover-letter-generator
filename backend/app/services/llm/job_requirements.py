@@ -1,4 +1,3 @@
-
 from langchain_core.prompts import ChatPromptTemplate
 
 from app.schemas.llm_outputs.job_requirements import JobRequirement
@@ -10,44 +9,39 @@ from .qwen import QwenClient
 
 
 class JobParsePrompt(GeneralLLMClient[JobRequirement]):
-
     def __init__(self):
-        
-        
+
         model = JsonParseModel()
         super().__init__(model=model.model)
-        
+
     def get_schema(self):
         return JobRequirement
 
     @property
     def prompt_template(self):
-        system="""
+        system = """
             Вытащи эти данные из текста в виде json
             id=id вакансии
             name=название вакансии
             technologies = Список технологий
         """
-        
-    
+
         human = """
             {job_text}
         """
 
-        return ChatPromptTemplate.from_messages([
-            ("system", system),
-            ("human", human),
-        ])
-        
+        return ChatPromptTemplate.from_messages(
+            [
+                ("system", system),
+                ("human", human),
+            ]
+        )
 
 
 class CVImportPrompt(QwenClient):
-
-    
     def get_schema(self):
         return CVImportModel
-    
-    
+
     @property
     def prompt_template(self):
         system = """Ты извлекаешь структурированные данные из резюме в JSON.
@@ -91,7 +85,9 @@ class CVImportPrompt(QwenClient):
             {cv_text}
             ---"""
 
-        return ChatPromptTemplate.from_messages([
-            ("system", system),
-            ("human", human),
-        ])
+        return ChatPromptTemplate.from_messages(
+            [
+                ("system", system),
+                ("human", human),
+            ]
+        )

@@ -5,12 +5,12 @@ from app.services.scraper.parsers.general import GeneralVacancyParser
 
 class HHVacancyParser(GeneralVacancyParser):
     def __init__(self):
-        super().__init__("hh.ru","https://hh.ru/search/vacancy", True)
-    
-    def get_single_url(self,vacancy_id)->str:
+        super().__init__("hh.ru", "https://hh.ru/search/vacancy", True)
+
+    def get_single_url(self, vacancy_id) -> str:
         return f"https://hh.ru/vacancy/{vacancy_id}"
-    
-    def evaluate_vacancy_list(self)->str:
+
+    def evaluate_vacancy_list(self) -> str:
         return """
         
             () => [...document.querySelectorAll('[data-qa^=vacancy-serp__vacancy]')]
@@ -24,7 +24,7 @@ class HHVacancyParser(GeneralVacancyParser):
                     })
                     .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
         """
-    
+
     def evaluate_vacancy_page(self):
         return """
         ()=>{
@@ -36,15 +36,14 @@ class HHVacancyParser(GeneralVacancyParser):
             }
         }
         """
-    
-    def evaluate_pagination(self)->str:
+
+    def evaluate_pagination(self) -> str:
         return """
         () => [...document.querySelectorAll('[data-qa="pager-page"]')]
                 .map(item => item.textContent?.trim() || null)
                 .filter(v => v != null)
         """
-    
-    
+
     def format_url(self, url: str, **kwargs) -> str:
         q_params = {
             "text": kwargs["text"],
@@ -52,6 +51,3 @@ class HHVacancyParser(GeneralVacancyParser):
         if "page" in kwargs:
             q_params["page"] = kwargs["page"]
         return f"{url}?{urlencode(q_params)}"
-    
-    
-        

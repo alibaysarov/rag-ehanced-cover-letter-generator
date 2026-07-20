@@ -6,12 +6,13 @@ class Skill(BaseModel):
 
 
 class JobRequirement(BaseModel):
-    id: int|str = Field(..., description="id вакансии")
-    name: str = Field(...,description="Название вакансии")
-    technologies:list[str] = Field(
+    id: int | str = Field(..., description="id вакансии")
+    name: str = Field(..., description="Название вакансии")
+    technologies: list[str] = Field(
         default_factory=list,
         description="Список технологий",
     )
+
     @model_validator(mode="before")
     @classmethod
     def fill_missing_name(cls, data):

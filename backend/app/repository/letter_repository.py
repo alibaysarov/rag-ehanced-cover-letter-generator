@@ -10,11 +10,20 @@ class LetterRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_letter(self, cv_id: int, source_id: int, job_title: str,
-                           letter_content: str, job_description: Optional[str] = None,
-                           company_name: Optional[str] = None, job_url: Optional[str] = None,
-                           job_requirements: Optional[str] = None, generation_time: Optional[int] = None,
-                           model_used: str = "gpt-4o", status: str = "generated") -> Letter:
+    async def create_letter(
+        self,
+        cv_id: int,
+        source_id: int,
+        job_title: str,
+        letter_content: str,
+        job_description: Optional[str] = None,
+        company_name: Optional[str] = None,
+        job_url: Optional[str] = None,
+        job_requirements: Optional[str] = None,
+        generation_time: Optional[int] = None,
+        model_used: str = "gpt-4o",
+        status: str = "generated",
+    ) -> Letter:
         """Create a new letter record"""
         letter = Letter(
             cv_id=cv_id,
@@ -27,7 +36,7 @@ class LetterRepository:
             job_requirements=job_requirements,
             generation_time=generation_time,
             model_used=model_used,
-            status=status
+            status=status,
         )
         self.session.add(letter)
         await self.session.commit()

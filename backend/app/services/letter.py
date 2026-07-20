@@ -6,21 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repository.cv_repository import CVRepository
 from app.repository.letter_repository import LetterRepository
 from app.schemas.rag import RAGSearchResult
-from app.services import PdfService
 from app.services.llm.agents.job_requirement import JobRequirementAgent
 from app.services.llm.mistral import MistralClient
 from app.storage.repository.qdrant import QdrantStorage
 
+from .pdf import PdfService
 
-class LetterService():
+
+class LetterService:
     def __init__(self, session: AsyncSession = None):
         self.client = OpenAI()
-        # self.llm = OpenAiClient()
         self.llm = MistralClient()
         self.job_requirement_agent = JobRequirementAgent()
         self.async_client = AsyncOpenAI()
         self.storage = QdrantStorage()
-        
+
         self.session = session
         self.pdf_service = PdfService(session)
         self.cv_repository = CVRepository(session) if session else None
@@ -44,16 +44,13 @@ class LetterService():
         messages = [
             {
                 "role": "user",
-                "content": f"Найди и суммируй основные требования и обязанности для вакансии '{job_title}'{' в компании ' + company if company else ''}. Используй поиск в интернете для получения актуальной информации."
+                "content": f"Найди и суммируй основные требования и обязанности для вакансии '{job_title}'{' в компании ' + company if company else ''}. Используй поиск в интернете для получения актуальной информации.",
             }
         ]
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-5-mini",
-                messages=messages,
-                max_tokens=800,
-                temperature=0.7
+                model="gpt-5-mini", messages=messages, max_tokens=800, temperature=0.7
             )
 
             return response.choices[0].message.content
@@ -72,15 +69,15 @@ class LetterService():
         Returns:
             str: Сгенерированное сопроводительное письмо
         """
-        
 
         # Получаем ключевые навыки и опыт из резюме
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = self.__search_resume_data(skills_query,source_id=source_id)
-        
+        resume_data = self.__search_resume_data(skills_query, source_id=source_id)
 
         if not resume_data.contexts:
-            return "Не найдены данные резюме в базе данных. Сначала загрузите свое резюме."
+            return (
+                "Не найдены данные резюме в базе данных. Сначала загрузите свое резюме."
+            )
 
         # Формируем контекст из резюме
         resume_context = "\n\n".join(f"- {c}" for c in resume_data.contexts)
@@ -99,21 +96,17 @@ class LetterService():
         Избегай общих фраз и клише
         Письмо должно быть на том языке, на котором написаны требования для вакансии. Объемом 200-300 слов.
     """
-    
 
         try:
             response = self.client.responses.create(
-                model="gpt-4o",
-                max_output_tokens=2048,
-                input=prompt,
-                temperature=1.0
+                model="gpt-4o", max_output_tokens=2048, input=prompt, temperature=1.0
             )
-            
+
             letter_content = response.output_text
             return letter_content
 
         except Exception as e:
-            return f"Ошибка при генерации сопроводительного письма: {str(e)}" 
+            return f"Ошибка при генерации сопроводительного письма: {str(e)}"
 
     async def stream_cover_letter(
         self, job_requirements: str, source_id: int, target_language: str | None = None
@@ -125,7 +118,7 @@ class LetterService():
         """
 
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = self.__search_resume_data(skills_query,source_id=source_id)
+        resume_data = self.__search_resume_data(skills_query, source_id=source_id)
 
         if not resume_data.contexts:
             raise ValueError("Не найдены данные резюме в базе данных.")
@@ -140,8 +133,8 @@ class LetterService():
 
         body = {
             "job_requirements": job_requirements,
-            "resume_context":resume_context,
-            "language_instruction":language_instruction
+            "resume_context": resume_context,
+            "language_instruction": language_instruction,
         }
 
         async for delta in self.llm.get_stream_response(body):
@@ -191,22 +184,32 @@ class LetterService():
 
         # prompt = self.__get_job_requirements_prompt(job_url=job_url)
         # job_requirements = await self.__fetch_job_requirements(prompt)
-        job_requirements = await self.__fetch_job_requirements_by_agent({
-            "job_url":job_url
-        })
-        print("reqs are ",job_requirements)
+        job_requirements = await self.__fetch_job_requirements_by_agent(
+            {"job_url": job_url}
+        )
+        print("reqs are ", job_requirements)
         if not job_requirements:
             raise ValueError("Не удалось извлечь требования из URL.")
 
         yield "__READY__"
 
-        async for delta in self.stream_cover_letter(job_requirements, source_id, target_language):
+        async for delta in self.stream_cover_letter(
+            job_requirements, source_id, target_language
+        ):
             yield delta
-        
-    async def parse_cv(self,user_id: int,pdf_path: str, source_id: str, filename: str = None,
-                    original_filename: str = None,
-                    file_size: int = 0, content_type: str = "application/pdf",
-                    upload_ip: str = None, user_agent: str = None):
+
+    async def parse_cv(
+        self,
+        user_id: int,
+        pdf_path: str,
+        source_id: str,
+        filename: str = None,
+        original_filename: str = None,
+        file_size: int = 0,
+        content_type: str = "application/pdf",
+        upload_ip: str = None,
+        user_agent: str = None,
+    ):
         await self.pdf_service.parse_cv(
             user_id=user_id,
             pdf_path=pdf_path,
@@ -216,12 +219,21 @@ class LetterService():
             file_size=file_size,
             content_type=content_type,
             upload_ip=upload_ip,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
 
-    async def add_cv(self, user_id: int, pdf_path: str, source_id: str, filename: str = None,
-                    original_filename: str = None, file_size: int = 0, content_type: str = "application/pdf",
-                    upload_ip: str = None, user_agent: str = None):
+    async def add_cv(
+        self,
+        user_id: int,
+        pdf_path: str,
+        source_id: str,
+        filename: str = None,
+        original_filename: str = None,
+        file_size: int = 0,
+        content_type: str = "application/pdf",
+        upload_ip: str = None,
+        user_agent: str = None,
+    ):
         """
         Загружает CV в векторную базу данных и сохраняет метаданные в PostgreSQL
 
@@ -245,9 +257,8 @@ class LetterService():
             file_size=file_size,
             content_type=content_type,
             upload_ip=upload_ip,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
-    
 
     async def generate_by_url(self, job_url: str, source_id: int) -> str:
         """
@@ -268,7 +279,9 @@ class LetterService():
         # Шаг 2: Получаем данные из резюме и генерируем письмо
         return await self.generate_cover_letter(job_requirements, source_id)
 
-    def __get_letter_prompt(self,job_requirements:str,resume_context:str,language_instruction:str)->str:
+    def __get_letter_prompt(
+        self, job_requirements: str, resume_context: str, language_instruction: str
+    ) -> str:
         prompt = f"""
         Ты - помощник по созданию профессиональных сопроводительных писем.
 
@@ -285,23 +298,24 @@ class LetterService():
         """
         return prompt
 
-    def __search_resume_data(self,query: str,source_id, top_k: int = 10)->RAGSearchResult:
-            """
-            Ищем релевантные данные из резюме в векторной базе
-            """
-            
-            query_vec = self.pdf_service.embed_texts([query])[0]
-            found = self.storage.search(query_vector=query_vec, top_k=top_k)
-            filtered_contexts = []
-            filtered_sources = []
-            for context, source in zip(found["contexts"], found["sources"]):
-                if str(source.get("source_id")) == str(source_id):
-                    filtered_contexts.append(context)
-                    filtered_sources.append(source)
-            return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
-    
-    
-    def __get_job_requirements_prompt(self,job_url:str):
+    def __search_resume_data(
+        self, query: str, source_id, top_k: int = 10
+    ) -> RAGSearchResult:
+        """
+        Ищем релевантные данные из резюме в векторной базе
+        """
+
+        query_vec = self.pdf_service.embed_texts([query])[0]
+        found = self.storage.search(query_vector=query_vec, top_k=top_k)
+        filtered_contexts = []
+        filtered_sources = []
+        for context, source in zip(found["contexts"], found["sources"]):
+            if str(source.get("source_id")) == str(source_id):
+                filtered_contexts.append(context)
+                filtered_sources.append(source)
+        return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
+
+    def __get_job_requirements_prompt(self, job_url: str):
         prompt = f"""
         Проанализируй страницу вакансии по URL: {job_url}
         Затем пиши на том языке, на котором информация на странице вакансии.
@@ -365,8 +379,8 @@ class LetterService():
         try:
             response = self.client.responses.create(
                 model="gpt-4.1-mini",
-                tools=[{ "type": "web_search_preview" }],
-                input=prompt
+                tools=[{"type": "web_search_preview"}],
+                input=prompt,
             )
             return response.output_text
 

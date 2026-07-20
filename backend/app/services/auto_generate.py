@@ -8,8 +8,8 @@ from app.cache.redis import async_client
 from app.tasks import single_generation
 
 
-def start_batch(parsing_job_id:int,vacancies:list[int], first_name, last_name):
-    
+def start_batch(parsing_job_id: int, vacancies: list[int], first_name, last_name):
+
     # инициализируем счётчик total, чтобы понимать, когда всё закончилось
     sync_client.hset(f"batch_meta:{parsing_job_id}", "total", len(vacancies))
 
@@ -19,7 +19,9 @@ def start_batch(parsing_job_id:int,vacancies:list[int], first_name, last_name):
     return parsing_job_id
 
 
-async def stream_gen_events(parsing_job_id: int, request: Request) -> AsyncIterator[str]:
+async def stream_gen_events(
+    parsing_job_id: int, request: Request
+) -> AsyncIterator[str]:
     """
     Сначала отдаёт снапшот уже накопленных статусов из batch:{parsing_job_id},
     затем подписывается на batch_channel:{parsing_job_id} и стримит live-события,
@@ -38,8 +40,7 @@ async def stream_gen_events(parsing_job_id: int, request: Request) -> AsyncItera
 
         terminal_statuses = {"generated", "failed", "not_found"}
         finished_count = sum(
-            1 for v in snapshot.values()
-            if json.loads(v)["status"] in terminal_statuses
+            1 for v in snapshot.values() if json.loads(v)["status"] in terminal_statuses
         )
 
         total_raw = await async_client.hget(f"batch_meta:{parsing_job_id}", "total")
@@ -59,7 +60,9 @@ async def stream_gen_events(parsing_job_id: int, request: Request) -> AsyncItera
             if await request.is_disconnected():
                 break
 
-            message = await pubsub.get_message(timeout=15, ignore_subscribe_messages=True)
+            message = await pubsub.get_message(
+                timeout=15, ignore_subscribe_messages=True
+            )
 
             if message is None:
                 yield ": heartbeat\n\n"
@@ -70,7 +73,10 @@ async def stream_gen_events(parsing_job_id: int, request: Request) -> AsyncItera
             vacancy_id = str(payload["vacancy_id"])
 
             # защита от дублей, если то же событие уже было в снапшоте
-            if vacancy_id in seen_vacancy_ids and payload["status"] not in terminal_statuses:
+            if (
+                vacancy_id in seen_vacancy_ids
+                and payload["status"] not in terminal_statuses
+            ):
                 pass
 
             yield f"data: {data}\n\n"

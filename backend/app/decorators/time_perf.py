@@ -12,7 +12,6 @@ async def with_timer(label=""):
     print(f"[{label}] выполнено за {elapsed:.3f} мс")
 
 
-
 def time_performance(func):
     @wraps(func)
     async def async_wrapper(*args, **kwargs):
@@ -21,9 +20,9 @@ def time_performance(func):
             result = await func(*args, **kwargs)
             return result
         except Exception as e:
-            print("Ошибка во время работы",e)
-            
-        finally:        
+            print("Ошибка во время работы", e)
+
+        finally:
             elapsed = time.perf_counter() - start
             print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")
 
@@ -34,8 +33,8 @@ def time_performance(func):
             result = func(*args, **kwargs)
             return result
         except Exception as e:
-            print("Ошибка во время работы",e)
-            
+            print("Ошибка во время работы", e)
+
         finally:
             elapsed = time.perf_counter() - start
             print(f"[{func.__name__}] выполнено за {elapsed:.3f} с")

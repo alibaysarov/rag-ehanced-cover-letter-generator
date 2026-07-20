@@ -5,12 +5,17 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.services import JwtService
 
 jwt_service = JwtService()
-UNPROTECTED_ROUTES=[
-    "/health", "/docs", "/redoc",
-    "/openapi.json", "/api/v1/auth/register",
+UNPROTECTED_ROUTES = [
+    "/health",
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+    "/api/v1/auth/register",
     "/api/v1/auth/login",
     # "/api/v1/letter/async-test"
 ]
+
+
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Пропускаем health check и некоторые другие эндпоинты
@@ -20,20 +25,21 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Проверяем авторизацию для API эндпоинтов
         if request.url.path.startswith("/api/v1/"):
             token = None
-            if (request.url.path.startswith("/api/v1/auto-parse/stream/") or
-                    "/generate-stream" in request.url.path):
+            if (
+                request.url.path.startswith("/api/v1/auto-parse/stream/")
+                or "/generate-stream" in request.url.path
+            ):
                 token = request.query_params.get("token")
                 if not token:
                     return JSONResponse(
-                        status_code=401,
-                        content={"detail": "Token query param missing"}
+                        status_code=401, content={"detail": "Token query param missing"}
                     )
             else:
                 auth_header = request.headers.get("Authorization")
                 if not auth_header or not auth_header.startswith("Bearer "):
                     return JSONResponse(
                         status_code=401,
-                        content={"detail": "Authorization header missing or invalid"}
+                        content={"detail": "Authorization header missing or invalid"},
                     )
                 token = auth_header.split(" ")[1]
 
@@ -44,8 +50,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 request.state.user_email = payload.get("email")
             except Exception as e:
                 return JSONResponse(
-                    status_code=401,
-                    content={"detail": "Invalid or expired token"}
+                    status_code=401, content={"detail": "Invalid or expired token"}
                 )
 
         response = await call_next(request)

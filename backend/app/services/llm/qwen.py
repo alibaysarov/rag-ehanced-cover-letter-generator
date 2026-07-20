@@ -8,14 +8,22 @@ from app.services.llm.general import GeneralLLMClient
 # _MODEL="qwen2.5:7b"
 
 # _MODEL="qwen3.5:4b"
-_MODEL="qwen3:1.7b"
+_MODEL = "qwen3:1.7b"
+
+
 class QwenClient(GeneralLLMClient):
     def __init__(self):
         base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        
-        model = ChatOllama(model=_MODEL,format="json", temperature=0.1,num_predict=400,reasoning=False, base_url=base_url)
-        super().__init__(model=model)
 
+        model = ChatOllama(
+            model=_MODEL,
+            format="json",
+            temperature=0.1,
+            num_predict=400,
+            reasoning=False,
+            base_url=base_url,
+        )
+        super().__init__(model=model)
 
     def get_schema(self):
         return None
@@ -38,7 +46,12 @@ class QwenClient(GeneralLLMClient):
         - {language_instruction} Объём 200-300 слов.
         """
 
-        return ChatPromptTemplate.from_messages([
-            ("system", "You are a professional HR specialist. Write the cover letter in the language of the job requirements."),
-            ("human", human),
-        ])
+        return ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "You are a professional HR specialist. Write the cover letter in the language of the job requirements.",
+                ),
+                ("human", human),
+            ]
+        )

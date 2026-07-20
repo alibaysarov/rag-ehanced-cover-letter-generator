@@ -3,6 +3,8 @@ import os
 import uuid
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.readers.file import PDFReader
 
 from app.dependencies import (
     get_cv_service,
@@ -16,8 +18,6 @@ from app.schemas.letter import CVUploadResponse, GeneralResponse
 from app.schemas.llm_outputs.cv_parse import CVImportModel
 from app.services import CVService, ProjectStorageService
 from app.services.llm.job_requirements import CVImportPrompt
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.readers.file import PDFReader
 from validator.pdf import validate_pdf_and_get_path
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,9 @@ router = APIRouter()
 async def cv_import(
     request: Request,
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
-    source_id: str = Form(None, description="Optional source identifier; generated if not provided"),
+    source_id: str = Form(
+        None, description="Optional source identifier; generated if not provided"
+    ),
     user_repo: UserRepository = Depends(get_user_repository),
     projects_service: ProjectStorageService = Depends(get_projects_storage_service),
     pdf_reader: PDFReader = Depends(get_pdf_reader),
@@ -75,10 +77,10 @@ async def update_cv(
     cv_id: int,
     source_id: str = Form(..., description="Unique identifier for the CV source"),
     file: UploadFile = File(..., description="PDF file containing the CV/resume"),
-    cv_service:CVService = Depends(get_cv_service)
+    cv_service: CVService = Depends(get_cv_service),
 ):
     file_data = await validate_pdf_and_get_path(file)
-    
+
     try:
         await cv_service.update_cv(
             cv_id=cv_id,
@@ -87,7 +89,7 @@ async def update_cv(
             filename=file.filename,
             original_filename=file.filename,
             file_size=len(file_data["file_content"]),
-            content_type=file.content_type or "application/pdf"
+            content_type=file.content_type or "application/pdf",
         )
 
         return CVUploadResponse(
@@ -97,29 +99,27 @@ async def update_cv(
             data={
                 "filename": file.filename,
                 "file_size": len(file_data["file_content"]),
-                "source_id": cv_id
-            }
+                "source_id": cv_id,
+            },
         )
     finally:
         # Clean up temporary file
         import os
+
         if os.path.exists(file_data["temp_file_path"]):
             os.unlink(file_data["temp_file_path"])
 
 
 @router.delete("/{cv_id}")
 async def delete_cv(
-    cv_id: int,
-    request: Request,
-    cv_service:CVService = Depends(get_cv_service)
-    ):
+    cv_id: int, request: Request, cv_service: CVService = Depends(get_cv_service)
+):
     """Delete CV by id with rollback support."""
     try:
         await cv_service.delete_cv(cv_id)
         return GeneralResponse(
-            success=True,
-            message=f"CV with id {cv_id} deleted successfully"
+            success=True, message=f"CV with id {cv_id} deleted successfully"
         )
     except Exception as e:
         logging.error("Error retrieving CVs", exc_info=True)
-        raise HTTPException(status_code=500, detail="Error retrieving CVs")  
+        raise HTTPException(status_code=500, detail="Error retrieving CVs")

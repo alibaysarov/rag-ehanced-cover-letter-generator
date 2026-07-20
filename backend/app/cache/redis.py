@@ -12,6 +12,7 @@ sync_client = sync_redis.Redis.from_url(REDIS_URL)
 
 async_client = redis.from_url(REDIS_URL, decode_responses=True)
 
+
 async def connect_redis():
     global redis_client
 
@@ -19,7 +20,7 @@ async def connect_redis():
         host="redis",
         port=6379,
         password=os.getenv("REDIS_PASSWORD"),
-        decode_responses=True
+        decode_responses=True,
     )
 
     await redis_client.ping()

@@ -6,6 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 class User(SQLModel, table=True):
     """User model for authentication"""
+
     __tablename__ = "users"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -23,8 +24,12 @@ class User(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    cvs: List["CV"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    projects: List["Project"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    cvs: List["CV"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+    projects: List["Project"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, is_active={self.is_active})>"

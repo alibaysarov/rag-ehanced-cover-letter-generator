@@ -13,14 +13,14 @@ from langchain_core.tools import BaseTool
 from ..general import GeneralLLMClient
 
 AgentStreamChunk = Union[
-    dict[str, list[AgentAction]],   # {"actions": [...]}
-    dict[str, list[AgentStep]],     # {"steps": [...]}
-    dict[str, str],                 # {"output": "..."}
+    dict[str, list[AgentAction]],  # {"actions": [...]}
+    dict[str, list[AgentStep]],  # {"steps": [...]}
+    dict[str, str],  # {"output": "..."}
 ]
 
-class BaseAiAgent(ABC):
 
-    def __init__(self,prompt_service: GeneralLLMClient):
+class BaseAiAgent(ABC):
+    def __init__(self, prompt_service: GeneralLLMClient):
         self.prompt_service = prompt_service
 
     @property
@@ -30,21 +30,19 @@ class BaseAiAgent(ABC):
         ...
 
     @abstractmethod
-    def get_structured_output(self) -> type:
-        ...
+    def get_structured_output(self) -> type: ...
 
     @abstractmethod
-    def get_tools(self)->list[BaseTool]:
+    def get_tools(self) -> list[BaseTool]:
         return []
 
-
-    def get_agent(self)->Runnable[dict, Union[AgentAction, AgentFinish]]:
+    def get_agent(self) -> Runnable[dict, Union[AgentAction, AgentFinish]]:
         model = self.prompt_service.get_model
 
         return create_agent(
             model=model,
             tools=self.get_tools(),
-            response_format=ToolStrategy(self.get_structured_output())
+            response_format=ToolStrategy(self.get_structured_output()),
         )
 
     def execute(self, body: dict) -> Union[AgentAction, AgentFinish]:
@@ -53,6 +51,8 @@ class BaseAiAgent(ABC):
 
     async def stream(self, body: dict):
         messages = self.prompt_template().format_messages(**body)
-        chunks = await asyncio.to_thread(list, self.get_agent().stream({"messages": messages}))
+        chunks = await asyncio.to_thread(
+            list, self.get_agent().stream({"messages": messages})
+        )
         for chunk in chunks:
             yield chunk

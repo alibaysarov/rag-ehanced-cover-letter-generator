@@ -5,4 +5,10 @@ from .letter_repository import LetterRepository
 from .project_repository import ProjectRepository
 from .user_repository import UserRepository
 
-__all__ = ["UserRepository", "CVRepository", "LetterRepository","ProjectRepository","AutoParseJobRepository"]
+__all__ = [
+    "UserRepository",
+    "CVRepository",
+    "LetterRepository",
+    "ProjectRepository",
+    "AutoParseJobRepository",
+]

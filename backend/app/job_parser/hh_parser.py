@@ -1,7 +1,6 @@
-
-'''
+"""
 https://hh.ru/search/vacancy?text=php+%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA&area=1&page=0&search_session_id=14c18ffd-9fa9-4ea2-9271-f2dde06ea175
-'''
+"""
 
 import asyncio
 import logging
@@ -18,36 +17,35 @@ HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
 VACANCIES_URL = "https://hh.ru/search/vacancy?text={query}&page={page}"
 
 
-
 class Vacancy(BaseModel):
-    name:str
-    link:str
-    vacancy_id:str
+    name: str
+    link: str
+    vacancy_id: str
+
 
 class AutoParserHH:
-    
-    async def get_vacancies_by_name(self,browser,text:str,job_id: int)->list[Vacancy]:
-        pages = await self._get_total_pages(browser,text)
-        
+    async def get_vacancies_by_name(
+        self, browser, text: str, job_id: int
+    ) -> list[Vacancy]:
+        pages = await self._get_total_pages(browser, text)
+
         logger.info(f"[job={job_id}] Total pages to scrape: {pages}")
-        
-        tasks = [
-            self.get_list_items(get_browser(),text,i)
-            for i in range(pages)
-        ]
-        results =flatten_list(await asyncio.gather(*tasks)) 
-        
+
+        tasks = [self.get_list_items(get_browser(), text, i) for i in range(pages)]
+        results = flatten_list(await asyncio.gather(*tasks))
+
         return results
 
-
-    async def get_list_items(self, browser,query:str, page_num:int = 0)->list[Vacancy]:
-        result:list[Vacancy] = []
+    async def get_list_items(
+        self, browser, query: str, page_num: int = 0
+    ) -> list[Vacancy]:
+        result: list[Vacancy] = []
         try:
             page = await browser.new_page()
             await page.route("**/*", self._block_resources)
             url = VACANCIES_URL.format(query=quote_plus(query), page=page_num)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            
+
             await self._scroll_page(page)
             await page.wait_for_timeout(500)
             cards = await page.evaluate("""
@@ -62,17 +60,19 @@ class AutoParserHH:
                     })
                     .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
             """)
-            
+
             result = [
-                Vacancy(name=card['title'],link=card['link'],vacancy_id=card['vacancy_id'])
+                Vacancy(
+                    name=card["title"], link=card["link"], vacancy_id=card["vacancy_id"]
+                )
                 for card in cards
             ]
             return result
-                
+
         except Exception as e:
             logger.error(f"Error getting list: {e}")
 
-    async def _scroll_page(self,page):
+    async def _scroll_page(self, page):
         await page.evaluate("""
             () => new Promise((resolve) => {
                 const distance = 300;       // пикселей за шаг
@@ -92,13 +92,13 @@ class AutoParserHH:
             })
         """)
 
-    async def _block_resources(self,route, request):
+    async def _block_resources(self, route, request):
         if request.resource_type in ("image", "font", "media", "stylesheet"):
             await route.abort()
         else:
             await route.continue_()
 
-    async def _get_total_pages(self,browser, query: str) -> int:
+    async def _get_total_pages(self, browser, query: str) -> int:
         page = await browser.new_page()
         try:
             await page.route("**/*", self._block_resources)
@@ -106,10 +106,7 @@ class AutoParserHH:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
             pages = await page.query_selector_all('[data-qa="pager-page"]')
-            pages_texts = [
-                page.inner_text()
-                for page in pages
-            ]
+            pages_texts = [page.inner_text() for page in pages]
             max_page = max([int(text) for text in await asyncio.gather(*pages_texts)])
             if max_page:
                 try:
@@ -122,4 +119,3 @@ class AutoParserHH:
             return 1
         finally:
             await page.close()
-    

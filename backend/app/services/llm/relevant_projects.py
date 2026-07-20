@@ -8,16 +8,22 @@ from .general import GeneralLLMClient
 
 
 class RelevantProjectsPrompt(GeneralLLMClient[RelevantProjects]):
-    
     def __init__(self):
         _MODEL = "qwen2.5:0.5b"
-        
-        model = ChatOllama(model=_MODEL, temperature=0.1,reasoning=False,num_ctx=4096, base_url=settings.OLLAMA_HOST)
-        
+
+        model = ChatOllama(
+            model=_MODEL,
+            temperature=0.1,
+            reasoning=False,
+            num_ctx=4096,
+            base_url=settings.OLLAMA_HOST,
+        )
+
         self.model = model.with_structured_output(RelevantProjects)
-        
+
     def get_schema(self):
         return RelevantProjects
+
     @property
     def prompt_template(self):
         system = """
@@ -37,7 +43,9 @@ class RelevantProjectsPrompt(GeneralLLMClient[RelevantProjects]):
 
         """
 
-        return ChatPromptTemplate.from_messages([
-            ("system", system),
-            ("human", human),
-        ])
+        return ChatPromptTemplate.from_messages(
+            [
+                ("system", system),
+                ("human", human),
+            ]
+        )

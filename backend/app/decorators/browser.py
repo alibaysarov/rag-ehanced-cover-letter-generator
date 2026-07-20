@@ -14,18 +14,19 @@ async def pw_browser(browser_type="chromium", **launch_kwargs):
 
 
 @asynccontextmanager
-async def simple_page(browser,base_url: str = "",viewport=None):
+async def simple_page(browser, base_url: str = "", viewport=None):
     context = await browser.new_context(
-            base_url=base_url,
-            viewport=viewport or {"width": 1280, "height": 720},
-        )
+        base_url=base_url,
+        viewport=viewport or {"width": 1280, "height": 720},
+    )
     page = await context.new_page()
     try:
         yield page
     finally:
         await context.close()
         await page.close()
-    
+
+
 @asynccontextmanager
 async def managed_page(base_url: str = "", viewport=None):
     async with async_playwright() as p:

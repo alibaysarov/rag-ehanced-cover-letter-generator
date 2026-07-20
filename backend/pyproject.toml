@@ -50,12 +50,15 @@ dependencies = [
 # стало
 [tool.ruff]
 # сюда можно вынести общие настройки, не связанные с lint (line-length и т.п.)
+extend-exclude = ["alembic/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
+
+
 
 [tool.pyright]
 include = ["app"]
@@ -68,5 +71,6 @@ reportAttributeAccessIssue = "error"
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.6.0",
     "pyright[nodejs]>=1.1.411",
 ]

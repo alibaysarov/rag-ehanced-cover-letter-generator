@@ -3,53 +3,56 @@ from qdrant_client.models import FieldCondition, Filter, MatchValue
 from app.repository import ProjectRepository
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
 from app.schemas.llm_outputs.job_requirements import JobRequirement
-from app.services.embeddings import BaseEmbedder, LocalMistralEmbedder
 from app.storage.repository.qdrant import QdrantStorage, get_projects_storage
+
+from .embeddings import BaseEmbedder, LocalMistralEmbedder
 
 
 class ProjectStorageService:
     def __init__(
         self,
+        project_repository: ProjectRepository,
         storage: QdrantStorage | None = None,
         embedder: BaseEmbedder | None = None,
     ):
         self.embedder = embedder or LocalMistralEmbedder()
         self.storage = storage or get_projects_storage(dim=self.embedder.dimensions)
-        self.repository = ProjectRepository()
+        self.repository = project_repository
 
     async def create_many(
         self,
         user_id: int,
         projects: list[ProjectFromCVModel],
     ):
-        
-        created_count = await self.repository.create_many(user_id=user_id,projects=projects)
+
+        created_count = await self.repository.create_many(
+            user_id=user_id, projects=projects
+        )
         return created_count
-    
-    
-    
-    async def delete(self,user_id:int,id:int):
-        return await self.repository.delete(id,user_id)
-    
-    
+
+    async def delete(self, user_id: int, id: int):
+        return await self.repository.delete(id, user_id)
+
     async def list_user_projects(self, user_id: int) -> list[dict]:
         projects = await self.repository.get_by_user(user_id)
         result = []
         for project in projects:
-            result.append({
-                "id": str(project.id),
-                "source_id": project.id,
-                "name": project.name,
-                "website": project.name,
-                "start_month": None,
-                "start_year": None,
-                "end_month": None,
-                "end_year": None,
-                "currently_working": False,
-                "skills": [],
-                "achievements": [],
-                "technologies": project.technologies
-            })
+            result.append(
+                {
+                    "id": str(project.id),
+                    "source_id": project.id,
+                    "name": project.name,
+                    "website": project.name,
+                    "start_month": None,
+                    "start_year": None,
+                    "end_month": None,
+                    "end_year": None,
+                    "currently_working": False,
+                    "skills": [],
+                    "achievements": [],
+                    "technologies": project.technologies,
+                }
+            )
         return result
 
     def update_project(
@@ -105,7 +108,6 @@ class ProjectStorageService:
         self.storage.delete_by_point_id(project_id)
         return True
 
-    
     def rank_projects_overlap(
         self,
         user_id: int,
@@ -120,9 +122,21 @@ class ProjectStorageService:
         query_vector = self.embedder.embed_query(query_text)
 
         buckets = [
-            ("required", [t.lower().strip() for t in vacancy.required_technologies], required_weight),
-            ("preferred", [t.lower().strip() for t in vacancy.preferred_technologies], preferred_weight),
-            ("nice_to_have", [t.lower().strip() for t in vacancy.nice_to_have_technologies], nice_to_have_weight),
+            (
+                "required",
+                [t.lower().strip() for t in vacancy.required_technologies],
+                required_weight,
+            ),
+            (
+                "preferred",
+                [t.lower().strip() for t in vacancy.preferred_technologies],
+                preferred_weight,
+            ),
+            (
+                "nice_to_have",
+                [t.lower().strip() for t in vacancy.nice_to_have_technologies],
+                nice_to_have_weight,
+            ),
         ]
         total_weight = sum(len(techs) * w for _, techs, w in buckets)
 
@@ -154,15 +168,19 @@ class ProjectStorageService:
                         matched_weight += w
                         matched[label].append(t)
 
-            weighted_overlap = matched_weight / total_weight if total_weight > 0 else 0.0
+            weighted_overlap = (
+                matched_weight / total_weight if total_weight > 0 else 0.0
+            )
             final_score = semantic_weight * score + overlap_weight * weighted_overlap
-            candidates.append({
-                "semantic_score": round(score, 7),
-                "weighted_overlap": round(weighted_overlap, 4),
-                "score": round(final_score, 7),
-                "matched": matched,
-                "payload": payload,
-            })
+            candidates.append(
+                {
+                    "semantic_score": round(score, 7),
+                    "weighted_overlap": round(weighted_overlap, 4),
+                    "score": round(final_score, 7),
+                    "matched": matched,
+                    "payload": payload,
+                }
+            )
 
         candidates.sort(
             key=lambda x: (x["score"], len(x["matched"]["required"])),
@@ -170,12 +188,11 @@ class ProjectStorageService:
         )
         return candidates[:top_k]
 
-    def _search(self,query_vector:list[float],top_k:int,query_filter:Filter):
+    def _search(self, query_vector: list[float], top_k: int, query_filter: Filter):
         return self.storage.search(
-            query_vector=query_vector,
-            top_k=top_k,
-            query_filter=query_filter
+            query_vector=query_vector, top_k=top_k, query_filter=query_filter
         )
+
     @staticmethod
     def _build_project_text(p: ProjectFromCVModel) -> str:
         lines = [f"Проект: {p.name}"]

@@ -14,24 +14,24 @@ from app.pw_instances.chromium import close_browser, start_browser
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan events"""
     # Startup
     logger.info("Starting application...")
     await redis_db.connect_redis()
-    
+
     await start_browser()
-    
+
     # Check database connection
     conn_result = await check_db_connection()
     if not conn_result:
         logger.error("Failed to connect to database on startup")
         raise Exception("Database connection failed")
-    
-    
+
     yield
-    
+
     await redis_db.close_conn()
     await close_browser()
     # Shutdown
@@ -42,28 +42,27 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
-
-
 
 
 @app.get("/")
 async def root():
-    a=1
-    b=2
-    c=a*b
-    
-    return {"message": "Hello World","data":c}
+    a = 1
+    b = 2
+    c = a * b
+
+    return {"message": "Hello World", "data": c}
+
 
 @app.get("/redis-test")
 async def redis_test():
-    await redis_db.redis_client.set("key","value")
-    
-    
+    await redis_db.redis_client.set("key", "value")
+
     cache_hit = await redis_db.redis_client.get("key")
-    
-    return {"message":cache_hit}
+
+    return {"message": cache_hit}
+
 
 app.add_middleware(AuthMiddleware)
 
@@ -80,12 +79,7 @@ app.add_middleware(
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "API is running"}
-
-
-
-
-
-

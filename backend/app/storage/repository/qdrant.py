@@ -14,7 +14,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 
-class QdrantStorage():
+class QdrantStorage:
     def __init__(
         self,
         url=settings.QDRANT_URL,
@@ -25,7 +25,9 @@ class QdrantStorage():
         print("qdrant init")
         self.client = QdrantClient(url=url)
         self.collection = collection_name
-        self._ensure_collection(dim=dim, recreate_on_dim_mismatch=recreate_on_dim_mismatch)
+        self._ensure_collection(
+            dim=dim, recreate_on_dim_mismatch=recreate_on_dim_mismatch
+        )
 
     def _ensure_collection(self, dim: int, recreate_on_dim_mismatch: bool):
         if not self.client.collection_exists(collection_name=self.collection):
@@ -49,17 +51,22 @@ class QdrantStorage():
 
         logger.warning(
             "Qdrant collection '%s' has dim=%d, recreating with dim=%d (data lost)",
-            self.collection, existing_dim, dim,
+            self.collection,
+            existing_dim,
+            dim,
         )
         self.client.delete_collection(collection_name=self.collection)
         self.client.create_collection(
             collection_name=self.collection,
             vectors_config=VectorParams(size=dim, distance=Distance.COSINE),
         )
-    def upsert(self,ids,vectors,payloads):
-        points = [PointStruct(id=ids[i],vector=vectors[i],payload=payloads[i]) for i in range(len(ids))]
-        self.client.upsert(collection_name=self.collection,points=points)
 
+    def upsert(self, ids, vectors, payloads):
+        points = [
+            PointStruct(id=ids[i], vector=vectors[i], payload=payloads[i])
+            for i in range(len(ids))
+        ]
+        self.client.upsert(collection_name=self.collection, points=points)
 
     def search(self, query_vector, top_k: int = 5, query_filter: Filter | None = None):
         results = self.client.query_points(
@@ -75,28 +82,25 @@ class QdrantStorage():
         scores = []
 
         for r in results:
-            payload = getattr(r,"payload",None) or {}
-            text = payload.get("text","")
+            payload = getattr(r, "payload", None) or {}
+            text = payload.get("text", "")
             if text:
                 contexts.append(text)
                 sources.append(payload)
                 scores.append(getattr(r, "score", None))
-        return {"contexts":contexts, "sources":sources, "scores": scores}
-    
+        return {"contexts": contexts, "sources": sources, "scores": scores}
+
     def delete_by_source_id(self, source_id: int):
         """Delete all points with given source_id"""
         from qdrant_client.models import FieldCondition, Filter, MatchValue
-        
+
         self.client.delete(
             collection_name=self.collection,
             points_selector=Filter(
                 must=[
-                    FieldCondition(
-                        key="source_id",
-                        match=MatchValue(value=source_id)
-                    )
+                    FieldCondition(key="source_id", match=MatchValue(value=source_id))
                 ]
-            )
+            ),
         )
 
     def get_points_by_source_id(self, source_id: int):
@@ -107,15 +111,12 @@ class QdrantStorage():
             collection_name=self.collection,
             scroll_filter=Filter(
                 must=[
-                    FieldCondition(
-                        key="source_id",
-                        match=MatchValue(value=source_id)
-                    )
+                    FieldCondition(key="source_id", match=MatchValue(value=source_id))
                 ]
             ),
             limit=10000,
             with_payload=True,
-            with_vectors=True
+            with_vectors=True,
         )
         return results[0]
 
@@ -159,6 +160,7 @@ class QdrantStorage():
 
 _vector_storage = None
 
+
 def get_vector_storage() -> QdrantStorage:
     global _vector_storage
     if _vector_storage is None:
@@ -167,6 +169,7 @@ def get_vector_storage() -> QdrantStorage:
 
 
 _projects_storage_by_dim: dict[int, "QdrantStorage"] = {}
+
 
 def get_projects_storage(dim: int = 768) -> QdrantStorage:
     if dim not in _projects_storage_by_dim:

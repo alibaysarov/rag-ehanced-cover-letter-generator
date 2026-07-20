@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      - id: fix-and-format
+        name: Ruff fix + format
+        entry: make -C backend pre-commit-fix
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      # - id: lint
+      #   name: Type check (pyright)
+      #   entry: make -C backend lint
+      #   language: system
+      #   pass_filenames: false
+      #   types: [python]
