@@ -63,27 +63,7 @@ class CoverLetterService:
         re.IGNORECASE,
     )
 
-    # async def _clean_stream(self, body: dict):
-    #     """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
-    #     buffer = ""
-    #     cleaned = False
-
-    #     async for chunk in self.llm.get_stream_response(body):
-    #         if cleaned:
-    #             yield chunk
-    #             continue
-
-    #         buffer += chunk
-    #         # Flush once we have enough context (double newline or 300 chars)
-    #         if len(buffer) >= 300 or "\n\n" in buffer:
-    #             cleaned = True
-    #             buffer = self._STRIP_LABEL.sub("", buffer)
-    #             yield buffer.lstrip("\n ")
-
-    #     # Stream ended while still buffering (very short output)
-    #     if not cleaned and buffer:
-    #         buffer = self._STRIP_LABEL.sub("", buffer)
-    #         yield buffer.lstrip("\n ")
+    
     
     
     async def _clean_stream(self, body: dict):
@@ -95,32 +75,7 @@ class CoverLetterService:
         for i in range(0, len(text), chunk_size):
             yield text[i:i+chunk_size]
             await asyncio.sleep(0.02)
-    
-    # async def _clean_stream(self, body: dict):
-    #     """Buffer the first chunk(s) of the LLM stream, strip known artifacts, then yield normally."""
-    #     buffer = ""
-    #     cleaned = False
 
-    #     async for chunk in self.llm.get_stream_response(body):
-    #         chunk = self._chunk_to_text(chunk)
-    #         if not chunk:
-    #             continue
-
-    #         if cleaned:
-    #             yield chunk
-    #             continue
-
-    #         buffer += chunk
-    #         # Flush once we have enough context (double newline or 300 chars)
-    #         if len(buffer) >= 300 or "\n\n" in buffer:
-    #             cleaned = True
-    #             buffer = self._STRIP_LABEL.sub("", buffer)
-    #             yield buffer.lstrip("\n ")
-
-        # Stream ended while still buffering (very short output)
-        # if not cleaned and buffer:
-        #     buffer = self._STRIP_LABEL.sub("", buffer)
-        #     yield buffer.lstrip("\n ")
 
     @staticmethod
     def _chunk_to_text(chunk) -> str:
@@ -160,9 +115,9 @@ class CoverLetterService:
         body = {
             "name":vacancy.name,
             "lang":"ru",
-            "project_name":vacancy.project_name,
+            "project_name":vacancy.name,
             "user_projects":user_projects,
-            "vacancy_requirements":vacancy.requirements,
+            "vacancy_requirements":vacancy.technologies,
             "vacancy_technologies":vacancy.technologies,
             "user_first_name": (user.first_name or "") if user else "",
             "user_last_name": (user.last_name or "") if user else "",
@@ -172,6 +127,7 @@ class CoverLetterService:
     def _get_ranked_projects(self, user_id,vacancy_text:str, job_requirement:JobRequirement):
         
         relevant_projects = self.project_repository.get_relevant(user_id,job_requirement.technologies)
+            
         if len(relevant_projects) > 2:
             relevant_project_promt = RelevantProjectsPrompt()
             model_response = relevant_project_promt.get_sync_response({
@@ -195,13 +151,8 @@ class CoverLetterService:
     
 
     async def __get_data_from_url(self,url:str,user_id:int):
-        text = None
-        if await redis_db.redis_client.get(url) is None:
-            text = await parse_hh(url)
-            await redis_db.redis_client.set(url,text,ex=3600)
-        else:
-            text = await redis_db.redis_client.get(url)
-            print("cache hit")
+        
+        text = await self.__fetch_from_browser(url)
         job_parse = JobParsePrompt()
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
@@ -222,18 +173,17 @@ class CoverLetterService:
             "user_last_name": (user.last_name or "") if user else "",
         }
         return body
+
+    async def __fetch_from_browser(self, url:str):
+        if await redis_db.redis_client.get(url) is None:
+            text = await parse_hh(url)
+            await redis_db.redis_client.set(url,text,ex=3600)
+        else:
+            text = await redis_db.redis_client.get(url)
+        return text
     
     
     def __projects_normalize(self, ranked: list[Project]) -> str:
-        # result = [
-        #     {
-        #         "project_name": item["payload"]["project_name"],
-        #         "skills": item["payload"]["skills"],
-        #         "achievements": item["payload"]["achievements"],
-        #         "technologies": item["payload"]["technologies"],
-        #     }
-        #     for item in ranked
-        # ]
         result = [
             {
                 "project_name":item.name,

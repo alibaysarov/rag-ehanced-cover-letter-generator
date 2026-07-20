@@ -46,7 +46,7 @@ def generate_cover_letter(
     return cover_letter.model_dump()
 
 
-def _sort_by_ids(projects: list[tuple[Project, Any]]|list[Project], llm_projects: list[RelevantProject]):
+def _sort_by_ids(projects: list[tuple[Project, Any]]|list[Project], llm_projects: list[RelevantProject])->list:
     if len(projects) ==0:
         return []
     if isinstance(projects[0], tuple):
@@ -61,7 +61,6 @@ def _sort_by_ids(projects: list[tuple[Project, Any]]|list[Project], llm_projects
             continue
         sorted_projects.append(project)
 
-    # optional: make sure any project the LLM forgot still gets included
     missing_ids = set(map_.keys()) - {p.id for p in sorted_projects}
     for missing_id in missing_ids:
         logger.warning(f"LLM omitted project id {missing_id}, appending at end")
