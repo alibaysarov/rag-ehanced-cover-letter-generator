@@ -6,10 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import async_session_maker as DbSession
 from app.decorators.time_perf import with_timer
+from app.helper import get_body_from_page, get_domain_by_url
 from app.job_parser.hh_parser import Vacancy
 from app.models import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.pw_instances import chromium as chromium_module
+from app.schemas.vacancy.single_vacancy import SingleVacancy
 from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
 from app.services.scraper.parsers.general import GeneralVacancyParser
 from app.services.scraper.parsers.hh import HHVacancyParser
@@ -23,6 +25,32 @@ class VacancyScrapingService:
             HHVacancyParser(),
             GeekJobVacancyParser(),
         ]
+        self._parser_map: dict[str:GeneralVacancyParser] = {
+            p.get_name(): p for p in self._parsers
+        }
+
+    async def parse_single(self, url: str) -> SingleVacancy:
+        page = await chromium_module.chromium.new_page()
+        try:
+            parser = self.get_parser(url)
+            if parser is not None:
+                logger.info("Parsing {%s}", parser.get_name())
+                single_vacancy = await parser.parse_single_by_url(page, url)
+                return single_vacancy
+            else:
+                logger.info("Parsing unknown url:\n {%s}", url)
+                body = await get_body_from_page(page, url)
+                return SingleVacancy(job_title="", job_text=body, job_url=url)
+        except Exception as e:
+            logger.error(f"An exception occured {e}")
+            raise
+        finally:
+            await page.close()
+
+    def get_parser(self, url: str) -> GeneralVacancyParser:
+        domain = get_domain_by_url(url)
+        print("item ", domain, self._parser_map.get(domain))
+        return self._parser_map.get(domain)
 
     async def run_parse_job(self, job_id: int, query: str, user_id: int) -> int | None:
         """
@@ -58,7 +86,7 @@ class VacancyScrapingService:
 
                                 results = await asyncio.gather(
                                     *[
-                                        self.__parse_single_vacancy(
+                                        self.__fetch_single_auto_parse_vacancy(
                                             semaphore,
                                             session,
                                             parser,
@@ -103,7 +131,7 @@ class VacancyScrapingService:
                     await session.commit()
                     return parsing_job.id
 
-    async def __parse_single_vacancy(
+    async def __fetch_single_auto_parse_vacancy(
         self,
         semaphore: asyncio.Semaphore,
         session: AsyncSession,
@@ -133,7 +161,7 @@ class VacancyScrapingService:
                     user_id=user_id,
                     url=url,
                     is_viewed=False,
-                    is_generated=True,
+                    is_generated=False,
                 )
                 session.add(auto_parsed_job)
                 session.add(parsing_job)

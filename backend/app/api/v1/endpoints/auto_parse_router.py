@@ -56,30 +56,6 @@ async def start_parse_test(
     return {"parsing_job_id": parsing_job.id}
 
 
-# @router.post("/start")
-# async def start_parse(
-#     user: CurrentUser,
-#     body: StartParseRequest,
-#     request: Request,
-#     db: DBSession,
-# ):
-#     parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
-#     db.add(parsing_job)
-#     await db.commit()
-#     await db.refresh(parsing_job)
-
-#     if parsing_job.id is None:
-#         logger.error("failed to create parsing job")
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="Возникла ошибка попробуйте позже",
-#         )
-
-#     launch_parse_job(parsing_job.id, body.query, user.id)
-
-#     return {"parsing_job_id": parsing_job.id}
-
-
 @router.get("/status/{parsing_job_id}")
 async def get_status(
     user: CurrentUser,

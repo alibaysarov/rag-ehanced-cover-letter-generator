@@ -18,7 +18,7 @@ class AutoParseJobRepository:
     async def get_by_id(self, id: int) -> AutoParsedJob | None:
         statement = select(AutoParsedJob).where(AutoParsedJob.id == id)
         result = await self._session.execute(statement)
-        job = result.one_or_none()
+        job = result.scalar_one_or_none()
         return job
 
     async def get_by_job_id(self, job_id: int) -> list[AutoParsedJob]:

@@ -5,6 +5,7 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.readers.file import PDFReader
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.commands import GenerateCoverCommandLetterHandler, build_handler
 from app.database import get_db
 from app.repository import (
     AutoParseJobRepository,
@@ -14,7 +15,6 @@ from app.repository import (
 )
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 from app.services import (
-    CoverLetterService,
     CVService,
     JwtService,
     LetterService,
@@ -23,6 +23,7 @@ from app.services import (
     UserService,
     VacancyScrapingService,
 )
+from app.services.cover_letter import CoverLetterService
 
 DBSession = Annotated[AsyncSession, Depends(get_db)]
 
@@ -65,10 +66,36 @@ def get_letter_service(session: AsyncSession = Depends(get_db)) -> LetterService
     return LetterService(session)
 
 
+async def get_generate_letter_handler(
+    session: AsyncSession = Depends(get_db),
+) -> GenerateCoverCommandLetterHandler:
+    return build_handler(session)
+
+
+def get_vacancy_scraping_service() -> VacancyScrapingService:
+    return VacancyScrapingService()
+
+
 def get_cover_letter_service(
     user_repo: UserRepository = Depends(get_user_repository),
+    project_repository: ProjectRepository = Depends(get_project_repository),
+    auto_parse_job_repository: AutoParseJobRepository = Depends(
+        get_auto_parse_repository
+    ),
+    generate_cover_letter_command_handler: GenerateCoverCommandLetterHandler = Depends(
+        get_generate_letter_handler
+    ),
+    vacancy_scraping_service: VacancyScrapingService = Depends(
+        get_vacancy_scraping_service
+    ),
 ) -> CoverLetterService:
-    return CoverLetterService(user_repo=user_repo)
+    return CoverLetterService(
+        user_repo=user_repo,
+        project_repository=project_repository,
+        auto_parse_job_repository=auto_parse_job_repository,
+        generate_cover_letter_command_handler=generate_cover_letter_command_handler,
+        vacancy_scraping_service=vacancy_scraping_service,
+    )
 
 
 def get_cv_service(cv_repo: CVRepository = Depends(get_cv_repository)) -> CVService:
@@ -96,7 +123,3 @@ def get_pdf_reader() -> PDFReader:
 
 def get_sentence_splitter() -> SentenceSplitter:
     return SentenceSplitter(chunk_size=1000, chunk_overlap=0)
-
-
-def get_vacancy_scraping_service() -> VacancyScrapingService:
-    return VacancyScrapingService()

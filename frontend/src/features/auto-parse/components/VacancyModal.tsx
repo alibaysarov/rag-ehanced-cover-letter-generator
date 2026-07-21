@@ -407,7 +407,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               color="aurora.indigo"
               _hover={{ textDecoration: 'underline' }}
             >
-              Открыть на hh.ru
+              Открыть страницу вакансии
               <IconExternalLink size={14} stroke={2} />
             </Link>
           </Box>

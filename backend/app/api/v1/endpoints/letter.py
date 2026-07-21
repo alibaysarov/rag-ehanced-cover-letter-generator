@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
@@ -10,6 +10,7 @@ from app.dependencies import get_cover_letter_service, get_letter_service
 from app.helper import CurrentUser
 from app.schemas.letter import CVUploadResponse, LetterResponse
 from app.services import LetterService
+from app.services.cover_letter import CoverLetterService
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,86 @@ async def create_letter_from_url(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/url/stream")
+async def stream_letter_from_url(
+    user: CurrentUser,
+    url: str = Form(...),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
+):
+
+    return StreamingResponse(
+        _sse_wrap(cover_letter_service.stream_by_url(url, user)),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.post("/text", response_model=LetterResponse)
+async def create_letter_from_text(
+    name: str = Form(..., min_length=1, max_length=100, description="Job title"),
+    description: str = Form(..., min_length=1, description="Job description"),
+    source_id: int = Form(..., description="Source ID of the CV in the database"),
+    letter_service: LetterService = Depends(get_letter_service),
+):
+    """
+    Create a cover letter from job title and description.
+
+    - **name**: Job title
+    - **description**: Job description
+    - **source_id**: Source ID of the CV in the database
+    """
+    try:
+        job_requirements = name + "\n" + description
+        # Generate cover letter using found requirements and CV data
+        letter_content = await letter_service.generate_cover_letter(
+            job_requirements, source_id
+        )
+
+        if letter_content.startswith("Ошибка") or letter_content.startswith(
+            "Не найдены"
+        ):
+            raise HTTPException(status_code=500, detail=letter_content)
+
+        result = {
+            "letter_content": letter_content,
+            "source_id": source_id,
+        }
+
+        return LetterResponse(
+            success=True,
+            message="Cover letter generated successfully from text",
+            data=result,
+        )
+
+    except Exception as e:
+        logging.error("Error uploading CV", exc_info=True)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/text/stream")
+async def stream_letter_from_text(
+    user: CurrentUser,
+    name: str = Form(..., min_length=1, max_length=100),
+    description: str = Form(..., min_length=1),
+    lang: Optional[str] = Form(None, max_length=50),
+    cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
+):
+
+    return StreamingResponse(
+        _sse_wrap(
+            cover_letter_service.stream_by_text(name, description, user, lang=lang)
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @router.post("/translate/stream")

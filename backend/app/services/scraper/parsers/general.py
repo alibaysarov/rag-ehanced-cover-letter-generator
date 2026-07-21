@@ -14,6 +14,7 @@ from tenacity import (
 )
 
 from app.decorators.browser import simple_page
+from app.helper import block_resources, get_domain_by_url, scroll_page_bottom
 from app.helper.flatten_list import flatten_list
 from app.job_parser.hh_parser import Vacancy
 from app.schemas.vacancy.single_vacancy import SingleVacancy
@@ -37,7 +38,9 @@ HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
 
 class GeneralVacancyParser:
     def __init__(self, name: str, base_url: str, has_pagination: bool):
-        self._name = name
+
+        self._name = get_domain_by_url(base_url)
+        print("Parser name", self._name)
         self._base_url = base_url
         self._has_pagination = has_pagination
 
@@ -104,13 +107,24 @@ class GeneralVacancyParser:
                 logger.warning(f"Error getting list: {e}", exc_info=True)
                 raise
 
+    @async_retry()
+    async def parse_single_by_url(self, page: Page, url: str) -> SingleVacancy:
+        try:
+            await page.route("**/*", block_resources)
+            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            vacancy = await self._get_result_from_vacancy(page=page)
+            return vacancy
+        except Exception as e:
+            logger.warning(
+                f"Error getting single vacancy page url:{url} : {e}", exc_info=True
+            )
+            raise
+
     async def parse_single_vacancy(self, page: Page, vacancy_id) -> SingleVacancy:
 
         url = self.get_single_url(vacancy_id)
         try:
-            await page.route("**/*", self._block_resources)
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            vacancy = await self._get_result_from_vacancy(page=page)
+            vacancy = await self.parse_single_by_url(page=page, url=url)
             return vacancy
         except Exception as e:
             logger.warning(
@@ -121,7 +135,7 @@ class GeneralVacancyParser:
     async def _get_vacancies_by_scroll(self, page, text: str) -> list[Vacancy]:
         try:
             url = self.format_url(self._base_url, text=text)
-            await page.route("**/*", self._block_resources)
+            await page.route("**/*", block_resources)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             return await self._get_results_from_page(page)
         except Exception as e:
@@ -133,7 +147,7 @@ class GeneralVacancyParser:
         self, page, query: str, page_num: int
     ) -> list[Vacancy]:
         try:
-            await page.route("**/*", self._block_resources)
+            await page.route("**/*", block_resources)
             url = self.format_url(self._base_url, text=query, page=page_num)
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
@@ -142,10 +156,9 @@ class GeneralVacancyParser:
             logger.error(f"Error getting list: {e}")
             raise
 
-    @async_retry()
     async def _get_result_from_vacancy(self, page: Page) -> SingleVacancy:
         try:
-            await self._scroll_page(page)
+            await scroll_page_bottom(page)
             await page.wait_for_timeout(500)
             vacancy_dict = await page.evaluate(self.evaluate_vacancy_page())
             vacancy: SingleVacancy = SingleVacancy.model_validate(vacancy_dict)
@@ -155,7 +168,7 @@ class GeneralVacancyParser:
             raise e
 
     async def _get_results_from_page(self, page) -> list[Vacancy]:
-        await self._scroll_page(page)
+        await scroll_page_bottom(page)
         await page.wait_for_timeout(500)
 
         cards = await page.evaluate(self.evaluate_vacancy_list())
@@ -175,7 +188,7 @@ class GeneralVacancyParser:
     async def _get_total_pages(self, page, text: str) -> int:
         url = self.format_url(self._base_url, text=text)
         try:
-            await page.route("**/*", self._block_resources)
+            await page.route("**/*", block_resources)
 
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
@@ -192,12 +205,6 @@ class GeneralVacancyParser:
         except Exception as e:
             logger.error(f"Error getting total pages: {e}")
             return 1
-
-    async def _block_resources(self, route, request):
-        if request.resource_type in ("image", "font", "media", "stylesheet"):
-            await route.abort()
-        else:
-            await route.continue_()
 
     async def _get_paginated_list(self, page, text: str, job_id: int) -> list[Vacancy]:
         pages = await self._get_total_pages(page, text=text)
@@ -217,23 +224,3 @@ class GeneralVacancyParser:
 
         valid = [r for r in results if isinstance(r, list)]
         return flatten_list(valid)
-
-    async def _scroll_page(self, page):
-        await page.evaluate("""
-            () => new Promise((resolve) => {
-                const distance = 300;       // пикселей за шаг
-                const delay = 100;          // мс между шагами
-                
-                const timer = setInterval(() => {
-                    window.scrollBy(0, distance);
-                    
-                    const scrolled = window.scrollY + window.innerHeight;
-                    const total = document.documentElement.scrollHeight;
-                    
-                    if (scrolled >= total) {
-                        clearInterval(timer);
-                        resolve();
-                    }
-                }, delay);
-            })
-        """)

@@ -18,7 +18,7 @@ dependencies = [
     "alembic>=1.13.0",
     "psycopg2-binary>=2.9.0",
     "sqlmodel>=0.0.31",
-    "asyncpg>=0.29.0",  # Commented out for Windows compatibility
+    "asyncpg>=0.29.0",
     # AI / RAG
     "openai>=2.14.0",
     "llama-index>=0.14.12",

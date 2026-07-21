@@ -59,8 +59,7 @@ class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
             temperature=0.1,
             reasoning=False,
         )
-        super().__init__(model.model)
-        self.model = model
+        super().__init__(model=model.model)
 
     def get_schema(self):
         return CoverLetterResult

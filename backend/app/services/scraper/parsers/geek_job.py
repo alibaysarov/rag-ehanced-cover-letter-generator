@@ -20,9 +20,19 @@ class GeekJobVacancyParser(GeneralVacancyParser):
     def evaluate_vacancy_page(self):
         return """
         ()=>{
-            const job_title = document.querySelector("h1")?.textContent?.trim() || '';
-            const job_text = document.querySelector('div.description')?.textContent?.trim() || '';
-            
+            const job_title = (
+                document.querySelector('h1')?.textContent?.trim() ||
+                document.querySelector('main h1')?.textContent?.trim() ||
+                ''
+            );
+
+            const job_text = (
+                document.querySelector('article')?.textContent?.trim() ||
+                document.querySelector('[class*="description"]')?.textContent?.trim() ||
+                document.body?.textContent?.trim() ||
+                ''
+            );
+
             return {
                 job_title,
                 job_text,
@@ -40,14 +50,12 @@ class GeekJobVacancyParser(GeneralVacancyParser):
 
     def evaluate_vacancy_list(self) -> str:
         return """
-        
             () => [...document.querySelectorAll('ul.collection.serp-list li')]
                     .map(v => {
                         const elem = v.querySelector('p.truncate.vacancy-name a')
                         const title = elem?.textContent || null;
-                        
                         const link = elem?.href || null;
-                        const vacancy_id = link?.match(/\/vacancy\/(\d+)/)?.[1] || null;
+                        const vacancy_id = link?.match(/\/vacancy\/([^/?#]+)/)?.[1] || null;
 
                         return { title, link, vacancy_id };
                     })

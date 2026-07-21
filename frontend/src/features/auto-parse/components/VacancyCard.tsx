@@ -109,7 +109,7 @@ export function VacancyCard({ vacancy }: VacancyCardProps) {
                 _hover={{ textDecoration: 'underline' }}
                 onClick={(e) => e.stopPropagation()}
               >
-                Открыть на hh.ru
+                Открыть страницу вакансии
                 <Box as="span" display="inline-flex" alignItems="center">
                   <IconExternalLink size={12} stroke={2} />
                 </Box>

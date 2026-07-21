@@ -30,8 +30,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - QDRANT_URL=${QDRANT_URL}
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      - OLLAMA_HOST=http://host.docker.internal:11434
+      - DATABASE_URL=${DATABASE_URL}
+      - OLLAMA_HOST=${OLLAMA_HOST}
   celery-worker:
     build:
       context: .
@@ -67,10 +67,9 @@ services:
 
     environment:
 
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-
+      DATABASE_URL: ${DATABASE_URL}
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
-      OLLAMA_HOST: http://host.docker.internal:11434
+      OLLAMA_HOST: ${OLLAMA_HOST}
 
 
   celery-beat:

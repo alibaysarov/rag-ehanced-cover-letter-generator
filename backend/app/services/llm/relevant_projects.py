@@ -1,25 +1,22 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
 
-from app.core.config import settings
 from app.schemas.llm_outputs.relevant_projects import RelevantProjects
 
 from .general import GeneralLLMClient
+from .models.ollama import OllamaModel
 
 
 class RelevantProjectsPrompt(GeneralLLMClient[RelevantProjects]):
     def __init__(self):
         _MODEL = "qwen2.5:0.5b"
 
-        model = ChatOllama(
+        model = OllamaModel(
             model=_MODEL,
             temperature=0.1,
             reasoning=False,
             num_ctx=4096,
-            base_url=settings.OLLAMA_HOST,
         )
-
-        self.model = model.with_structured_output(RelevantProjects)
+        super().__init__(model=model.model)
 
     def get_schema(self):
         return RelevantProjects

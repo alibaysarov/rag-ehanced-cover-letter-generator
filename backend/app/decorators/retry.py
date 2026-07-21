@@ -3,7 +3,28 @@ import logging
 import random
 import time
 
+from tenacity import (
+    before_sleep_log,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+from tenacity import (
+    retry as tenacity_retry,
+)
+
 logger = logging.getLogger(__name__)
+
+
+def async_retry():
+    """Декоратор с exponential backoff: 3 попытки, задержки 1s → 2s → 4s."""
+    return tenacity_retry(
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=1, min=1, max=8),
+        retry=retry_if_exception_type(Exception),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True,
+    )
 
 
 def retry(max_attempts=3, delay=1.0, backoff=2.0, exceptions=(Exception,)):

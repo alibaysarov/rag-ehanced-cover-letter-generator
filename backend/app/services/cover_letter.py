@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from app.cache import redis as redis_db
+from app.commands import GenerateCoverCommandLetterHandler, GenerateLetterCommand
 from app.models import AutoParsedJob, Project, User
 from app.repository import AutoParseJobRepository, ProjectRepository
 from app.repository.user_repository import UserRepository
@@ -12,6 +13,7 @@ from app.schemas.llm_outputs.relevant_projects import RelevantProject
 from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.services.llm.cover_letter_prompt import CoverLetterPrompt
 from app.services.llm.relevant_projects import RelevantProjectsPrompt
+from app.services.scraper.vacancy_scraper import VacancyScrapingService
 
 from ..schemas.llm_outputs.job_requirements import JobRequirement
 from ..services.llm.job_requirements import JobParsePrompt
@@ -25,7 +27,16 @@ class CoverLetterService:
         user_repo: UserRepository,
         project_repository: ProjectRepository,
         auto_parse_job_repository: AutoParseJobRepository,
+        generate_cover_letter_command_handler: GenerateCoverCommandLetterHandler,
+        vacancy_scraping_service: VacancyScrapingService,
     ):
+        # Services
+        self.vacancy_scraping_service = vacancy_scraping_service
+        # Commands
+        self.generate_cover_letter_command_handler = (
+            generate_cover_letter_command_handler
+        )
+
         # Repos
         self.project_repository = project_repository
         self.user_repo = user_repo
@@ -49,10 +60,6 @@ class CoverLetterService:
         self, vacancy_name: str, vacancy_text: str, user: User, lang: str | None = None
     ):
 
-        text = f"""
-        {vacancy_name}\n
-        {vacancy_text}
-        """
         create_vacancy_dto = {
             "user_id": user.id,
             "parsing_job_id": None,
@@ -64,30 +71,46 @@ class CoverLetterService:
             "is_viewed": False,
             "cover_letter_text": "",
         }
+
         auto_parse_job: AutoParsedJob = await self.auto_parse_job_repository.create(
-            create_vacancy_dto
+            **create_vacancy_dto
         )
 
-        self.generate_by_vacancy(auto_parse_job.id)
+        cover_letter_text = await self.generate_by_vacancy(
+            auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
+        )
 
-        body = await self.__get_data_from_text(text=text, user_id=user.id)
-
-        if lang:
-            body["lang"] = lang
-
-        async for delta in self._clean_stream(body):
+        async for delta in self._clean_stream(cover_letter_text):
             yield delta
 
-    async def stream_by_url(self, url: str, user_id: int):
+    async def stream_by_url(self, url: str, user: User):
         try:
-            body = await self.__get_data_from_url(url, user_id)
+            single_vacancy = await self.vacancy_scraping_service.parse_single(url)
+            create_vacancy_dto = {
+                "user_id": user.id,
+                "parsing_job_id": None,
+                "vacancy_id": None,
+                "url": url,
+                "job_title": single_vacancy.job_title,
+                "job_text": single_vacancy.job_text,
+                "is_applied": False,
+                "is_viewed": False,
+                "cover_letter_text": "",
+            }
+
+            auto_parse_job: AutoParsedJob = await self.auto_parse_job_repository.create(
+                **create_vacancy_dto
+            )
+            cover_letter_text = await self.generate_by_vacancy(
+                auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
+            )
+
+            async for delta in self._clean_stream(cover_letter_text):
+                yield delta
         except Exception as e:
             print(f"URL parse error: {e}")
             yield "__URL_PARSE_ERROR__"
             return
-
-        async for delta in self._clean_stream(body):
-            yield delta
 
     # Patterns stripped from the very start of LLM output
     _STRIP_LABEL = re.compile(
@@ -98,67 +121,18 @@ class CoverLetterService:
     async def generate_by_vacancy(
         self, vacancy_id: int, first_name: str, last_name: str
     ) -> str:
-        logger.info(f"Starting single generation: id {vacancy_id}")
 
-        # TODO:Implement method like in app.tasks.single_generation
-        vacancy = await self.auto_parse_job_repository.get_by_id(vacancy_id)
-        if vacancy is not None:
-            user_id = vacancy.user_id
-            prep_str = f"{vacancy.id} {vacancy.job_title} {vacancy.job_text}"
-            try:
-                job_requirement = await self.job_parse_promt.get_async_response(
-                    {"job_text": prep_str}
-                )
-                job_requirement.technologies
-                technologies = [tech.lower() for tech in job_requirement.technologies]
-                relevant_projects = await self.project_repository.get_relevant(
-                    user_id, technologies
-                )
+        command = GenerateLetterCommand(
+            first_name=first_name,
+            last_name=last_name,
+            vacancy_id=vacancy_id,
+            batch_id=None,
+        )
 
-                if len(relevant_projects) == 0:
-                    logger.warning(
-                        f"Missed getting relevant projects vacancy_id {vacancy_id}\n Technologies:{technologies} \n fetching all projects by user"
-                    )
-                    user_projects = await self.project_repository.get_by_user(user_id)
-                    sorted_projects = self.__sort_projects_llm(
-                        vacancy, technologies, user_projects
-                    )
-
-                if len(relevant_projects) > 2:
-                    sorted_projects = self.__sort_projects_llm(
-                        vacancy, technologies, relevant_projects
-                    )
-                    cover_letter: str = await self.__generate_cover_letter(
-                        name=first_name,
-                        last_name=last_name,
-                        vacancy_name=vacancy.job_title,
-                        vacancy_technologies=technologies,
-                        vacancy_requirements=technologies,
-                        projects=sorted_projects,
-                    )
-                    print("Response", cover_letter)
-                    await self.auto_parse_job_repository.update_vacancy(
-                        vacancy_id, cover_letter, is_generated=True
-                    )
-
-                    return cover_letter
-                else:
-                    cover_letter = await self.__generate_cover_letter(
-                        name=first_name,
-                        last_name=last_name,
-                        vacancy_name=vacancy.job_title,
-                        vacancy_technologies=technologies,
-                        vacancy_requirements=technologies,
-                        projects=relevant_projects,
-                    )
-                    print("Response", cover_letter)
-                    self.auto_parse_job_repository.update_vacancy(
-                        vacancy_id, cover_letter, is_generated=True
-                    )
-
-                    return cover_letter
-            except Exception as e:
-                raise
+        cover_letter_text: str = (
+            await self.generate_cover_letter_command_handler.handle(command=command)
+        )
+        return cover_letter_text
 
     async def _clean_stream(self, text: str):
         #  body: dict
@@ -260,6 +234,19 @@ class CoverLetterService:
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
 
+        create_vacancy_dto = {
+            "user_id": user.id,
+            "parsing_job_id": None,
+            "vacancy_id": None,
+            "url": "",
+            "job_title": vacancy.jo,
+            "job_text": vacancy_text,
+            "is_applied": False,
+            "is_viewed": False,
+            "cover_letter_text": "",
+        }
+
+        self.auto_parse_job_repository.create()
         ranked = await self._get_ranked_projects(
             user_id=user.id, vacancy_text=text, job_requirement=vacancy
         )
@@ -320,17 +307,20 @@ class CoverLetterService:
         )
         return cover_letter.content
 
-    def __sort_projects_llm(self, vacancy, technologies, relevant_projects):
+    async def __sort_projects_llm(self, vacancy, technologies, relevant_projects):
         body = {
             "job_text": vacancy.job_text,
             "technologies": technologies,
             "projects": relevant_projects,
         }
-        llm_sorted_projects = self.relevant_projects_prompt.get_async_response(body)
+        llm_sorted_projects = await self.relevant_projects_prompt.get_async_response(
+            body
+        )
 
         return self.__sort_by_ids(relevant_projects, llm_sorted_projects.projects)
 
     def __sort_by_ids(
+        self,
         projects: list[tuple[Project, Any]] | list[Project],
         llm_projects: list[RelevantProject],
     ) -> list:

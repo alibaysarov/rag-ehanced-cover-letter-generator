@@ -16,7 +16,7 @@ class GeneralLLMClient(ABC, Generic[SchemaT]):
     def __init__(self, model: BaseChatModel):
         schema = self.get_schema()
         self._schema = schema  # сохраняем схему как атрибут
-        if schema is None:
+        if self._schema is None:
             self.model = model
         else:
             self.model = model.with_structured_output(schema=schema)
