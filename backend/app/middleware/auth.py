@@ -25,6 +25,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Проверяем авторизацию для API эндпоинтов
         if request.url.path.startswith("/api/v1/"):
             token = None
+
             if (
                 request.url.path.startswith("/api/v1/auto-parse/stream/")
                 or "/generate-stream" in request.url.path
@@ -34,6 +35,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     return JSONResponse(
                         status_code=401, content={"detail": "Token query param missing"}
                     )
+
+                request.state.user_email = _get_email_from_token(token=token)
+                _set_auth_header(request=request, token=token)
+                response = await call_next(request)
+                return response
             else:
                 auth_header = request.headers.get("Authorization")
                 if not auth_header or not auth_header.startswith("Bearer "):
@@ -44,10 +50,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 token = auth_header.split(" ")[1]
 
             try:
-                # Декодируем токен (здесь можно добавить дополнительную логику)
-                payload = jwt_service.decode_jwt(token)
                 # Можно добавить payload в request.state для использования в эндпоинтах
-                request.state.user_email = payload.get("email")
+                request.state.user_email = _get_email_from_token(token=token)
             except Exception as e:
                 return JSONResponse(
                     status_code=401, content={"detail": "Invalid or expired token"}
@@ -55,3 +59,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         response = await call_next(request)
         return response
+
+
+def _get_email_from_token(token: str) -> str:
+    payload = jwt_service.decode_jwt(token)
+    email = payload.get("email")
+    if not email:
+        raise ValueError("Token payload missing 'email' claim")
+    return email
+
+
+def _set_auth_header(request: Request, token: str) -> None:
+    new_headers = [(k, v) for k, v in request.scope["headers"] if k != b"Authorization"]
+    new_headers.append((b"Authorization", f"Bearer {token}".encode()))
+    request.scope["headers"] = new_headers

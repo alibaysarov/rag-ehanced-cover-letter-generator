@@ -169,6 +169,7 @@ async def start_test_generation(
             "status": "started",
         }
     except Exception as e:
+        logger.error("An error during auto generation %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Возникла ошибка попробуйте позже",
@@ -195,6 +196,7 @@ async def get_generate_status(
 
     # статусы из Redis по конкретным vacancy_id этой job
     raw_statuses = await async_client.hgetall(f"batch:{parsing_job_id}") or {}
+    print("raw statuses", raw_statuses)
     statuses: dict[str, dict] = {
         k.decode() if isinstance(k, bytes) else k: json.loads(v)
         for k, v in raw_statuses.items()

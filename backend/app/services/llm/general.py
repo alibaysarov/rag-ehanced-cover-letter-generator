@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import AsyncIterator, Generic, Optional, TypeVar, Union, cast
 
+from langchain_core.exceptions import OutputParserException
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.ai import AIMessage
 from langchain_core.messages.base import BaseMessage
@@ -49,7 +50,10 @@ class GeneralLLMClient(ABC, Generic[SchemaT]):
 
     async def get_async_response(self, body: dict = {}) -> Union[SchemaT, BaseMessage]:
         messages = self.get_prompt(body)
-        result = await self.model.ainvoke(messages)
+        try:
+            result = await self.model.ainvoke(messages)
+        except OutputParserException as e:
+            result = self.__fallback_from_error(e)
         return self.__cast_llm_output(result=result)
 
     async def get_stream_response(self, body: dict = {}) -> AsyncIterator[str]:
@@ -58,6 +62,16 @@ class GeneralLLMClient(ABC, Generic[SchemaT]):
         async for chunk in self.model.astream(messages):
             if chunk.content:
                 yield chunk.content
+
+    def __fallback_from_error(self, e: OutputParserException):
+        raw_text = getattr(e, "llm_output", None) or str(e)
+        if self._schema is not None and hasattr(self._schema, "model_fields"):
+            # если схема — один текстовый филд (как CoverLetterResult.content),
+            # просто кладём туда сырой текст
+            field_names = list(self._schema.model_fields.keys())
+            if len(field_names) == 1:
+                return self._schema(**{field_names[0]: raw_text})
+        raise e  # если схема сложнее одного поля — фолбэк не годится, пробрасываем дальше
 
     def __cast_llm_output(self, result: AIMessage) -> Union[SchemaT, BaseMessage]:
         if self._schema is not None:

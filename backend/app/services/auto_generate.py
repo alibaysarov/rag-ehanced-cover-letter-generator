@@ -8,13 +8,13 @@ from app.cache.redis import async_client
 from app.tasks import single_generation
 
 
-def start_batch(parsing_job_id: int, vacancies: list[int], first_name, last_name):
+def start_batch(parsing_job_id: int, vacancy_ids: list[int], first_name, last_name):
 
     # инициализируем счётчик total, чтобы понимать, когда всё закончилось
-    sync_client.hset(f"batch_meta:{parsing_job_id}", "total", len(vacancies))
+    sync_client.hset(f"batch_meta:{parsing_job_id}", "total", len(vacancy_ids))
 
-    for v in vacancies:
-        single_generation.delay(v.id, first_name, last_name, parsing_job_id)
+    for vacancy_id in vacancy_ids:
+        single_generation.delay(vacancy_id, first_name, last_name, parsing_job_id)
 
     return parsing_job_id
 

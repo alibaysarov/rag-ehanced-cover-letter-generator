@@ -59,29 +59,33 @@ class CoverLetterService:
     async def stream_by_text(
         self, vacancy_name: str, vacancy_text: str, user: User, lang: str | None = None
     ):
+        try:
+            create_vacancy_dto = {
+                "user_id": user.id,
+                "parsing_job_id": None,
+                "vacancy_id": None,
+                "url": "",
+                "job_title": vacancy_name,
+                "job_text": vacancy_text,
+                "is_applied": False,
+                "is_viewed": False,
+                "cover_letter_text": "",
+            }
 
-        create_vacancy_dto = {
-            "user_id": user.id,
-            "parsing_job_id": None,
-            "vacancy_id": None,
-            "url": "",
-            "job_title": vacancy_name,
-            "job_text": vacancy_text,
-            "is_applied": False,
-            "is_viewed": False,
-            "cover_letter_text": "",
-        }
+            auto_parse_job: AutoParsedJob = await self.auto_parse_job_repository.create(
+                **create_vacancy_dto
+            )
 
-        auto_parse_job: AutoParsedJob = await self.auto_parse_job_repository.create(
-            **create_vacancy_dto
-        )
-
-        cover_letter_text = await self.generate_by_vacancy(
-            auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
-        )
-
-        async for delta in self._clean_stream(cover_letter_text):
-            yield delta
+            cover_letter_text = await self.generate_by_vacancy(
+                auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
+            )
+            print("Cover letter", cover_letter_text)
+            async for delta in self._clean_stream(cover_letter_text):
+                yield delta
+        except Exception as e:
+            logger.error("URL parse error %s", e)
+            yield "__URL_PARSE_ERROR__"
+            return
 
     async def stream_by_url(self, url: str, user: User):
         try:
