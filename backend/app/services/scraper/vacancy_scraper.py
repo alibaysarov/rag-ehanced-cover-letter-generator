@@ -49,7 +49,6 @@ class VacancyScrapingService:
 
     def get_parser(self, url: str) -> GeneralVacancyParser:
         domain = get_domain_by_url(url)
-        print("item ", domain, self._parser_map.get(domain))
         return self._parser_map.get(domain)
 
     async def run_parse_job(self, job_id: int, query: str, user_id: int) -> int | None:

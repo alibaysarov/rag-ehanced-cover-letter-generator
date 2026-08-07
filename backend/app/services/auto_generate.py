@@ -5,7 +5,16 @@ from fastapi import Request
 
 from app.cache import sync_client
 from app.cache.redis import async_client
-from app.tasks import single_generation
+from app.tasks import single_generation, test_task
+
+
+def start_test_batch():
+    vacancy_ids: list[int] = [i for i in range(10)]
+    first_name = "john"
+    last_name = "doe"
+    parsing_job_id = 1
+    for vacancy_id in vacancy_ids:
+        test_task.delay(vacancy_id, first_name, last_name, parsing_job_id)
 
 
 def start_batch(parsing_job_id: int, vacancy_ids: list[int], first_name, last_name):

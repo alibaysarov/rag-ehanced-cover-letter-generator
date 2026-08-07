@@ -46,7 +46,8 @@ class CoverLetterResult(BaseModel):
     content: str = Field(..., description="Текст письма")
 
 
-_MODEL = "qwen3:8b"
+# _MODEL = "qwen3:8b"
+_MODEL = "qwen3:1.7b"
 
 
 class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):

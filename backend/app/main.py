@@ -8,6 +8,7 @@ from app.api.v1.api import api_router
 from app.cache import redis as redis_db
 from app.core.config import settings
 from app.database import check_db_connection
+from app.dependencies import get_pub_sub_listener
 from app.middleware.auth import AuthMiddleware
 from app.pw_instances.chromium import close_browser, start_browser
 
@@ -23,6 +24,11 @@ async def lifespan(app: FastAPI):
     await redis_db.connect_redis()
 
     await start_browser()
+    pubsub_listener = get_pub_sub_listener()
+
+    pubsub_listener.start_all_listeners()
+
+    # task = asyncio.create_task(listen_cover_letter_events())
 
     # Check database connection
     conn_result = await check_db_connection()
@@ -31,6 +37,13 @@ async def lifespan(app: FastAPI):
         raise Exception("Database connection failed")
 
     yield
+
+    pubsub_listener.stop_all_listeners()
+    # task.cancel()
+    # try:
+    #     await task
+    # except asyncio.CancelledError:
+    #     pass
 
     await redis_db.close_conn()
     await close_browser()

@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends
@@ -24,6 +25,8 @@ from app.services import (
     VacancyScrapingService,
 )
 from app.services.cover_letter import CoverLetterService
+from app.services.websocket.websocket_manager import WebSocketManager
+from app.tasks.listener.pubsub_listener import PubsubListener
 
 DBSession = Annotated[AsyncSession, Depends(get_db)]
 
@@ -123,3 +126,15 @@ def get_pdf_reader() -> PDFReader:
 
 def get_sentence_splitter() -> SentenceSplitter:
     return SentenceSplitter(chunk_size=1000, chunk_overlap=0)
+
+
+# ws
+@lru_cache
+def get_websocket_manager() -> WebSocketManager:
+    return WebSocketManager()
+
+
+# redis listener
+@lru_cache
+def get_pub_sub_listener() -> PubsubListener:
+    return PubsubListener()

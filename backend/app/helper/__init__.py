@@ -6,6 +6,7 @@ from .url import get_domain_by_url
 
 __all__ = [
     "CurrentUser",
+    "WsUser",
     "flatten_list",
     "get_current_user",
     "get_domain_by_url",
@@ -20,4 +21,9 @@ def __getattr__(name):
         from .user import CurrentUser, get_current_user
 
         return {"CurrentUser": CurrentUser, "get_current_user": get_current_user}[name]
+
+    if name in {"WsUser", "get_current_user_ws"}:
+        from .user import WsUser, get_current_user_ws
+
+        return {"WsUser": WsUser, "get_current_user_ws": get_current_user_ws}[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

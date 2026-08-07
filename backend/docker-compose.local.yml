@@ -32,6 +32,14 @@ services:
       - QDRANT_URL=${QDRANT_URL}
       - DATABASE_URL=${DATABASE_URL}
       - OLLAMA_HOST=${OLLAMA_HOST}
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
   celery-worker:
     build:
       context: .
@@ -70,7 +78,14 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       OLLAMA_HOST: ${OLLAMA_HOST}
-
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
 
   celery-beat:
     build:

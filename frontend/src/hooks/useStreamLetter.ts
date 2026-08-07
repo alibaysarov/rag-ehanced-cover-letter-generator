@@ -18,6 +18,7 @@ interface UseStreamLetterReturn {
   preload: (text: string) => void;
 }
 
+
 export function useStreamLetter(): UseStreamLetterReturn {
   const [content, setContent] = useState('');
   const [status, setStatus] = useState<StreamStatus>('idle');

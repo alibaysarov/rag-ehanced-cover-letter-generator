@@ -23,6 +23,7 @@ export default function LetterGenerator() {
     streamFromText,
     reset: resetStream,
   } = useStreamLetter();
+
   const {
     content: translatedContent,
     status: translateStatus,
@@ -48,10 +49,13 @@ export default function LetterGenerator() {
     translate({ text: streamContent, target_language: targetLanguage });
   };
 
+
+  
+
   return (
     <Box>
       <TodayStatsCard />
-
+      
       <Box mb={8}>
         <Heading
           fontFamily="heading"

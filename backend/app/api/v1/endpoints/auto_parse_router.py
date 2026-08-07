@@ -3,7 +3,15 @@ import json
 import logging
 from typing import AsyncIterator
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from fastapi.responses import StreamingResponse
 from sqlmodel import desc, select
 
@@ -14,18 +22,51 @@ from app.dependencies import (
     get_auto_parse_repository,
     get_sent_letter_repository,
     get_vacancy_scraping_service,
+    get_websocket_manager,
 )
-from app.helper import CurrentUser
+from app.helper import CurrentUser, WsUser
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.repository.auto_parse_job_repository import AutoParseJobRepository
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
 from app.schemas.api.auto_parse import MarkAppliedRequest, StartParseRequest
 from app.services import VacancyScrapingService
-from app.services.auto_generate import start_batch, stream_gen_events
+from app.services.auto_generate import start_batch, start_test_batch, stream_gen_events
+from app.services.websocket.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+# ws_manager = get_websocket_manager()
+
+
+@router.post("/test-send")
+async def test_send(
+    user: CurrentUser, ws_manager: WebSocketManager = Depends(get_websocket_manager)
+):
+    #   await ws_manager.send_text(user.id,"Example text")
+    start_test_batch()
+    return {"Message": "123"}
+
+
+@router.websocket("/ws")
+async def ws_connect(
+    user: WsUser,
+    websocket: WebSocket,
+    ws_manager: WebSocketManager = Depends(get_websocket_manager),
+):
+    await ws_manager.connect(user.id, websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # обработка входящих сообщений
+            print("Data from ws", data)
+            await ws_manager.send_text(user.id, f"echo: {data}")
+    except WebSocketDisconnect:
+        await ws_manager.disconnect(user.id)
+    except Exception as e:
+        logger.exception("Ошибка в WS-соединении user_id=%s", user.id)
+        await ws_manager.disconnect(user.id)
 
 
 @router.post("/start")

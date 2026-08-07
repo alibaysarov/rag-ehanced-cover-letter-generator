@@ -1,3 +1,3 @@
-from .single_generation import single_generation
+from .single_generation import single_generation, test_task
 
-__all__ = ["single_generation"]
+__all__ = ["single_generation", "test_task"]

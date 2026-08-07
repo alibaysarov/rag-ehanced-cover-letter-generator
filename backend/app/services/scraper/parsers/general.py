@@ -40,7 +40,6 @@ class GeneralVacancyParser:
     def __init__(self, name: str, base_url: str, has_pagination: bool):
 
         self._name = get_domain_by_url(base_url)
-        print("Parser name", self._name)
         self._base_url = base_url
         self._has_pagination = has_pagination
 

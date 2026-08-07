@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, WebSocket, WebSocketException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +10,36 @@ from app.schemas.api.user import AuthenticatedUser
 from app.services.jwt import JwtService
 
 security = HTTPBearer()
+
+
+async def get_current_user_ws(
+    websocket: WebSocket,
+    db: AsyncSession = Depends(get_db),
+) -> AuthenticatedUser:
+    auth = websocket.headers.get("authorization")
+    if not auth or not auth.startswith("Bearer "):
+        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
+    token = auth.removeprefix("Bearer ")
+    jwt_service = JwtService()
+    user_repo = UserRepository(db)
+    try:
+        email = jwt_service.get_email_from_token(token)
+        user = await user_repo.get_user_by_email(email)
+
+        if user is None:
+            raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
+
+        if not user.is_active:
+            raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
+
+        return AuthenticatedUser.model_validate(user)
+    except Exception as e:
+        print("error", e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def get_current_user(
@@ -69,3 +99,5 @@ async def get_current_user(
 
 
 CurrentUser = Annotated[AuthenticatedUser, Depends(get_current_user)]
+
+WsUser = Annotated[AuthenticatedUser, Depends(get_current_user_ws)]
