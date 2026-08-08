@@ -274,7 +274,6 @@ export default function AutoParsePage() {
 
   const handleWs = (evt: MessageEvent<string>) => {
     const message = JSON.parse(evt.data) as messageType
-    console.log("ws message",message)
     setVacancies(prev => {
       return prev.map(vacancy => {
         if (vacancy.id == message.vacancy_id) {

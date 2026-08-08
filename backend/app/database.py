@@ -2,6 +2,7 @@ import logging
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 from sqlmodel import text
 
 from app.core.config import settings
@@ -13,8 +14,23 @@ engine = create_async_engine(
     url=settings.DATABASE_URL,
 )
 
+
 async_session_maker = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
+)
+
+
+# Отдельный engine для Celery: каждая задача = новый event loop (asyncio.run),
+# поэтому обычный пул соединений тут только вредит (соединения "протухают"
+# между loop'ами). NullPool создаёт новое соединение на каждый запрос и
+# закрывает его сразу после использования — никакого переиспользования между loop'ами.
+celery_engine = create_async_engine(
+    url=settings.DATABASE_URL,
+    poolclass=NullPool,
+)
+
+celery_async_session_maker = async_sessionmaker(
+    celery_engine, class_=AsyncSession, expire_on_commit=False
 )
 
 

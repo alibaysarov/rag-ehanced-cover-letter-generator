@@ -18,3 +18,11 @@ async def handle_event(data: dict):
     data.pop("user_id")
     await ws_manager.send_text(user_id, json.dumps(data))
     logger.info("cover letter event: %s", data)
+
+
+@response_listener("test_events")
+async def handle_test_event(data: dict):
+    user_id = data.get("user_id")
+    data.pop("user_id")
+    await ws_manager.send_text(user_id, json.dumps(data))
+    logger.info("cover letter event: %s", data)

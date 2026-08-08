@@ -11,6 +11,7 @@ from app.database import check_db_connection
 from app.dependencies import get_pub_sub_listener
 from app.middleware.auth import AuthMiddleware
 from app.pw_instances.chromium import close_browser, start_browser
+from app.tasks import listener
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,8 +26,9 @@ async def lifespan(app: FastAPI):
 
     await start_browser()
     pubsub_listener = get_pub_sub_listener()
-
+    print("starting listeners", listener)
     pubsub_listener.start_all_listeners()
+    print("Ln count", len(pubsub_listener._listeners))
 
     # Check database connection
     conn_result = await check_db_connection()

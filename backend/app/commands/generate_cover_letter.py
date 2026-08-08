@@ -11,10 +11,6 @@ from app.services.llm import CoverLetterPrompt, JobParsePrompt, RelevantProjects
 
 logger = logging.getLogger(__name__)
 
-_cover_letter_prompt = CoverLetterPrompt()
-_job_parse_prompt = JobParsePrompt()
-_relevant_projects_prompt = RelevantProjectsPrompt()
-
 
 class GenerateLetterCommand(BaseModel):
     vacancy_id: int | str
@@ -194,7 +190,7 @@ def build_handler(session: AsyncSession) -> GenerateCoverCommandLetterHandler:
         user_repo=UserRepository(session=session),
         project_repository=ProjectRepository(session=session),
         auto_parse_job_repository=AutoParseJobRepository(session=session),
-        cover_letter_prompt=_cover_letter_prompt,
-        job_parse_prompt=_job_parse_prompt,
-        relevant_projects_prompt=_relevant_projects_prompt,
+        cover_letter_prompt=CoverLetterPrompt(),
+        job_parse_prompt=JobParsePrompt(),
+        relevant_projects_prompt=RelevantProjectsPrompt(),
     )

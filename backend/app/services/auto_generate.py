@@ -8,9 +8,7 @@ from app.cache.redis import async_client
 from app.tasks import single_generation, test_task
 
 
-def start_test_batch(user_id: int):
-    vacancy_ids: list[int] = [i for i in range(10)]
-    parsing_job_id: int = 1
+def start_test_batch(user_id: int, parsing_job_id: int, vacancy_ids: list[int]):
     first_name = "ali"
     last_name = "baisarov"
 

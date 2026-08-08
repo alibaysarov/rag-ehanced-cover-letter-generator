@@ -42,10 +42,16 @@ router = APIRouter()
 
 @router.post("/test-send")
 async def test_send(
-    user: CurrentUser, ws_manager: WebSocketManager = Depends(get_websocket_manager)
+    user: CurrentUser,
+    ws_manager: WebSocketManager = Depends(get_websocket_manager),
+    auto_parse_job_repo: AutoParseJobRepository = Depends(get_auto_parse_repository),
 ):
     #   await ws_manager.send_text(user.id,"Example text")
-    start_test_batch(user.id)
+    job_id = 54
+    vacancies = await auto_parse_job_repo.get_by_job_id(job_id)
+    vacancy_ids: list[int] = [item.id for item in vacancies[0:10]]
+    start_test_batch(user.id, job_id, vacancy_ids)
+    # start_batch()
     return {"Message": "123"}
 
 
@@ -256,7 +262,7 @@ async def get_generate_status(
     is_running = batch_total > 0 and finished_count < batch_total
 
     return {
-        "is_running": False,
+        "is_running": is_running,
         "generated": generated,
         "failed": failed_count,
         "total": total,
