@@ -23,6 +23,7 @@ import {
 } from '@/features/auto-parse';
 import type { ParsingJobStatus, AutoParsedJob } from '@/features/auto-parse';
 import type { GenerationState } from '@/features/auto-parse/hooks/useAutoParse';
+import useWebSocket from '@/hooks/useWebSocket';
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
   pending: 'yellow',
@@ -259,8 +260,33 @@ export default function AutoParsePage() {
     loadVacanciesForJob,
     genState,
     isStartingGen,
+    setVacancies,
     startGeneration,
   } = useAutoParse();
+
+
+  type messageType = {
+    vacancy_id: number,
+    batch_id: number,
+    status: string,
+    cover_letter_text: string
+  }
+
+  const handleWs = (evt: MessageEvent<string>) => {
+    const message = JSON.parse(evt.data) as messageType
+    console.log("ws message",message)
+    setVacancies(prev => {
+      return prev.map(vacancy => {
+        if (vacancy.id == message.vacancy_id) {
+          vacancy.cover_letter_text = message.cover_letter_text
+          vacancy.is_generated = true
+          return vacancy
+        }
+        return vacancy
+      })
+    })
+  }
+  useWebSocket({ messageHandler: handleWs })
 
   const isRunning = job?.status === 'running' || job?.status === 'pending';
   const showProgress = job !== null && job.status !== 'pending';

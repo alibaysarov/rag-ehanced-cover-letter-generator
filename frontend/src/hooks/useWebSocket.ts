@@ -1,45 +1,45 @@
 import { TokenManager } from "@/features/auth";
 import { useEffect, useRef } from "react";
 
-
-
-interface WsConfig {
-    messageHandler: (evt :MessageEvent<any>) => void
+interface WsConfig<T> {
+    messageHandler: (evt: MessageEvent<T>) => void;
 }
-
 
 const setupWs = (): WebSocket => {
-    const url = "ws://localhost:8000/api/v1/auto-parse/ws"
     const token = TokenManager.getAccessToken();
-    const headers = ["Authorization", `Bearer ${token}`]
-    return new WebSocket(url, headers);
-}
+    const url = `ws://localhost:8000/api/v1/auto-parse/ws?token=${encodeURIComponent(token ?? "")}`;
+    return new WebSocket(url);
+};
 
-
-const useWebSocket = ({ messageHandler }: WsConfig) => {
+const useWebSocket = <T>({ messageHandler }: WsConfig<T>) => {
     const socketRef = useRef<WebSocket | null>(null);
 
     useEffect(() => {
-        // 1. Establish the WebSocket connection
-        
-        socketRef.current = setupWs();
+        const socket = setupWs();
+        socketRef.current = socket;
 
-        // 2. Listen for messages from the server
-        socketRef.current.onmessage = (event:MessageEvent<any>) => {
+        socket.onmessage = (event: MessageEvent<T>) => {
             messageHandler(event);
         };
 
-        // 3. Optional: Handle connection errors or openings
-        socketRef.current.onopen = () => console.log('Connected!');
-        socketRef.current.onerror = (error) => console.error('WebSocket Error:', error);
+        socket.onopen = () => console.log("Connected!");
+        socket.onerror = (error) => console.error("WebSocket Error:", error);
+        socket.onclose = (event) => console.log("WebSocket closed:", event.code, event.reason);
 
-        // 4. Clean up and close the connection when the component unmounts
         return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
+            // Если сокет ещё не открылся — закрываем его "мягко",
+            // без ошибки в консоли, и не даём "повиснуть" открытому соединению
+            if (
+                socket.readyState === WebSocket.CONNECTING ||
+                socket.readyState === WebSocket.OPEN
+            ) {
+                socket.close();
+            }
+            if (socketRef.current === socket) {
+                socketRef.current = null;
             }
         };
     }, []);
-}
+};
 
 export default useWebSocket;

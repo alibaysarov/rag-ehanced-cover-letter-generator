@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.commands import GenerateCoverCommandLetterHandler, build_handler
 from app.database import get_db
+from app.pubsub.pubsub_listener import PubsubListener
 from app.repository import (
     AutoParseJobRepository,
     CVRepository,
@@ -26,7 +27,6 @@ from app.services import (
 )
 from app.services.cover_letter import CoverLetterService
 from app.services.websocket.websocket_manager import WebSocketManager
-from app.tasks.listener.pubsub_listener import PubsubListener
 
 DBSession = Annotated[AsyncSession, Depends(get_db)]
 

@@ -28,8 +28,6 @@ async def lifespan(app: FastAPI):
 
     pubsub_listener.start_all_listeners()
 
-    # task = asyncio.create_task(listen_cover_letter_events())
-
     # Check database connection
     conn_result = await check_db_connection()
     if not conn_result:
@@ -39,11 +37,6 @@ async def lifespan(app: FastAPI):
     yield
 
     pubsub_listener.stop_all_listeners()
-    # task.cancel()
-    # try:
-    #     await task
-    # except asyncio.CancelledError:
-    #     pass
 
     await redis_db.close_conn()
     await close_browser()
@@ -57,15 +50,6 @@ app = FastAPI(
     description=settings.DESCRIPTION,
     lifespan=lifespan,
 )
-
-
-@app.get("/")
-async def root():
-    a = 1
-    b = 2
-    c = a * b
-
-    return {"message": "Hello World", "data": c}
 
 
 @app.get("/redis-test")

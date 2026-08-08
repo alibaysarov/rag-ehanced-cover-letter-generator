@@ -16,10 +16,13 @@ async def get_current_user_ws(
     websocket: WebSocket,
     db: AsyncSession = Depends(get_db),
 ) -> AuthenticatedUser:
-    auth = websocket.headers.get("authorization")
-    if not auth or not auth.startswith("Bearer "):
+    token = websocket.query_params.get("token")
+    print("token is ")
+    if not token:
         raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
-    token = auth.removeprefix("Bearer ")
+    if token.startswith("Bearer "):
+        token = token.removeprefix("Bearer ")
+
     jwt_service = JwtService()
     user_repo = UserRepository(db)
     try:

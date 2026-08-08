@@ -45,7 +45,7 @@ async def test_send(
     user: CurrentUser, ws_manager: WebSocketManager = Depends(get_websocket_manager)
 ):
     #   await ws_manager.send_text(user.id,"Example text")
-    start_test_batch()
+    start_test_batch(user.id)
     return {"Message": "123"}
 
 
@@ -89,7 +89,7 @@ async def start_parse_test(
             detail="Возникла ошибка попробуйте позже",
         )
 
-    # TODO:Сделать выполнение в фоне (RabbitMQ+ разделение на воркеры + sse/websocket)
+    # TODO:Сделать выполнение в фоне (RabbitMQ + разделение на воркеры + sse/websocket)
     await vacancy_scraping_service.run_parse_job(
         parsing_job.id, query=body.query, user_id=user.id
     )
@@ -205,7 +205,9 @@ async def start_test_generation(
     try:
         vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
         vacancy_ids: list[int] = [item.id for item in vacancies]
-        start_batch(parsing_job_id, vacancy_ids, user.first_name, user.last_name)
+        start_batch(
+            user.id, parsing_job_id, vacancy_ids, user.first_name, user.last_name
+        )
         return {
             "status": "started",
         }
@@ -254,7 +256,7 @@ async def get_generate_status(
     is_running = batch_total > 0 and finished_count < batch_total
 
     return {
-        "is_running": is_running,
+        "is_running": False,
         "generated": generated,
         "failed": failed_count,
         "total": total,

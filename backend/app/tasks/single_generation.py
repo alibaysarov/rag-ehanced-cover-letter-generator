@@ -1,8 +1,6 @@
 import asyncio
-import json
 import logging
 
-from app.cache.redis import async_client
 from app.celery_app import celery_app
 from app.commands import (
     GenerateLetterCommand,
@@ -10,21 +8,10 @@ from app.commands import (
 )
 from app.database import async_session_maker
 from app.decorators import async_task
+from app.pubsub.publish_event import publish_event_sync
 from app.services.task_progress import set_cover_letter_task_status
 
 logger = logging.getLogger(__name__)
-
-
-async def publish_event(batch_id: str, vacancy_id: int, status: str):
-    try:
-        await async_client.publish(
-            "cover_letter_events",
-            json.dumps(
-                {"batch_id": batch_id, "vacancy_id": vacancy_id, "status": status}
-            ),
-        )
-    except Exception as e:
-        logger.error("Erro during publishing event", e)
 
 
 @celery_app.task(
@@ -34,10 +21,19 @@ async def publish_event(batch_id: str, vacancy_id: int, status: str):
 )
 @async_task
 async def test_task(
-    self, vacancy_id: int, first_name: str, last_name: str, batch_id: str
+    self, user_id: int, vacancy_id: int, first_name: str, last_name: str, batch_id: str
 ):
-    await asyncio.sleep(5)
-    await publish_event(batch_id, vacancy_id, "generated")
+    cover_letter_text = f"test123 {first_name} {last_name}"
+    data = {
+        "user_id": user_id,
+        "batch_id": batch_id,
+        "vacancy_id": vacancy_id,
+        "status": "generated",
+        "cover_letter_text": cover_letter_text,
+    }
+
+    await asyncio.sleep(2)
+    publish_event_sync("cover_letter_events", data)
 
 
 @celery_app.task(
@@ -47,7 +43,7 @@ async def test_task(
 )
 @async_task
 async def single_generation(
-    self, vacancy_id: int, first_name: str, last_name: str, batch_id: str
+    self, user_id: int, vacancy_id: int, first_name: str, last_name: str, batch_id: str
 ):
     async with async_session_maker() as session:
         command = GenerateLetterCommand(
@@ -59,9 +55,16 @@ async def single_generation(
         handler = build_handler(session=session)
         try:
             set_cover_letter_task_status(batch_id, vacancy_id, "started")
-            await handler.handle(command=command)
+            cover_letter_text = await handler.handle(command=command)
             set_cover_letter_task_status(batch_id, vacancy_id, "generated")
-            await publish_event(batch_id, vacancy_id, "generated")
+            data = {
+                "user_id": user_id,
+                "batch_id": batch_id,
+                "vacancy_id": vacancy_id,
+                "status": "generated",
+                "cover_letter_text": cover_letter_text,
+            }
+            publish_event_sync("cover_letter_events", data)
         except Exception as e:
             set_cover_letter_task_status(batch_id, vacancy_id, "failed")
             raise

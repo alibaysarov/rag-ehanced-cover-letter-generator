@@ -5,7 +5,7 @@ import redis.asyncio as redis
 
 REDIS_URL = "redis://:pass@redis:6379/0"
 
-sync_client = sync_redis.Redis.from_url(REDIS_URL)
+sync_client = sync_redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
 async_client = redis.from_url(REDIS_URL, decode_responses=True)
 

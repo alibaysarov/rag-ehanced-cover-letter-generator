@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { autoParseApi } from '../api/auto-parse-client';
 import type { ParsingJob, AutoParsedJob } from '../types';
 
@@ -20,6 +20,7 @@ interface UseAutoParseReturn {
   genState: GenerationState;
   isStartingGen: boolean;
   startGeneration: () => Promise<void>;
+  setVacancies: Dispatch<SetStateAction<AutoParsedJob[]>>
 }
 
 export function useAutoParse(): UseAutoParseReturn {
@@ -259,5 +260,6 @@ export function useAutoParse(): UseAutoParseReturn {
     genState,
     isStartingGen,
     startGeneration,
+    setVacancies,
   };
 }

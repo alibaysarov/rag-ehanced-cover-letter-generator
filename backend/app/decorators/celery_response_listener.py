@@ -8,6 +8,7 @@ listener = get_pub_sub_listener()
 def response_listener(redis_chan: str):
     def decorator(func):
         listener.attach_listener(redis_chan, func)
+        print("Listner attached ", redis_chan)
 
         @wraps(func)
         async def wrapper(data: dict):

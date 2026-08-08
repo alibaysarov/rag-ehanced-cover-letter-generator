@@ -17,10 +17,10 @@ _relevant_projects_prompt = RelevantProjectsPrompt()
 
 
 class GenerateLetterCommand(BaseModel):
-    vacancy_id: int
+    vacancy_id: int | str
     first_name: str
     last_name: str
-    batch_id: str | None = None
+    batch_id: str | int | None = None
 
     model_config = {"frozen": True}
 

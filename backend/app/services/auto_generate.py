@@ -8,22 +8,27 @@ from app.cache.redis import async_client
 from app.tasks import single_generation, test_task
 
 
-def start_test_batch():
+def start_test_batch(user_id: int):
     vacancy_ids: list[int] = [i for i in range(10)]
-    first_name = "john"
-    last_name = "doe"
-    parsing_job_id = 1
+    parsing_job_id: int = 1
+    first_name = "ali"
+    last_name = "baisarov"
+
     for vacancy_id in vacancy_ids:
-        test_task.delay(vacancy_id, first_name, last_name, parsing_job_id)
+        test_task.delay(user_id, vacancy_id, first_name, last_name, parsing_job_id)
 
 
-def start_batch(parsing_job_id: int, vacancy_ids: list[int], first_name, last_name):
+def start_batch(
+    user_id: int, parsing_job_id: int, vacancy_ids: list[int], first_name, last_name
+):
 
     # инициализируем счётчик total, чтобы понимать, когда всё закончилось
     sync_client.hset(f"batch_meta:{parsing_job_id}", "total", len(vacancy_ids))
 
     for vacancy_id in vacancy_ids:
-        single_generation.delay(vacancy_id, first_name, last_name, parsing_job_id)
+        single_generation.delay(
+            user_id, vacancy_id, first_name, last_name, parsing_job_id
+        )
 
     return parsing_job_id
 
