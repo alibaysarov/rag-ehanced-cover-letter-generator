@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Project
 from app.repository import AutoParseJobRepository, ProjectRepository, UserRepository
 from app.schemas.llm_outputs import RelevantProject
+from app.schemas.project import RelevantProjectResponse
 from app.services.llm import CoverLetterPrompt, JobParsePrompt, RelevantProjectsPrompt
 
 logger = logging.getLogger(__name__)
@@ -40,64 +41,137 @@ class GenerateCoverCommandLetterHandler:
 
     async def handle(self, command: GenerateLetterCommand) -> str:
         logger.info(f"Starting single generation: id {command.vacancy_id}")
-
         vacancy = await self.auto_parse_job_repository.get_by_id(command.vacancy_id)
-        if vacancy is not None:
-            user_id = vacancy.user_id
-            prep_str = f"{vacancy.id} {vacancy.job_title} {vacancy.job_text}"
-            try:
-                job_requirement = await self.__extract_job_requirement(prep_str)
-
-                (
-                    technologies,
-                    relevant_projects,
-                ) = await self.__extract_relevant_projects(user_id, job_requirement)
-
-                if len(relevant_projects) == 0:
-                    logger.warning(
-                        f"Missed getting relevant projects vacancy_id {vacancy.id}\n Technologies:{technologies} \n fetching all projects by user"
-                    )
-                    user_projects = await self.project_repository.get_by_user(user_id)
-                    sorted_projects = await self.__sort_projects_llm(
-                        vacancy, technologies, user_projects
-                    )
-
-                if len(relevant_projects) > 2:
-                    sorted_projects = await self.__sort_projects_llm(
-                        vacancy, technologies, relevant_projects
-                    )
-                    cover_letter: str = await self.__generate_cover_letter(
-                        name=command.first_name,
-                        last_name=command.last_name,
-                        vacancy_name=vacancy.job_title,
-                        vacancy_technologies=technologies,
-                        vacancy_requirements=technologies,
-                        projects=sorted_projects,
-                    )
-                    await self.auto_parse_job_repository.update_vacancy(
-                        vacancy.id, cover_letter, is_generated=True
-                    )
-
-                    return cover_letter
-                else:
-                    cover_letter = await self.__generate_cover_letter(
-                        name=command.first_name,
-                        last_name=command.last_name,
-                        vacancy_name=vacancy.job_title,
-                        vacancy_technologies=technologies,
-                        vacancy_requirements=technologies,
-                        projects=relevant_projects,
-                    )
-                    print("Response\n", cover_letter)
-                    await self.auto_parse_job_repository.update_vacancy(
-                        vacancy.id, cover_letter, is_generated=True
-                    )
-
-                    return cover_letter
-            except Exception as e:
-                raise
-        else:
+        if vacancy is None:
             return ""
+        user_id = vacancy.user_id
+
+        vacancy_text = f"{vacancy.job_title}\n{vacancy.job_text}"
+
+        try:
+            relevant_projects: list[
+                RelevantProjectResponse
+            ] = await self.__get_projects_by_vacancy_text(
+                vacancy_text=vacancy_text, user_id=user_id
+            )
+            if len(relevant_projects) == 0:
+                logger.warning(
+                    f"Missed getting relevant projects vacancy_id {vacancy.id}. Fetching all projects by user"
+                )
+                user_projects = await self.project_repository.get_by_user(user_id)
+
+                technologies = self.__get_technologies(user_projects)
+
+                cover_letter: str = await self.__generate_cover_letter(
+                    name=command.first_name,
+                    last_name=command.last_name,
+                    vacancy_name=vacancy.job_title,
+                    vacancy_technologies=technologies,
+                    vacancy_requirements=technologies,
+                    projects=user_projects,
+                )
+
+                await self.auto_parse_job_repository.update_vacancy(
+                    vacancy.id, cover_letter, is_generated=True
+                )
+
+                return cover_letter
+
+            logger.info(
+                f"Got relevant projects for vacancy_id {vacancy.id}. Generating based on them"
+            )
+            technologies = self.__get_technologies(relevant_projects)
+
+            cover_letter: str = await self.__generate_cover_letter(
+                name=command.first_name,
+                last_name=command.last_name,
+                vacancy_name=vacancy.job_title,
+                vacancy_technologies=technologies,
+                vacancy_requirements=technologies,
+                projects=relevant_projects,
+            )
+
+            await self.auto_parse_job_repository.update_vacancy(
+                vacancy.id, cover_letter, is_generated=True
+            )
+
+            return cover_letter
+        except Exception as e:
+            logger.error(f"Error occured {e}")
+
+    # async def handle(self, command: GenerateLetterCommand) -> str:
+    #     logger.info(f"Starting single generation: id {command.vacancy_id}")
+
+    #     vacancy = await self.auto_parse_job_repository.get_by_id(command.vacancy_id)
+    #     if vacancy is not None:
+    #         user_id = vacancy.user_id
+    #         prep_str = f"{vacancy.id} {vacancy.job_title} {vacancy.job_text}"
+    #         try:
+    #             job_requirement = await self.__extract_job_requirement(prep_str)
+
+    #             (
+    #                 technologies,
+    #                 relevant_projects,
+    #             ) = await self.__extract_relevant_projects(user_id, job_requirement)
+
+    #             if len(relevant_projects) == 0:
+    #                 logger.warning(
+    #                     f"Missed getting relevant projects vacancy_id {vacancy.id}\n Technologies:{technologies} \n fetching all projects by user"
+    #                 )
+    #                 user_projects = await self.project_repository.get_by_user(user_id)
+    #                 sorted_projects = await self.__sort_projects_llm(
+    #                     vacancy, technologies, user_projects
+    #                 )
+
+    #             if len(relevant_projects) > 2:
+    #                 sorted_projects = await self.__sort_projects_llm(
+    #                     vacancy, technologies, relevant_projects
+    #                 )
+    #                 cover_letter: str = await self.__generate_cover_letter(
+    #                     name=command.first_name,
+    #                     last_name=command.last_name,
+    #                     vacancy_name=vacancy.job_title,
+    #                     vacancy_technologies=technologies,
+    #                     vacancy_requirements=technologies,
+    #                     projects=sorted_projects,
+    #                 )
+    #                 await self.auto_parse_job_repository.update_vacancy(
+    #                     vacancy.id, cover_letter, is_generated=True
+    #                 )
+
+    #                 return cover_letter
+    #             else:
+    #                 cover_letter = await self.__generate_cover_letter(
+    #                     name=command.first_name,
+    #                     last_name=command.last_name,
+    #                     vacancy_name=vacancy.job_title,
+    #                     vacancy_technologies=technologies,
+    #                     vacancy_requirements=technologies,
+    #                     projects=relevant_projects,
+    #                 )
+    #                 print("Response\n", cover_letter)
+    #                 await self.auto_parse_job_repository.update_vacancy(
+    #                     vacancy.id, cover_letter, is_generated=True
+    #                 )
+
+    #                 return cover_letter
+    #         except Exception as e:
+    #             raise
+    #     else:
+    #         return ""
+
+    def __get_technologies(self, projects: list) -> set[str]:
+        technologies = {
+            technology for project in projects for technology in project.technologies
+        }
+        return technologies
+
+    async def __get_projects_by_vacancy_text(
+        self, vacancy_text: str, user_id: str
+    ) -> list[RelevantProjectResponse]:
+        return await self.project_repository.get_projects_by_vacancy_text(
+            vacancy_text, user_id
+        )
 
     async def __extract_relevant_projects(self, user_id, job_requirement):
         technologies = [tech.lower() for tech in job_requirement.technologies]

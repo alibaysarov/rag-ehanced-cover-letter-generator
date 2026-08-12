@@ -1,13 +1,17 @@
 import json
+import logging
 from typing import List
 
-from sqlalchemy import cast, func
+from sqlalchemy import cast, func, literal
 from sqlalchemy.dialects.postgresql import ARRAY, VARCHAR
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, text
 
 from app.models import Project
 from app.schemas.llm_outputs.cv_parse import ProjectFromCVModel
+from app.schemas.project import RelevantProjectResponse
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectRepository:
@@ -28,6 +32,76 @@ class ProjectRepository:
         statement = select(Project).where(Project.user_id == user_id)
         result = await self._session.execute(statement)
         return list(result.scalars().all())
+
+    async def get_projects_by_vacancy_text(
+        self, vacancy_text: str, user_id: str
+    ) -> list[RelevantProjectResponse]:
+        """
+        Берет текст вакансии и при помощи векторного поиска подбирает релевантные проекты
+        """
+
+        try:
+            tech = func.unnest(Project.technologies).alias("tech")
+
+            match_count = (
+                select(func.count().label("cnt"))
+                .select_from(tech)
+                .where(
+                    func.to_tsvector(
+                        "simple",
+                        func.lower(literal(vacancy_text)),
+                    ).op("@@")(
+                        func.plainto_tsquery(
+                            "simple",
+                            tech.column,
+                        )
+                    )
+                )
+                .correlate(Project)
+                .lateral()
+                .alias("matched")
+            )
+
+            statement = (
+                select(
+                    Project.id,
+                    Project.name,
+                    Project.company_name.label("project_name"),
+                    Project.technologies,
+                    match_count.c.cnt.label("match_count"),
+                )
+                .select_from(Project)
+                .join(
+                    match_count,
+                    literal(True),
+                )
+                .where(
+                    Project.user_id == user_id,
+                    match_count.c.cnt > 0,
+                )
+                .order_by(
+                    match_count.c.cnt.desc(),
+                )
+                .limit(20)
+            )
+
+            result = await self._session.execute(statement)
+
+            rows = result.all()
+
+            return [
+                RelevantProjectResponse(
+                    id=row.id,
+                    name=row.name,
+                    project_name=row.project_name,
+                    technologies=row.technologies,
+                )
+                for row in rows
+            ]
+
+        except Exception as e:
+            logger.error("Error during fetching relevant projects", exc_info=True)
+            return []
 
     async def get_relevant_by_vacancy_data(self, vacancy_data: list[dict]):
         query = text("""

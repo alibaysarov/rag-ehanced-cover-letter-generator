@@ -3,7 +3,6 @@ import os
 from celery import Celery
 from kombu import Queue
 
-
 # @worker_process_init.connect
 # def init_worker(**kwargs):
 #     # закрываем унаследованные из родителя соединения,

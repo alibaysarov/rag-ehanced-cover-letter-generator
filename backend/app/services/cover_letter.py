@@ -83,7 +83,7 @@ class CoverLetterService:
             async for delta in self._clean_stream(cover_letter_text):
                 yield delta
         except Exception as e:
-            logger.error("URL parse error %s", e)
+            logger.error("Error during getting cover letter", exc_info=True)
             yield "__URL_PARSE_ERROR__"
             return
 

@@ -54,15 +54,6 @@ app = FastAPI(
 )
 
 
-@app.get("/redis-test")
-async def redis_test():
-    await redis_db.redis_client.set("key", "value")
-
-    cache_hit = await redis_db.redis_client.get("key")
-
-    return {"message": cache_hit}
-
-
 app.add_middleware(AuthMiddleware)
 
 # CORS middleware
