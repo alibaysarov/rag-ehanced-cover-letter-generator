@@ -50,4 +50,7 @@ async def parse_site(job_id: int, site_key: str) -> None:
             )
     except Exception:
         logger.exception("Site parse failed for job=%s site=%s", job_id, site_key)
+        await repository.finish_site(
+            job_id, site_key, failed=True, error="site parsing failed"
+        )
         raise

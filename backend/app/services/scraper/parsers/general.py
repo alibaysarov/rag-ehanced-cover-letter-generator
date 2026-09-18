@@ -10,7 +10,8 @@ from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
-    wait_exponential,
+    wait_chain,
+    wait_fixed,
 )
 
 from app.decorators.browser import simple_page
@@ -21,10 +22,10 @@ from app.schemas.vacancy.vacancy import Vacancy
 
 
 def async_retry():
-    """Декоратор с exponential backoff: 3 попытки, задержки 1s → 2s → 4s."""
+    """Three retries after 10, 15, and 20 seconds for slow vacancy pages."""
     return retry(
         stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=8),
+        wait=wait_chain(wait_fixed(10), wait_fixed(15), wait_fixed(20)),
         retry=retry_if_exception_type(Exception),
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
@@ -34,6 +35,7 @@ def async_retry():
 logger = logging.getLogger(__name__)
 
 HH_MAX_PAGES = int(os.getenv("HH_MAX_PAGES", "5"))
+PAGE_GOTO_TIMEOUT_MS = 10_000
 
 
 class GeneralVacancyParser:
@@ -110,7 +112,9 @@ class GeneralVacancyParser:
     async def parse_single_by_url(self, page: Page, url: str) -> SingleVacancy:
         try:
             await page.route("**/*", block_resources)
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.goto(
+                url, wait_until="domcontentloaded", timeout=PAGE_GOTO_TIMEOUT_MS
+            )
             vacancy = await self._get_result_from_vacancy(page=page)
             return vacancy
         except Exception as e:
@@ -135,7 +139,9 @@ class GeneralVacancyParser:
         try:
             url = self.format_url(self._base_url, text=text)
             await page.route("**/*", block_resources)
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.goto(
+                url, wait_until="domcontentloaded", timeout=PAGE_GOTO_TIMEOUT_MS
+            )
             return await self._get_results_from_page(page)
         except Exception as e:
             logger.error(f"Error getting list: {e}", exc_info=True)
@@ -148,7 +154,9 @@ class GeneralVacancyParser:
         try:
             await page.route("**/*", block_resources)
             url = self.format_url(self._base_url, text=query, page=page_num)
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.goto(
+                url, wait_until="domcontentloaded", timeout=PAGE_GOTO_TIMEOUT_MS
+            )
 
             return await self._get_results_from_page(page)
         except Exception as e:
@@ -189,7 +197,9 @@ class GeneralVacancyParser:
         try:
             await page.route("**/*", block_resources)
 
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await page.goto(
+                url, wait_until="domcontentloaded", timeout=PAGE_GOTO_TIMEOUT_MS
+            )
 
             # pages = await page.query_selector_all(self._pagination_elems)
 

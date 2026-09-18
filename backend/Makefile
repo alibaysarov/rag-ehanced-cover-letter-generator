@@ -7,7 +7,7 @@ dev:
 # Alembic commands (when database is accessible)
 
 migrate:
-	alembic upgrade head
+	uv run alembic upgrade head
 
 alembic-init:
 	@echo "Initializing Alembic..."
