@@ -1,6 +1,9 @@
 services:
 
   backend:
+    # Build once; the Celery services use this same local image.
+    image: &backend-image cover-letter-backend:local
+    pull_policy: never
     build:
       context: .
       dockerfile: Dockerfile
@@ -39,9 +42,8 @@ services:
           cpus: '0.5'
           memory: 512M
   celery-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: *backend-image
+    pull_policy: never
 
     container_name: app-celery-worker
     extra_hosts:
@@ -85,9 +87,8 @@ services:
           memory: 1G
 
   celery-beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: *backend-image
+    pull_policy: never
 
     container_name: app-celery-beat
 

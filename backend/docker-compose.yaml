@@ -1,6 +1,8 @@
 services:
 
   backend:
+    image: cover-letter-backend:local
+    pull_policy: never
     build:
       context: .
       dockerfile: Dockerfile

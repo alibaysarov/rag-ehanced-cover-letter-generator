@@ -223,6 +223,8 @@ For Windows/Docker environment, migrations are applied through Docker containers
 
 ## Docker Services
 
+Run Docker Compose commands from `backend/`.
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -233,6 +235,25 @@ docker-compose up -d postgres
 # View logs
 docker-compose logs -f
 ```
+
+The local stack uses one image, `cover-letter-backend:local`, for `backend`,
+`celery-worker`, and `celery-beat`. Only the `backend` service builds it; the Celery
+services reuse it with their own commands. Build the shared image before starting
+Celery on its own:
+
+```bash
+cd backend
+make build-backend
+docker compose -f docker-compose.local.yml up -d --renew-anon-volumes backend celery-worker celery-beat
+
+# Rebuild once and update all three services after dependency/image changes.
+make restart-backend
+```
+
+Existing containers keep using their previous image until recreated. Old images
+are not deleted automatically. `--renew-anon-volumes` refreshes each service's
+`/app/.venv` from the shared image; named database volumes are preserved. The
+standard `docker-compose.yaml` uses the same image name for its backend service.
 
 ## Development
 

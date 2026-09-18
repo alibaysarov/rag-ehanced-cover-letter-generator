@@ -48,7 +48,6 @@ async def start_browser():
     _playwright = await async_playwright().start()
     chromium = await _playwright.chromium.launch(
         headless=True,
-        executable_path="./browsers/chromium-1187/chrome-linux/chrome",
         args=LAUNCH_ARGS,
         timeout=30000,
     )

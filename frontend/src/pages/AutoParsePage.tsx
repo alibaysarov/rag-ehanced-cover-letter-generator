@@ -303,7 +303,7 @@ export default function AutoParsePage() {
     isStartingGen,
     startGeneration,
   } = useAutoParse();
-  const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('compact');
+  const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('hh');
   const handleStartParse = async (query: string) => {
     try {
       await startParse(query);
@@ -386,16 +386,6 @@ export default function AutoParsePage() {
               <Flex justify="flex-end" mb={3} gap={2}>
                 <Button
                   size="sm"
-                  variant={cardVariant === 'compact' ? 'solid' : 'outline'}
-                  colorScheme="purple"
-                  onClick={() => setCardVariant('compact')}
-                  aria-label="Компактные карточки"
-                  title="Компактные карточки"
-                >
-                  <IconLayoutGrid size={18} stroke={2} />
-                </Button>
-                <Button
-                  size="sm"
                   variant={cardVariant === 'hh' ? 'solid' : 'outline'}
                   colorScheme="blue"
                   onClick={() => setCardVariant('hh')}
@@ -403,6 +393,17 @@ export default function AutoParsePage() {
                   title="Вертикальные карточки в стиле HH.ru"
                 >
                   <IconList size={20} stroke={2} />
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={cardVariant === 'compact' ? 'solid' : 'outline'}
+                  colorScheme="purple"
+                  onClick={() => setCardVariant('compact')}
+                  aria-label="Компактные карточки"
+                  title="Компактные карточки"
+                >
+                  <IconLayoutGrid size={18} stroke={2} />
                 </Button>
               </Flex>
             )}

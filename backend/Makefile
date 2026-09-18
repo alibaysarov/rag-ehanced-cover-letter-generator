@@ -50,8 +50,12 @@ setup: up alembic-upgrade
 	@echo "Database setup complete!" --reload
 
 
-restart-backend:
-	docker compose -f docker-compose.local.yml up --build backend -d
+.PHONY: build-backend restart-backend
+build-backend:
+	docker compose -f docker-compose.local.yml build backend
+
+restart-backend: build-backend
+	docker compose -f docker-compose.local.yml up -d --no-build --renew-anon-volumes backend celery-worker celery-beat
 
 ngrok-start:
 	ngrok http --url=https://limpidly-unensnared-anika.ngrok-free.dev 5173
