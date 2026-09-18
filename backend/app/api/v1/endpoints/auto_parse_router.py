@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 from typing import AsyncIterator
@@ -14,6 +13,7 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from sqlmodel import desc, select
+from starlette.concurrency import run_in_threadpool
 
 from app.cache.redis import async_client
 from app.database import async_session_maker
@@ -21,18 +21,23 @@ from app.dependencies import (
     DBSession,
     get_auto_parse_repository,
     get_sent_letter_repository,
-    get_vacancy_scraping_service,
     get_websocket_manager,
 )
 from app.helper import CurrentUser, WsUser
 from app.models.auto_parsed_job import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.repository.auto_parse_job_repository import AutoParseJobRepository
+from app.repository.parsing_job_repository import ParsingJobRepository
 from app.repository.sent_cover_letter_repository import SentCoverLetterRepository
-from app.schemas.api.auto_parse import MarkAppliedRequest, StartParseRequest
-from app.services import VacancyScrapingService
+from app.schemas.api.auto_parse import (
+    AutoParsedJobRead,
+    MarkAppliedRequest,
+    StartParseRequest,
+)
 from app.services.auto_generate import start_batch, start_test_batch, stream_gen_events
+from app.services.scraper.parsers.registry import get_parser_keys
 from app.services.websocket.websocket_manager import WebSocketManager
+from app.tasks.parse_site import parse_site
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -69,25 +74,21 @@ async def ws_connect(
             print("Data from ws", data)
             await ws_manager.send_text(user.id, f"echo: {data}")
     except WebSocketDisconnect:
-        await ws_manager.disconnect(user.id)
+        await ws_manager.disconnect(user.id, websocket)
     except Exception as e:
         logger.exception("Ошибка в WS-соединении user_id=%s", user.id)
-        await ws_manager.disconnect(user.id)
+        await ws_manager.disconnect(user.id, websocket)
 
 
-@router.post("/start")
+@router.post("/start", status_code=status.HTTP_202_ACCEPTED)
 async def start_parse_test(
     user: CurrentUser,
     body: StartParseRequest,
-    db: DBSession,
-    vacancy_scraping_service: VacancyScrapingService = Depends(
-        get_vacancy_scraping_service
-    ),
 ):
-    parsing_job = ParsingJob(user_id=user.id, query=body.query, status="pending")
-    db.add(parsing_job)
-    await db.commit()
-    await db.refresh(parsing_job)
+    repository = ParsingJobRepository(async_session_maker)
+    parsing_job = await repository.create_job_with_sites(
+        user.id, body.query, get_parser_keys()
+    )
     if parsing_job.id is None:
         logger.error("failed to create parsing job")
         raise HTTPException(
@@ -95,10 +96,21 @@ async def start_parse_test(
             detail="Возникла ошибка попробуйте позже",
         )
 
-    # TODO:Сделать выполнение в фоне (RabbitMQ + разделение на воркеры + sse/websocket)
-    await vacancy_scraping_service.run_parse_job(
-        parsing_job.id, query=body.query, user_id=user.id
-    )
+    try:
+        for site_key in get_parser_keys():
+            await run_in_threadpool(
+                parse_site.apply_async, args=(parsing_job.id, site_key)
+            )
+    except Exception:
+        logger.exception("Could not dispatch parsing job %s", parsing_job.id)
+        await repository.fail_pending_dispatch(parsing_job.id, "dispatch failure")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "message": "Не удалось запустить все парсеры",
+                "parsing_job_id": parsing_job.id,
+            },
+        )
 
     return {"parsing_job_id": parsing_job.id}
 
@@ -116,7 +128,7 @@ async def get_status(
     return job
 
 
-@router.get("/jobs/{parsing_job_id}/vacancies")
+@router.get("/jobs/{parsing_job_id}/vacancies", response_model=list[AutoParsedJobRead])
 async def get_vacancies(
     user: CurrentUser,
     parsing_job_id: int,
@@ -133,7 +145,7 @@ async def get_vacancies(
     )
     vacancies = result.scalars().all()
     print("List \n", vacancies)
-    return list(vacancies)
+    return [AutoParsedJobRead.model_validate(vacancy) for vacancy in vacancies]
 
 
 @router.patch("/vacancies/{vacancy_id}/applied")

@@ -70,5 +70,5 @@ Scaffold a complete, production-ready endpoint for the following:
 - Services receive `AsyncSession` via dependency injection — never create sessions internally.
 - Use `HTTPException` with specific status codes for errors.
 - Always include `success: bool` in response models.
-- `source_id` must stay consistent between PostgreSQL and Qdrant.
+- `source_id` must stay consistent between CV metadata and PostgreSQL-backed RAG chunks.
 - Do not expose internal error details to the client.

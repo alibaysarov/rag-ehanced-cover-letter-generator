@@ -28,7 +28,6 @@ backend/app/
 ├── repository/         # Data access layer (async DB operations)
 ├── schemas/            # Pydantic request/response models
 ├── services/           # Business logic (orchestrates repos + external APIs)
-└── storage/repository/ # Vector DB wrapper (Qdrant)
 ```
 
 ## Import Rules
@@ -151,8 +150,8 @@ Extend with `message` or `source_id` fields as needed. Always include `success` 
 
 ## Critical Rules
 
-1. **source_id** must be consistent between PostgreSQL CVs table and Qdrant payloads
+1. **source_id** must be consistent between `cvs.source_id` and `cv_chunks.source_id`
 2. **Never create new sessions** inside services — always receive from DI
-3. **Port awareness**: PostgreSQL 5433 (external), Qdrant 6333, backend 8000
+3. **Port awareness**: PostgreSQL 5433 (external), backend 8000
 4. **uv sync** for dependency management, never pip install
-5. **Vector dimensions** = 3072 (text-embedding-3-large). Changing EMBED_DIM requires re-embedding all data
+5. **RAG context** comes from PostgreSQL `cv_chunks` and `projects` via repository methods

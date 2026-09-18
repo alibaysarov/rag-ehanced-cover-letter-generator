@@ -3,52 +3,35 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.readers.file import PDFReader
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.repository import CVChunkRepository
 from app.repository.cv_repository import CVRepository
-from app.services.embeddings import BaseEmbedder, OpenAIEmbedder
-from app.storage.repository.qdrant import QdrantStorage
 
 load_dotenv()
 
 
 class PdfService:
-    def __init__(self, session: AsyncSession = None, embedder: BaseEmbedder = None):
+    def __init__(self, session: AsyncSession = None):
         self.reader = PDFReader()
-        self.embedder: BaseEmbedder = embedder or OpenAIEmbedder()
-        self.storage = QdrantStorage()
-        self.skill_storage = QdrantStorage(collection_name="skills")
-        self.project_storage = QdrantStorage(collection_name="projects")
         self.splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=0)
         self.session = session
         self.cv_repository = CVRepository(session) if session else None
+        self.cv_chunk_repository = CVChunkRepository(session) if session else None
 
-    def upsert_vectors(
+    async def upsert_chunks(
         self,
         pdf_path: str,
-        original_filename: str,
         source_id: str,
         user_id: int,
-        storage=None,
-    ):
-        """Embedding pdf файла и upsert в векторную БД."""
-        if storage is None:
-            storage = self.storage
+    ) -> int:
+        """Load and store CV chunks in PostgreSQL for text search."""
         text_chunks = self._load_and_chunk_pdf(pdf_path)
-        vectors = self.embed_texts(text_chunks)
-        ids = [
-            abs(hash(f"{original_filename}_{source_id}_{i + 1}"))
-            for i in range(len(text_chunks))
-        ]
-        payloads = [
-            {
-                "user_id": user_id,
-                "text": chunk,
-                "source": pdf_path,
-                "source_id": source_id,
-                "chunk_index": i,
-            }
-            for i, chunk in enumerate(text_chunks)
-        ]
-        storage.upsert(ids=ids, vectors=vectors, payloads=payloads)
+        if not self.cv_chunk_repository:
+            return len(text_chunks)
+        return await self.cv_chunk_repository.replace_chunks(
+            user_id=user_id,
+            source_id=source_id,
+            chunks=text_chunks,
+        )
 
     async def parse_cv(
         self,
@@ -62,15 +45,10 @@ class PdfService:
         upload_ip: str = None,
         user_agent: str = None,
     ):
-        """Загружает CV в векторную БД и сохраняет метаданные в PostgreSQL"""
-        # skill parsing
-        self.upsert_vectors(
-            pdf_path,
-            original_filename or filename,
-            source_id,
-            user_id,
-            self.skill_storage,
-        )
+        """Parses and stores CV chunks in PostgreSQL."""
+        await self.upsert_chunks(pdf_path, source_id, user_id)
+        if self.session:
+            await self.session.commit()
 
     async def add_cv(
         self,
@@ -84,8 +62,8 @@ class PdfService:
         upload_ip: str = None,
         user_agent: str = None,
     ):
-        """Загружает CV в векторную БД и сохраняет метаданные в PostgreSQL"""
-        self.upsert_vectors(pdf_path, original_filename or filename, source_id, user_id)
+        """Stores CV chunks and metadata in PostgreSQL."""
+        await self.upsert_chunks(pdf_path, source_id, user_id)
 
         # Save CV metadata to PostgreSQL if repository is available
         if self.cv_repository:
@@ -104,6 +82,8 @@ class PdfService:
                     upload_ip=upload_ip,
                     user_agent=user_agent,
                 )
+            else:
+                await self.session.commit()
 
     def _load_and_chunk_pdf(self, path: str):
         docs = self.reader.load_data(file=path)
@@ -112,6 +92,3 @@ class PdfService:
         for t in texts:
             chunks.extend(self.splitter.split_text(t))
         return chunks
-
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
-        return self.embedder.embed_texts(texts)

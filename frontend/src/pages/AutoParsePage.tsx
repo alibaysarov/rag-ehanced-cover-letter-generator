@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Heading,
   Input,
@@ -9,10 +10,11 @@ import {
   SimpleGrid,
   Spinner,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { IconSparkles } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList, IconSparkles } from '@tabler/icons-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { TodayStatsCard } from '@/components/ui/TodayStatsCard';
@@ -23,7 +25,6 @@ import {
 } from '@/features/auto-parse';
 import type { ParsingJobStatus, AutoParsedJob } from '@/features/auto-parse';
 import type { GenerationState } from '@/features/auto-parse/hooks/useAutoParse';
-import useWebSocket from '@/hooks/useWebSocket';
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
   pending: 'yellow',
@@ -226,10 +227,22 @@ function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPane
 
 interface VacancyListProps {
   vacancies: AutoParsedJob[];
+  variant: 'compact' | 'hh';
 }
 
-function VacancyList({ vacancies }: VacancyListProps) {
+function VacancyList({ vacancies, variant }: VacancyListProps) {
   const { t } = useTranslation();
+  const pageSize = 8;
+  const [page, setPage] = useState(1);
+  const pageCount = Math.max(1, Math.ceil(vacancies.length / pageSize));
+  const visibleVacancies = useMemo(
+    () => vacancies.slice((page - 1) * pageSize, page * pageSize),
+    [vacancies, page],
+  );
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, pageCount));
+  }, [pageCount]);
 
   if (vacancies.length === 0) {
     return (
@@ -242,16 +255,44 @@ function VacancyList({ vacancies }: VacancyListProps) {
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-      {vacancies.map((v) => (
-        <VacancyCard key={v.id} vacancy={v} />
-      ))}
-    </SimpleGrid>
+    <>
+      <SimpleGrid columns={variant === 'hh' ? 1 : { base: 1, md: 2, lg: 3 }} spacing={4}>
+        {visibleVacancies.map((v) => (
+          <VacancyCard key={v.id} vacancy={v} variant={variant} />
+        ))}
+      </SimpleGrid>
+      {pageCount > 1 && (
+        <Flex mt={6} justify="center" align="center" gap={3}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPage((current) => current - 1)}
+            isDisabled={page === 1}
+            aria-label="Предыдущая страница"
+          >
+            <IconChevronLeft size={18} />
+          </Button>
+          <Text fontSize="sm" color="slate.600" fontWeight={600}>
+            {page} / {pageCount}
+          </Text>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPage((current) => current + 1)}
+            isDisabled={page === pageCount}
+            aria-label="Следующая страница"
+          >
+            <IconChevronRight size={18} />
+          </Button>
+        </Flex>
+      )}
+    </>
   );
 }
 
 export default function AutoParsePage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const {
     job,
     vacancies,
@@ -260,35 +301,30 @@ export default function AutoParsePage() {
     loadVacanciesForJob,
     genState,
     isStartingGen,
-    setVacancies,
     startGeneration,
   } = useAutoParse();
+  const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('compact');
+  const handleStartParse = async (query: string) => {
+    try {
+      await startParse(query);
+      toast({
+        title: 'Задача парсинга запущена',
+        description: 'Вакансии появятся в списке по мере обработки.',
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      });
+    } catch {
+      toast({
+        title: 'Не удалось запустить парсинг',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
-
-  type messageType = {
-    vacancy_id: number,
-    batch_id: number,
-    status: string,
-    cover_letter_text: string
-  }
-
-  const handleWs = (evt: MessageEvent<string>) => {
-    const message = JSON.parse(evt.data) as messageType
-    setVacancies(prev => {
-      return prev.map(vacancy => {
-        if (vacancy.id == message.vacancy_id) {
-          vacancy.cover_letter_text = message.cover_letter_text
-          vacancy.is_generated = true
-          return vacancy
-        }
-        return vacancy
-      })
-    })
-  }
-  useWebSocket({ messageHandler: handleWs })
-
-  const isRunning = job?.status === 'running' || job?.status === 'pending';
-  const showProgress = job !== null && job.status !== 'pending';
+  const showProgress = job !== null;
   const showGeneration = job?.status === 'done' && vacancies.length > 0;
 
   return (
@@ -318,9 +354,9 @@ export default function AutoParsePage() {
 
         <Box mb={4}>
           <ParseSearchBar
-            isDisabled={isRunning}
+            isDisabled={isStarting}
             isLoading={isStarting}
-            onSubmit={startParse}
+            onSubmit={handleStartParse}
           />
         </Box>
 
@@ -346,7 +382,31 @@ export default function AutoParsePage() {
 
         {(vacancies.length > 0 || job?.status === 'done') && (
           <Box mb={8}>
-            <VacancyList vacancies={vacancies} />
+            {vacancies.length > 0 && (
+              <Flex justify="flex-end" mb={3} gap={2}>
+                <Button
+                  size="sm"
+                  variant={cardVariant === 'compact' ? 'solid' : 'outline'}
+                  colorScheme="purple"
+                  onClick={() => setCardVariant('compact')}
+                  aria-label="Компактные карточки"
+                  title="Компактные карточки"
+                >
+                  <IconLayoutGrid size={18} stroke={2} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant={cardVariant === 'hh' ? 'solid' : 'outline'}
+                  colorScheme="blue"
+                  onClick={() => setCardVariant('hh')}
+                  aria-label="Вертикальные карточки в стиле HH.ru"
+                  title="Вертикальные карточки в стиле HH.ru"
+                >
+                  <IconList size={20} stroke={2} />
+                </Button>
+              </Flex>
+            )}
+            <VacancyList vacancies={vacancies} variant={cardVariant} />
           </Box>
         )}
 

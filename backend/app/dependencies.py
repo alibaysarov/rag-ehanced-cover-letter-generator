@@ -114,7 +114,7 @@ def get_password_service() -> PasswordService:
     return PasswordService()
 
 
-def get_projects_storage_service(
+def get_project_service(
     project_repository: ProjectRepository = Depends(get_project_repository),
 ) -> ProjectStorageService:
     return ProjectStorageService(project_repository)

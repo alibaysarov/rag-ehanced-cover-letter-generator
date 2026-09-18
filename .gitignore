@@ -26,8 +26,4 @@ Thumbs.db
 # =========================
 postgres_data/
 
-# =========================
-# Qdrant local storage
-# =========================
-backend/qdrant_storage/
 backend/browsers/*

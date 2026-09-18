@@ -3,12 +3,12 @@ from typing import AsyncGenerator
 from openai import AsyncOpenAI, OpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.repository import CVChunkRepository, ProjectRepository
 from app.repository.cv_repository import CVRepository
 from app.repository.letter_repository import LetterRepository
 from app.schemas.rag import RAGSearchResult
 from app.services.llm.agents.job_requirement import JobRequirementAgent
 from app.services.llm.mistral import MistralClient
-from app.storage.repository.qdrant import QdrantStorage
 
 from .pdf import PdfService
 
@@ -19,11 +19,12 @@ class LetterService:
         self.llm = MistralClient()
         self.job_requirement_agent = JobRequirementAgent()
         self.async_client = AsyncOpenAI()
-        self.storage = QdrantStorage()
 
         self.session = session
         self.pdf_service = PdfService(session)
         self.cv_repository = CVRepository(session) if session else None
+        self.cv_chunk_repository = CVChunkRepository(session) if session else None
+        self.project_repository = ProjectRepository(session) if session else None
         self.letter_repository = LetterRepository(session) if session else None
 
     async def search_job_requirements(self, job_title: str, company: str = None) -> str:
@@ -72,7 +73,7 @@ class LetterService:
 
         # Получаем ключевые навыки и опыт из резюме
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = self.__search_resume_data(skills_query, source_id=source_id)
+        resume_data = await self.__search_resume_data(skills_query, source_id=source_id)
 
         if not resume_data.contexts:
             return (
@@ -118,7 +119,7 @@ class LetterService:
         """
 
         skills_query = "ключевые навыки опыт образование достижения"
-        resume_data = self.__search_resume_data(skills_query, source_id=source_id)
+        resume_data = await self.__search_resume_data(skills_query, source_id=source_id)
 
         if not resume_data.contexts:
             raise ValueError("Не найдены данные резюме в базе данных.")
@@ -298,22 +299,62 @@ class LetterService:
         """
         return prompt
 
-    def __search_resume_data(
+    async def __search_resume_data(
         self, query: str, source_id, top_k: int = 10
     ) -> RAGSearchResult:
         """
-        Ищем релевантные данные из резюме в векторной базе
+        Ищем релевантные данные из резюме и проектов в PostgreSQL.
         """
 
-        query_vec = self.pdf_service.embed_texts([query])[0]
-        found = self.storage.search(query_vector=query_vec, top_k=top_k)
-        filtered_contexts = []
-        filtered_sources = []
-        for context, source in zip(found["contexts"], found["sources"]):
-            if str(source.get("source_id")) == str(source_id):
-                filtered_contexts.append(context)
-                filtered_sources.append(source)
-        return RAGSearchResult(contexts=filtered_contexts, sources=filtered_sources)
+        if not self.cv_chunk_repository or not self.cv_repository:
+            return RAGSearchResult(contexts=[], sources=[])
+
+        cv = await self.cv_repository.get_cv_by_source_id(source_id)
+        chunks = await self.cv_chunk_repository.search_by_source_id(
+            source_id=source_id,
+            query=query,
+            top_k=top_k,
+        )
+
+        contexts = [chunk.text for chunk in chunks]
+        sources = [
+            {
+                "source_id": chunk.source_id,
+                "chunk_index": chunk.chunk_index,
+                "type": "cv_chunk",
+            }
+            for chunk in chunks
+        ]
+
+        if cv and self.project_repository:
+            projects = await self.project_repository.search_contexts(
+                user_id=cv.user_id,
+                query=query,
+                top_k=5,
+            )
+            for project in projects:
+                contexts.append(self.__format_project_context(project))
+                sources.append(
+                    {
+                        "source_id": source_id,
+                        "project_id": project.id,
+                        "type": "project",
+                    }
+                )
+
+        return RAGSearchResult(contexts=contexts, sources=sources)
+
+    @staticmethod
+    def __format_project_context(project) -> str:
+        lines = [f"Проект: {project.name}"]
+        if project.technologies:
+            lines.append(f"Технологии: {', '.join(project.technologies)}")
+        if project.skills:
+            lines.append(f"Навыки: {', '.join(project.skills)}")
+        if project.achievements:
+            lines.append("Достижения:")
+            lines.extend(f"- {item}" for item in project.achievements)
+        return "\n".join(lines)
 
     def __get_job_requirements_prompt(self, job_url: str):
         prompt = f"""

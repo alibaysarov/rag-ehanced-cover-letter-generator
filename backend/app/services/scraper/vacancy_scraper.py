@@ -7,14 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import async_session_maker as DbSession
 from app.decorators.time_perf import with_timer
 from app.helper import get_body_from_page, get_domain_by_url
-from app.job_parser.hh_parser import Vacancy
 from app.models import AutoParsedJob
 from app.models.parsing_job import ParsingJob
 from app.pw_instances import chromium as chromium_module
 from app.schemas.vacancy.single_vacancy import SingleVacancy
-from app.services.scraper.parsers.geek_job import GeekJobVacancyParser
+from app.schemas.vacancy.vacancy import Vacancy
 from app.services.scraper.parsers.general import GeneralVacancyParser
-from app.services.scraper.parsers.hh import HHVacancyParser
+from app.services.scraper.parsers.registry import create_parser, get_parser_keys
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +21,9 @@ logger = logging.getLogger(__name__)
 class VacancyScrapingService:
     def __init__(self):
         self._parsers: list[GeneralVacancyParser] = [
-            HHVacancyParser(),
-            GeekJobVacancyParser(),
+            create_parser(site_key) for site_key in get_parser_keys()
         ]
-        self._parser_map: dict[str:GeneralVacancyParser] = {
+        self._parser_map: dict[str, GeneralVacancyParser] = {
             p.get_name(): p for p in self._parsers
         }
 
@@ -47,7 +45,7 @@ class VacancyScrapingService:
         finally:
             await page.close()
 
-    def get_parser(self, url: str) -> GeneralVacancyParser:
+    def get_parser(self, url: str) -> GeneralVacancyParser | None:
         domain = get_domain_by_url(url)
         return self._parser_map.get(domain)
 
@@ -141,7 +139,7 @@ class VacancyScrapingService:
     ):
         async with semaphore:
             parsing_job = await session.get(ParsingJob, job_id)
-            page = await chromium_module.chromium.new_page()
+            page = await chromium_module.chromium.context.new_page()
             try:
                 item = await parser.parse_single_vacancy(
                     page, vacancy_id=vacancy.vacancy_id

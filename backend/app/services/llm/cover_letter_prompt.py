@@ -46,19 +46,20 @@ class CoverLetterResult(BaseModel):
     content: str = Field(..., description="Текст письма")
 
 
-# _MODEL = "qwen3:8b"
 _MODEL = "qwen3:1.7b"
 
 
 class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
     def __init__(self):
-
         model = OllamaModel(
             model=_MODEL,
-            format="json",
+            # format="json",
             num_ctx=8192,
-            num_predict=1024,
+            num_predict=2048,
             temperature=0.1,
+            top_k=5,
+            stop=["—"],
+            top_p=0.9,
             reasoning=False,
         )
         super().__init__(model=model.model)
@@ -83,6 +84,7 @@ class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
 2) добавь Мои достижения и проекты
 
 Правила:
+- Делай абзацные отступы между проектами
 - Название проекта пиши обычным текстом, без квадратных скобок и без двоеточия в конце можно оставить как в примере.
 - Числа обязательны в каждом предложении о проекте. Нет данных — придумай реалистичное.
 - Технологии в блоке "Стек" бери только из списка технологий вакансии.

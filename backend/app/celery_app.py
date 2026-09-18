@@ -29,5 +29,8 @@ celery_app.conf.update(
         "app.tasks.test_task": {
             "queue": "default",
         },
+        "app.tasks.parse_site": {
+            "queue": "default",
+        },
     },
 )

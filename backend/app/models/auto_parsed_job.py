@@ -1,17 +1,30 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, Text
+from sqlalchemy import Column, Text, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
 class AutoParsedJob(SQLModel, table=True):
     __tablename__ = "auto_parsed_jobs"
+    __table_args__ = (
+        UniqueConstraint(
+            "parsing_site_job_id",
+            "vacancy_id",
+            name="uq_auto_parsed_jobs_site_vacancy",
+        ),
+    )
 
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True, nullable=False)
     parsing_job_id: int = Field(
         foreign_key="parsing_jobs.id", index=True, nullable=True
+    )
+    parsing_site_job_id: int | None = Field(
+        default=None,
+        foreign_key="parsing_site_jobs.id",
+        index=True,
+        nullable=True,
     )
     vacancy_id: str = Field(nullable=True)
     url: str = Field(nullable=False)

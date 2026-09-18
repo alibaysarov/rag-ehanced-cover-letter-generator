@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    pubsub_listener.stop_all_listeners()
+    await pubsub_listener.stop_all_listeners()
 
     await redis_db.close_conn()
     await close_browser()

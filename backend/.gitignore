@@ -49,11 +49,6 @@ htmlcov/
 .ruff_cache/
 
 # =========================
-# Qdrant local storage
-# =========================
-qdrant_storage/
-
-# =========================
 # Uploaded files
 # =========================
 uploads/

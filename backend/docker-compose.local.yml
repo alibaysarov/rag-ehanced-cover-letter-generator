@@ -16,21 +16,19 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      qdrant:
-        condition: service_started
     volumes:
       - .:/app
       - /app/.venv
-    env_file:
-      - .env
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-      - QDRANT_URL=${QDRANT_URL}
       - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - OLLAMA_HOST=${OLLAMA_HOST}
     deploy:
       resources:
@@ -70,13 +68,12 @@ services:
       - .:/app
       - /app/.venv
 
-    env_file:
-      - .env
-
     environment:
 
       DATABASE_URL: ${DATABASE_URL}
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       OLLAMA_HOST: ${OLLAMA_HOST}
     deploy:
       resources:
@@ -110,12 +107,11 @@ services:
       - .:/app
       - /app/.venv
 
-    env_file:
-      - .env
-
     environment:
 
       CELERY_BROKER_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+      REDIS_URL: ${REDIS_URL}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       OLLAMA_HOST: ${OLLAMA_HOST}
   rabbitmq:
@@ -150,23 +146,12 @@ services:
     depends_on:
       - backend
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: db-qdrant
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    restart: unless-stopped
-    volumes:
-      - ./qdrant_storage:/qdrant/storage
   redis:
       image: redis:latest
       container_name: app_cache
       ports:
        - "6390:6379"
       restart: always
-      env_file:
-        - .env
       environment:
         - REDIS_USER=${REDIS_USER}
         - REDIS_PASSWORD=${REDIS_PASSWORD}

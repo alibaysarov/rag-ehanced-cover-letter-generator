@@ -22,7 +22,7 @@ You are a senior software architect. Your task is to generate a detailed impleme
 **Spec must include the following sections:**
 
 1. **Overview** — what the feature does and why
-2. **Architecture / Flow** — ASCII diagram of the request/response flow across frontend ↔ backend ↔ PostgreSQL ↔ Qdrant ↔ OpenAI
+2. **Architecture / Flow** — ASCII diagram of the request/response flow across frontend ↔ backend ↔ PostgreSQL ↔ OpenAI
 3. **New file structure** — full list of files to create or modify with comments (← NEW / ← UPDATED)
 4. **Step-by-step specification** — numbered sections, one per layer:
    - Pydantic schemas (`backend/app/schemas/`)
@@ -46,7 +46,7 @@ You are a senior software architect. Your task is to generate a detailed impleme
 - All endpoints must be `async def`
 - Frontend uses Chakra UI, React Query, React Hook Form + Zod
 - TypeScript `strict: true` — no `any`
-- source_id must be consistent between PostgreSQL and Qdrant
+- source_id must be consistent between CV metadata and PostgreSQL-backed RAG chunks
 - All feature files export from barrel `index.ts`
 
 ---

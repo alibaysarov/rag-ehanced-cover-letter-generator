@@ -1,4 +1,5 @@
 from app.decorators.browser import simple_page
+from app.helper import block_resources
 from app.pw_instances.chromium import chromium
 
 TIMEOUT = 30_000
@@ -14,13 +15,6 @@ TIMEOUT = 30_000
 """
 
 
-async def _block_resources(route, request):
-    if request.resource_type in ("image", "font", "media", "stylesheet"):
-        await route.abort()
-    else:
-        await route.continue_()
-
-
 # @tool
 async def get_html(url: str):
     """
@@ -29,7 +23,7 @@ async def get_html(url: str):
 
     async with simple_page(chromium, url) as page:
         try:
-            await page.route("**/*", _block_resources)
+            await page.route("**/*", block_resources)
             await page.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT)
             result = await page.evaluate("""
                 () => {
@@ -50,7 +44,7 @@ async def visit_website(url: str, jsFn: str):
 
     async with simple_page(chromium, url) as page:
         try:
-            await page.route("**/*", _block_resources)
+            await page.route("**/*", block_resources)
             await page.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT)
             result = await page.evaluate(jsFn)
             return result

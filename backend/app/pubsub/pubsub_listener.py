@@ -25,6 +25,7 @@ class PubsubListener:
             for chan, handlers in self._listeners.items()
         ]
         self._tasks = result
+        return result
 
     async def stop_all_listeners(self):
         for t in self._tasks:
@@ -42,6 +43,7 @@ class PubsubListener:
                     data = json.loads(message["data"])
                 except Exception:
                     logger.exception("failed to handle event")
+                    continue
                 for handler in handlers:
                     try:
                         await handler(data)
@@ -51,4 +53,4 @@ class PubsubListener:
                         )
         finally:
             await pubsub.unsubscribe(redis_chan)
-            await redis.aclose()
+            await pubsub.aclose()

@@ -19,8 +19,10 @@ class WebSocketManager:
         if conn is not None:
             await conn.send_text(text)
 
-    async def disconnect(self, user_id: str):
-        self._connections.pop(user_id, None)
+    async def disconnect(self, user_id: str, expected_ws: WebSocket | None = None):
+        key = self.__get_key(user_id)
+        if expected_ws is None or self._connections.get(key) is expected_ws:
+            self._connections.pop(key, None)
 
     def __get_key(self, user_id: str):
         return f"user:{user_id}"

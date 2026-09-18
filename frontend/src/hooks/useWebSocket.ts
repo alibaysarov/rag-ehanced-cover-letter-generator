@@ -1,45 +1,58 @@
-import { TokenManager } from "@/features/auth";
-import { useEffect, useRef } from "react";
+import { API_BASE_URL } from '@/api/client';
+import { TokenManager } from '@/features/auth';
+import { useEffect, useRef } from 'react';
 
 interface WsConfig<T> {
-    messageHandler: (evt: MessageEvent<T>) => void;
+  messageHandler: (evt: MessageEvent<T>) => void;
+  onOpen?: () => void;
 }
 
-const setupWs = (): WebSocket => {
+function websocketUrl(token: string): string {
+  const apiUrl = new URL(API_BASE_URL, window.location.origin);
+  apiUrl.protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+  apiUrl.pathname = `${apiUrl.pathname.replace(/\/$/, '')}/auto-parse/ws`;
+  apiUrl.search = `token=${encodeURIComponent(token)}`;
+  return apiUrl.toString();
+}
+
+const useWebSocket = <T>({ messageHandler, onOpen }: WsConfig<T>) => {
+  const socketRef = useRef<WebSocket | null>(null);
+  const retryRef = useRef<number | null>(null);
+  const handlerRef = useRef(messageHandler);
+  const openRef = useRef(onOpen);
+  handlerRef.current = messageHandler;
+  openRef.current = onOpen;
+
+  useEffect(() => {
     const token = TokenManager.getAccessToken();
-    const url = `ws://localhost:8000/api/v1/auto-parse/ws?token=${encodeURIComponent(token ?? "")}`;
-    return new WebSocket(url);
-};
+    if (!token) return;
+    let disposed = false;
+    let attempts = 0;
 
-const useWebSocket = <T>({ messageHandler }: WsConfig<T>) => {
-    const socketRef = useRef<WebSocket | null>(null);
+    const connect = () => {
+      if (disposed) return;
+      const socket = new WebSocket(websocketUrl(token));
+      socketRef.current = socket;
+      socket.onopen = () => {
+        attempts = 0;
+        openRef.current?.();
+      };
+      socket.onmessage = (event: MessageEvent<T>) => handlerRef.current(event);
+      socket.onclose = (event) => {
+        if (disposed || event.code === 1008 || event.code === 4001) return;
+        retryRef.current = window.setTimeout(connect, Math.min(1000 * 2 ** attempts++, 15000));
+      };
+    };
+    connect();
 
-    useEffect(() => {
-        const socket = setupWs();
-        socketRef.current = socket;
-
-        socket.onmessage = (event: MessageEvent<T>) => {
-            messageHandler(event);
-        };
-
-        socket.onopen = () => console.log("Connected!");
-        socket.onerror = (error) => console.error("WebSocket Error:", error);
-        socket.onclose = (event) => console.log("WebSocket closed:", event.code, event.reason);
-
-        return () => {
-            // Если сокет ещё не открылся — закрываем его "мягко",
-            // без ошибки в консоли, и не даём "повиснуть" открытому соединению
-            if (
-                socket.readyState === WebSocket.CONNECTING ||
-                socket.readyState === WebSocket.OPEN
-            ) {
-                socket.close();
-            }
-            if (socketRef.current === socket) {
-                socketRef.current = null;
-            }
-        };
-    }, []);
+    return () => {
+      disposed = true;
+      if (retryRef.current !== null) window.clearTimeout(retryRef.current);
+      const socket = socketRef.current;
+      socketRef.current = null;
+      if (socket && (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN)) socket.close();
+    };
+  }, []);
 };
 
 export default useWebSocket;

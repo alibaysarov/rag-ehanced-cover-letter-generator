@@ -16,7 +16,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { autoParseApi } from '../api/auto-parse-client';
 import type { ParsingJob, ParsingJobStatus } from '../types';
 
-const AUTO_PARSE_HISTORY_KEY = ['auto-parse', 'history'] as const;
+export const AUTO_PARSE_HISTORY_KEY = ['auto-parse', 'history'] as const;
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
   pending: 'yellow',

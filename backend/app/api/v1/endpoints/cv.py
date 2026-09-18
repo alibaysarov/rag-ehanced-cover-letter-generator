@@ -9,7 +9,7 @@ from llama_index.readers.file import PDFReader
 from app.dependencies import (
     get_cv_service,
     get_pdf_reader,
-    get_projects_storage_service,
+    get_project_service,
     get_sentence_splitter,
 )
 from app.helper import CurrentUser
@@ -31,9 +31,10 @@ async def cv_import(
     source_id: str = Form(
         None, description="Optional source identifier; generated if not provided"
     ),
-    projects_service: ProjectStorageService = Depends(get_projects_storage_service),
+    projects_service: ProjectStorageService = Depends(get_project_service),
     pdf_reader: PDFReader = Depends(get_pdf_reader),
     sentence_splitter: SentenceSplitter = Depends(get_sentence_splitter),
+    cv_service: CVService = Depends(get_cv_service),
 ):
     file_data = await validate_pdf_and_get_path(file)
     try:
@@ -49,6 +50,15 @@ async def cv_import(
         result: CVImportModel = chain.invoke({"cv_text": cv_text})
 
         effective_source_id = source_id or str(uuid.uuid4())
+        await cv_service.add_cv(
+            user_id=user.id,
+            source_id=effective_source_id,
+            pdf_path=file_data["temp_file_path"],
+            filename=file.filename or "",
+            original_filename=file.filename,
+            file_size=len(file_data["file_content"]),
+            content_type=file.content_type or "application/pdf",
+        )
         saved = await projects_service.create_many(
             user_id=user.id,
             projects=result.projects,

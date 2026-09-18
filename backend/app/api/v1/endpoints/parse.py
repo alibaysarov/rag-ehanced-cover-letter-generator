@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.cache import redis as redis_db
-from app.dependencies import get_projects_storage_service
+from app.dependencies import get_project_service
 from app.helper import CurrentUser
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services import ProjectStorageService
@@ -23,7 +23,7 @@ class ParseDto(BaseModel):
 async def parse(
     user: CurrentUser,
     body: ParseDto,
-    projects_service: ProjectStorageService = Depends(get_projects_storage_service),
+    projects_service: ProjectStorageService = Depends(get_project_service),
 ):
 
     cached = await redis_db.redis_client.get(body.url)
@@ -41,7 +41,7 @@ async def parse(
     chain = job_parse.prompt_template | job_parse.get_model
     vacancy: JobRequirement = chain.invoke({"job_text": text})
 
-    ranked = projects_service.rank_projects_overlap(
+    ranked = await projects_service.rank_projects_overlap(
         user_id=user.id,
         vacancy=vacancy,
         top_k=5,

@@ -37,8 +37,8 @@ class CVRepository:
             user_agent=user_agent,
         )
         self.session.add(cv)
-        self.session.commit()
-        self.session.refresh(cv)
+        await self.session.commit()
+        await self.session.refresh(cv)
         return cv
 
     async def update_cv(self, cv: CV, data: dict) -> CV:
@@ -50,26 +50,26 @@ class CVRepository:
     async def get_cv_by_source_id(self, source_id: int) -> Optional[CV]:
         """Get CV by source_id"""
         stmt = select(CV).where(CV.source_id == source_id)
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_cv_by_id(self, cv_id: int) -> Optional[CV]:
         """Get CV by ID"""
         stmt = select(CV).where(CV.id == cv_id)
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_cvs_options_by_user_id(self, user_id: int) -> list[Option]:
         """Get all CV options for a user"""
         stmt = select(CV.source_id, CV.filename).where(CV.user_id == user_id)
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
 
         return [{"name": row.filename, "value": row.source_id} for row in result.all()]
 
     async def get_cvs_by_user_id(self, user_id: int) -> list[CV]:
         """Get all CVs for a user"""
         stmt = select(CV).where(CV.user_id == user_id)
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
     async def update_cv_status(self, cv_id: int, status: str) -> bool:
@@ -81,9 +81,9 @@ class CVRepository:
             return True
         return False
 
-    def delete_cv(self, cv: CV):
+    async def delete_cv(self, cv: CV):
         """Delete CV record and return it for rollback if needed"""
         if cv is not None:
-            self.session.delete(cv)
+            await self.session.delete(cv)
             # self.session.flush()
             return cv

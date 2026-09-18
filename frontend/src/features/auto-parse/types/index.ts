@@ -8,11 +8,13 @@ export interface ParsingJob {
   total_found: number;
   created_at: string;
   finished_at: string | null;
+  error: string | null;
 }
 
 export interface AutoParsedJob {
   id: number;
-  vacancy_id: string;
+  parsing_job_id: number | null;
+  vacancy_id: string | null;
   url: string;
   web_site: string | null;
   job_title: string;
@@ -22,4 +24,11 @@ export interface AutoParsedJob {
   is_generated: boolean;
   cover_letter_text: string | null;
   created_at: string;
+}
+
+export interface ParsingVacancySavedEvent {
+  type: 'parsing.vacancy_saved';
+  parsing_job_id: number;
+  site_key: string;
+  vacancy: AutoParsedJob;
 }

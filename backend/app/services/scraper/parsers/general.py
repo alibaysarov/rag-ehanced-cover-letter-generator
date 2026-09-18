@@ -16,8 +16,8 @@ from tenacity import (
 from app.decorators.browser import simple_page
 from app.helper import block_resources, get_domain_by_url, scroll_page_bottom
 from app.helper.flatten_list import flatten_list
-from app.job_parser.hh_parser import Vacancy
 from app.schemas.vacancy.single_vacancy import SingleVacancy
+from app.schemas.vacancy.vacancy import Vacancy
 
 
 def async_retry():
@@ -203,7 +203,7 @@ class GeneralVacancyParser:
 
         except Exception as e:
             logger.error(f"Error getting total pages: {e}")
-            return 1
+            raise
 
     async def _get_paginated_list(self, page, text: str, job_id: int) -> list[Vacancy]:
         pages = await self._get_total_pages(page, text=text)
@@ -221,5 +221,7 @@ class GeneralVacancyParser:
         tasks = [fetch_page(i) for i in range(pages)]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        valid = [r for r in results if isinstance(r, list)]
-        return flatten_list(valid)
+        failures = [r for r in results if isinstance(r, Exception)]
+        if failures:
+            raise failures[0]
+        return flatten_list(results)

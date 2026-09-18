@@ -1,20 +1,20 @@
 # RAG Enhanced Cover Letter Generator
 
-AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) with vector search.
+AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) with PostgreSQL full-text search.
 
 ## Features
 
-- **Resume Upload**: Upload PDF resumes to vector database
+- **Resume Upload**: Upload PDF resumes and store searchable chunks in PostgreSQL
 - **URL-based Generation**: Generate cover letters from job posting URLs
 - **Text-based Generation**: Generate cover letters from job title and description
-- **RAG Technology**: Uses vector search to find relevant resume content
+- **RAG Technology**: Uses PostgreSQL `tsvector` search and project data to find relevant resume context
 - **PostgreSQL/SQLite**: Flexible database support
 
 ## Tech Stack
 
 - **Backend**: FastAPI, SQLAlchemy, PostgreSQL/SQLite
-- **AI**: OpenAI GPT-4, Vector Embeddings
-- **Vector DB**: Qdrant
+- **AI**: OpenAI GPT models
+- **Search**: PostgreSQL full-text search
 - **Frontend**: React, TypeScript, Chakra UI
 
 ## Setup
@@ -50,7 +50,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
 
 3. **Database Setup**
 
-   Start PostgreSQL and Qdrant:
+   Start PostgreSQL:
    ```bash
    cd backend
    make up
@@ -118,7 +118,7 @@ This will start the React development server on http://localhost:5173
 ### Letter Generation (`/api/v1/letter`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/upload-cv` | Upload resume PDF to vector database |
+| POST | `/upload-cv` | Upload resume PDF to PostgreSQL-backed RAG storage |
 | POST | `/url` | Generate cover letter from job posting URL |
 | POST | `/text` | Generate cover letter from job title/description |
 
@@ -136,11 +136,6 @@ POSTGRES_PASSWORD=your_secure_password
 POSTGRES_DB=cover_letter_db
 DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/db
 
-# PostgreSQL settings are configured via Docker environment
-
-# Qdrant
-QDRANT_URL=http://localhost:6333
-
 # App Settings
 APP_ENV=development
 DEBUG=True
@@ -151,6 +146,8 @@ DEBUG=True
 ### Tables
 - **users**: User accounts with email and password
 - **cvs**: Resume metadata (belongs to users)
+- **cv_chunks**: Searchable resume chunks for RAG context
+- **projects**: Structured project data parsed from CVs
 - **letters**: Generated cover letters (belongs to CVs)
 
 ### Relationships
@@ -232,7 +229,6 @@ docker-compose up -d
 
 # Start specific service
 docker-compose up -d postgres
-docker-compose up -d qdrant
 
 # View logs
 docker-compose logs -f
@@ -250,7 +246,6 @@ backend/
 │   ├── repository/          # Data access layer
 │   ├── schemas/             # Pydantic schemas
 │   ├── services/            # Business logic
-│   └── storage/             # Vector storage
 ├── alembic/                 # Database migrations
 └── tests/                   # Unit tests
 
@@ -278,7 +273,6 @@ cd frontend && npm test
 - [ ] Set `USE_SQLITE=false`
 - [ ] Configure PostgreSQL in production
 - [ ] Set secure `OPENAI_API_KEY`
-- [ ] Configure Qdrant for production
 - [ ] Set `APP_ENV=production`
 - [ ] Enable HTTPS
 - [ ] Configure proper CORS origins
@@ -301,3 +295,8 @@ docker-compose -f docker-compose.prod.yml up -d
 ## License
 
 MIT License
+# Parallel auto-parse
+
+The local stack uses one Celery worker with four prefork slots. Run migrations from the API container with `uv run alembic upgrade head`, then start the local services. `POST /auto-parse/start` returns immediately and workers parse the registered sites in parallel; progress is SSE and saved vacancies arrive over WebSocket.
+
+The implementation does not recover jobs after a worker SIGKILL/OOM, unavailable database during error persistence, or a process crash between a database commit and Redis publish. Reload/reconnect restores results through the vacancies API. Run backend checks with `uv run python -m unittest discover -s tests` and frontend checks with `npm run test && npm run build`.
