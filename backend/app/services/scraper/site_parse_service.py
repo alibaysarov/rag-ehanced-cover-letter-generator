@@ -1,7 +1,8 @@
 import asyncio
+import inspect
 import logging
 import re
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 from playwright.async_api import Browser, BrowserContext
 
@@ -19,7 +20,7 @@ class SiteParseService:
     def __init__(
         self,
         repository: ParsingJobRepository,
-        publish_saved: Callable[[AutoParsedJob], None] | None = None,
+        publish_saved: Callable[[AutoParsedJob], Awaitable[None] | None] | None = None,
     ):
         self._repository = repository
         self._publish_saved = publish_saved
@@ -33,10 +34,15 @@ class SiteParseService:
         query: str,
         parser: GeneralVacancyParser,
         browser: Browser,
+        vacancy_limit: int | None = None,
     ) -> None:
         try:
+            if vacancy_limit is not None and vacancy_limit < 1:
+                raise ValueError("vacancy_limit must be positive")
             vacancy_list = await parser.get_list(browser, query, job_id)
             vacancies = self._unique_vacancies(vacancy_list)
+            if vacancy_limit is not None:
+                vacancies = vacancies[:vacancy_limit]
             await self._repository.record_found(job_id, site_key, len(vacancies))
         except Exception as exc:
             await self._repository.finish_site(
@@ -99,9 +105,11 @@ class SiteParseService:
                 )
                 if inserted and saved is not None and self._publish_saved is not None:
                     try:
-                        self._publish_saved(saved)
+                        callback_result = self._publish_saved(saved)
+                        if inspect.isawaitable(callback_result):
+                            await callback_result
                     except Exception:
-                        logger.exception("Could not publish saved vacancy event")
+                        logger.exception("Could not process saved vacancy callback")
             except Exception:
                 await self._repository.record_vacancy_failure(job_id, site_key)
                 raise

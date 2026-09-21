@@ -5,7 +5,7 @@ from fastapi import Request
 
 from app.cache import sync_client
 from app.cache.redis import async_client
-from app.repository.auto_parse_job_repository import AutoParseJobRepository
+from app.models import AutoParsedJob
 from app.repository.parsing_job_repository import ParsingJobRepository
 from app.schemas.generation_mode import GenerationMode
 
@@ -50,29 +50,53 @@ def start_batch(
     return parsing_job_id
 
 
-async def maybe_start_template_generation(
-    job_id: int, repository: ParsingJobRepository, session_factory
-) -> bool:
-    """Dispatch a template batch exactly once after the parent parsing transaction."""
-    claimed = await repository.claim_template_generation(job_id)
-    if claimed is None:
-        return False
-    if claimed.saved_count == 0:
-        return True
+def start_single_template_generation(
+    user_id: int,
+    parsing_job_id: int,
+    vacancy_id: int,
+) -> None:
+    """Add one vacancy to a growing template batch and dispatch its task."""
+    from app.tasks.single_generation import single_generation
+
+    meta_key = f"batch_meta:{parsing_job_id}"
+    sync_client.hincrby(meta_key, "total", 1)
+    sync_client.expire(meta_key, 3600)
     try:
-        async with session_factory() as session:
-            vacancies = await AutoParseJobRepository(session).get_by_job_id(job_id)
-        start_batch(
-            claimed.user_id,
-            job_id,
-            [v.id for v in vacancies if v.id is not None],
+        single_generation.delay(
+            user_id,
+            vacancy_id,
             "",
             "",
-            GenerationMode.TEMPLATE.value,
+            parsing_job_id,
+            generation_mode=GenerationMode.TEMPLATE.value,
         )
+    except Exception:
+        sync_client.hincrby(meta_key, "total", -1)
+        raise
+
+
+async def maybe_start_template_generation_for_vacancy(
+    vacancy: AutoParsedJob,
+    generation_mode: GenerationMode,
+    repository: ParsingJobRepository,
+) -> bool:
+    """Dispatch generation immediately after one vacancy is persisted."""
+    if generation_mode != GenerationMode.TEMPLATE:
+        return False
+    if vacancy.id is None or vacancy.parsing_job_id is None:
+        raise ValueError("Saved parsing vacancy is missing public identifiers")
+    try:
+        start_single_template_generation(
+            vacancy.user_id,
+            vacancy.parsing_job_id,
+            vacancy.id,
+        )
+        await repository.record_template_generation_started(vacancy.parsing_job_id)
         return True
     except Exception as exc:
-        await repository.set_auto_generation_error(job_id, str(exc)[:500])
+        await repository.set_auto_generation_error(
+            vacancy.parsing_job_id, str(exc)[:500]
+        )
         raise
 
 

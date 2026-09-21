@@ -34,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^8.51.0",
     "@typescript-eslint/parser": "^8.51.0",
     "@vitejs/plugin-react": "^5.1.2",
+    "@xyflow/react": "^12.11.6",
     "axios": "^1.13.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",

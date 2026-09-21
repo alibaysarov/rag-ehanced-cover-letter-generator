@@ -92,7 +92,7 @@ async def start_parse_test(
     repository = ParsingJobRepository(async_session_maker)
     try:
         parsing_job, site_jobs = await repository.create_job_with_parsers(
-            user.id, body.query, body.generation_mode
+            user.id, body.query, body.generation_mode, vacancy_limit=body.vacancy_limit
         )
     except ValueError as exc:
         if str(exc) == "parsers_empty":
@@ -352,14 +352,14 @@ async def get_generate_status(
         "auto_generation_status": (
             "not_applicable"
             if job.generation_mode == GenerationMode.AI
-            else "waiting_for_parse"
-            if job.status in {"pending", "running"}
             else "failed"
             if job.auto_generation_error
-            else "skipped"
-            if job.status != "done" or total == 0
             else "started"
             if job.auto_generation_started_at
+            else "waiting_for_parse"
+            if job.status in {"pending", "running"}
+            else "skipped"
+            if job.status != "done" or total == 0
             else "pending"
         ),
         "auto_generation_error": job.auto_generation_error,

@@ -4,10 +4,10 @@ import { TokenManager } from '@/features/auth';
 import type { ParsingJob, AutoParsedJob, GenerationMode } from '../types';
 
 export const autoParseApi = {
-  async startParse(query: string, generationMode: GenerationMode = 'ai'): Promise<{ parsing_job_id: number }> {
+  async startParse(query: string, generationMode: GenerationMode = 'ai', vacancyLimit?: number): Promise<{ parsing_job_id: number }> {
     const res = await authApi.post<{ parsing_job_id: number }>(
       '/auto-parse/start',
-      { query, generation_mode: generationMode },
+      { query, generation_mode: generationMode, vacancy_limit: vacancyLimit },
     );
     return res.data;
   },

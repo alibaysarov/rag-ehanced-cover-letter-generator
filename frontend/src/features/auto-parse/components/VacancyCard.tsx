@@ -21,6 +21,29 @@ function copyLetterOnVacancyOpen(letter: string | null): void {
   }
 }
 
+function formatCreatedAt(createdAt: string): string {
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(createdAt));
+}
+
+function VacancyCreatedAt({ createdAt }: { createdAt: string }) {
+  return (
+    <Text
+      as="time"
+      dateTime={createdAt}
+      fontSize="xs"
+      color="slate.500"
+      lineHeight={1.4}
+    >
+      {formatCreatedAt(createdAt)}
+    </Text>
+  );
+}
+
 interface VacancyCardProps {
   vacancy: AutoParsedJob;
   variant?: 'compact' | 'hh';
@@ -36,6 +59,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
   const [isViewed, setIsViewed] = useState(vacancy.is_viewed);
   // is_generated is updated by the parent via SSE so we read it from the prop
   const isGenerated = vacancy.is_generated;
+  const isGenerationPending = isTemplateGenerationPending && !isGenerated;
 
   const openCard = () => {
     onOpen();
@@ -52,7 +76,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
 
   const handleGenerate = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isTemplateGenerationPending) return;
+    if (isGenerationPending) return;
     setAutoGenerate(true);
     openCard();
   };
@@ -88,6 +112,8 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
               >
                 {vacancy.job_title}
               </Text>
+
+              <VacancyCreatedAt createdAt={vacancy.created_at} />
 
               {vacancy.web_site && URL.canParse(vacancy.web_site) && (
                 <Link
@@ -207,9 +233,9 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                 w="full"
                 height={8}
                 fontSize="xs"
-                isDisabled={isTemplateGenerationPending}
+                isDisabled={isGenerationPending}
               >
-                {isGenerated ? 'Посмотреть письмо' : isTemplateGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}
+                {isGenerated ? 'Посмотреть письмо' : isGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}
               </GradientButton>
             </Box>
           </Flex>
@@ -234,6 +260,7 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
   const [isViewed, setIsViewed] = useState(vacancy.is_viewed);
+  const isGenerationPending = isTemplateGenerationPending && !vacancy.is_generated;
 
   const openCard = () => {
     onOpen();
@@ -244,7 +271,7 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
   };
   const generate = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (isTemplateGenerationPending) return;
+    if (isGenerationPending) return;
     setAutoGenerate(true);
     openCard();
   };
@@ -272,6 +299,7 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
             <Flex justify="space-between" align="flex-start" gap={4}>
               <Box minW={0}>
                 <Text fontFamily="heading" fontSize={{ base: 'md', md: 'lg' }} fontWeight={700} color="slate.900" noOfLines={2}>{vacancy.job_title}</Text>
+                <VacancyCreatedAt createdAt={vacancy.created_at} />
                 {isApplied && <Flex mt={2} align="center" gap={1} w="fit-content" bg="green.100" border="1px solid" borderColor="green.300" borderRadius="lg" px={2} py={1}><IconCheck size={12} stroke={2.5} color="var(--chakra-colors-green-700)" /><Text fontSize="xs" fontWeight={700} color="green.700">Уже откликались</Text></Flex>}
                 <Text mt={1.5} color="slate.600" fontSize="sm" lineHeight={1.55} noOfLines={2}>{vacancy.job_text}</Text>
               </Box>
@@ -292,7 +320,7 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
               <Flex mt={1.5} align="center" gap={1.5} color="slate.600" fontSize="sm"><IconMapPin size={15} stroke={1.8} /><Text>Локация указана в вакансии</Text></Flex>
             </Box>
             <Flex justify="space-between" align={{ base: 'stretch', sm: 'center' }} direction={{ base: 'column', sm: 'row' }} gap={3}>
-              <GradientButton size="md" px={6} onClick={generate} isDisabled={isTemplateGenerationPending} leftIcon={<IconSparkles size={16} stroke={2} />}>{vacancy.is_generated ? 'Посмотреть письмо' : isTemplateGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}</GradientButton>
+              <GradientButton size="md" px={6} onClick={generate} isDisabled={isGenerationPending} leftIcon={<IconSparkles size={16} stroke={2} />}>{vacancy.is_generated ? 'Посмотреть письмо' : isGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}</GradientButton>
               <Link href={vacancy.url} isExternal onClick={openVacancy} color="blue.600" fontSize="sm" fontWeight={600}>Открыть вакансию <IconExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /></Link>
             </Flex>
           </Flex>

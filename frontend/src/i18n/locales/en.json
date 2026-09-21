@@ -273,6 +273,8 @@
     "subtitle": "Search and scrape vacancies from your configured sites",
     "parse": "Parse",
     "parsing": "Parsing...",
+    "vacancyLimit": "Number of vacancies",
+    "vacancyLimitHint": "Total limit across all sites. If fewer vacancies are available, we’ll save those we find.",
     "saved": "saved",
     "status": "Status",
     "open": "Open",
@@ -283,7 +285,7 @@
     "employerLink":"Employer site",
     "templates": "Use templates",
     "useAi": "Use AI",
-    "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. Template letters are generated automatically after parsing from prepared phrases, projects and technologies, without an AI request."
+    "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. In template mode, each letter is generated automatically as soon as its vacancy is parsed, using prepared phrases, projects and technologies without an AI request."
   },
   "searchSites": {
     "title": "Search sites", "subtitle": "Manage your personal vacancy sources", "newTitle": "Add site", "editTitle": "Edit site", "add": "Add site", "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel", "empty": "No sites yet", "loadError": "Could not load sites", "saveError": "Could not save site", "deleteError": "Could not delete site", "confirmDelete": "Delete site “{{name}}”?", "inUse": "In use", "cannotDelete": "Wait for parsing to finish", "editInUse": "Changes apply to future runs. Current parsing uses the previous settings.", "paginationOn": "Pagination enabled", "paginationOff": "No pagination", "previous": "Previous", "next": "Next", "addParam": "Add parameter",

@@ -17,7 +17,7 @@ interface UseAutoParseReturn {
   job: ParsingJob | null;
   vacancies: AutoParsedJob[];
   isStarting: boolean;
-  startParse: (query: string, mode: GenerationMode) => Promise<void>;
+  startParse: (query: string, mode: GenerationMode, vacancyLimit: number) => Promise<void>;
   loadVacanciesForJob: (jobId: number) => Promise<void>;
   // generation
   genState: GenerationState;
@@ -126,6 +126,17 @@ export function useAutoParse(): UseAutoParseReturn {
       setVacancies((previous) => previous.some((item) => item.id === vacancy.id)
         ? previous
         : [...previous, vacancy].sort((a, b) => a.id - b.id));
+      return;
+    }
+    if (message.type === 'generation.vacancy_ready') {
+      const vacancy = message.vacancy as AutoParsedJob | undefined;
+      if (message.parsing_job_id !== jobIdRef.current || !vacancy || typeof vacancy.id !== 'number') return;
+      revisionRef.current.set(vacancy.id, Date.now());
+      setVacancies((previous) => {
+        const existingIndex = previous.findIndex((item) => item.id === vacancy.id);
+        if (existingIndex === -1) return [...previous, vacancy].sort((a, b) => a.id - b.id);
+        return previous.map((item) => item.id === vacancy.id ? vacancy : item);
+      });
       return;
     }
     if (Number(message.batch_id) !== jobIdRef.current || message.status !== 'generated' || typeof message.vacancy_id !== 'number') return;
@@ -245,10 +256,10 @@ export function useAutoParse(): UseAutoParseReturn {
   }, [closeEventSource, closeGenEventSource]);
 
   const startParse = useCallback(
-    async (query: string, mode: GenerationMode) => {
+    async (query: string, mode: GenerationMode, vacancyLimit: number) => {
       setIsStarting(true);
       try {
-        const { parsing_job_id } = await autoParseApi.startParse(query, mode);
+        const { parsing_job_id } = await autoParseApi.startParse(query, mode, vacancyLimit);
         await queryClient.invalidateQueries({ queryKey: ['parsers'] });
         localStorage.setItem(STORAGE_KEY, String(parsing_job_id));
         setJobId(parsing_job_id);

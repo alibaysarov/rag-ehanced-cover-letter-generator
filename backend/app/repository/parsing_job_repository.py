@@ -49,8 +49,12 @@ class ParsingJobRepository:
         user_id: int,
         query: str,
         generation_mode: GenerationMode = GenerationMode.AI,
+        *,
+        vacancy_limit: int | None = None,
     ) -> tuple[ParsingJob, list[ParsingSiteJob]]:
-        """Atomically freeze the user's complete parser catalog into site jobs."""
+        """Freeze parser snapshots and distribute this run's vacancy budget."""
+        if vacancy_limit is not None and vacancy_limit < 1:
+            raise ValueError("vacancy_limit must be positive")
         async with self._session_factory() as session, session.begin():
             user = await session.scalar(
                 select(User).where(User.id == user_id).with_for_update()
@@ -68,6 +72,12 @@ class ParsingJobRepository:
             )
             if not parsers:
                 raise ValueError("parsers_empty")
+            per_site_limit = (
+                (vacancy_limit + len(parsers) - 1) // len(parsers)
+                if vacancy_limit is not None
+                else None
+            )
+            remaining = vacancy_limit
             job = ParsingJob(
                 user_id=user_id,
                 query=query,
@@ -80,6 +90,13 @@ class ParsingJobRepository:
                 raise RuntimeError("Parsing job was not assigned an id")
             sites = []
             for parser in parsers:
+                if remaining == 0:
+                    break
+                site_limit = (
+                    min(per_site_limit, remaining)
+                    if per_site_limit is not None and remaining is not None
+                    else None
+                )
                 snapshot = ParserSnapshot.model_validate(parser).model_dump(mode="json")
                 site = ParsingSiteJob(
                     parsing_job_id=job.id,
@@ -87,32 +104,31 @@ class ParsingJobRepository:
                     parser_id=parser.id,
                     parser_version=parser.version,
                     parser_snapshot=snapshot,
+                    vacancy_limit=site_limit,
                 )
                 session.add(site)
                 sites.append(site)
+                if remaining is not None and site_limit is not None:
+                    remaining -= site_limit
             await session.flush()
         return job, sites
-
-    async def claim_template_generation(self, job_id: int) -> ParsingJob | None:
-        """Persist an auto-dispatch intent once; safe when multiple sites finish together."""
-        async with self._session_factory() as session, session.begin():
-            job = await self._locked_job(session, job_id)
-            if (
-                job is None
-                or job.status != "done"
-                or job.generation_mode != GenerationMode.TEMPLATE
-                or job.auto_generation_started_at is not None
-            ):
-                return None
-            job.auto_generation_started_at = datetime.utcnow()
-            job.auto_generation_error = None
-            return job
 
     async def set_auto_generation_error(self, job_id: int, error: str | None) -> None:
         async with self._session_factory() as session, session.begin():
             job = await self._locked_job(session, job_id)
             if job is not None:
                 job.auto_generation_error = error
+
+    async def record_template_generation_started(self, job_id: int) -> None:
+        """Record the first successfully dispatched per-vacancy template task."""
+        async with self._session_factory() as session, session.begin():
+            job = await self._locked_job(session, job_id)
+            if job is None:
+                raise LookupError(f"Parsing job {job_id} does not exist")
+            if job.generation_mode != GenerationMode.TEMPLATE:
+                raise ValueError("Template generation is not enabled for this job")
+            if job.auto_generation_started_at is None:
+                job.auto_generation_started_at = datetime.utcnow()
 
     async def claim_site(self, job_id: int, site_key: str) -> ParsingSiteJob | None:
         async with self._session_factory() as session, session.begin():

@@ -134,6 +134,21 @@ class ParsingJobRepositoryTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual("failed", final.status)
             self.assertIn("geekjob.ru: dispatch failure", final.error)
 
+    async def test_vacancy_limits_are_persisted_for_workers(self):
+        async with self.sessions() as session:
+            session.add_all(
+                [Parser(**item) for item in default_parser_values(self.user_id)]
+            )
+            await session.commit()
+
+        _, sites = await self.repository.create_job_with_parsers(
+            self.user_id, "python", vacancy_limit=3
+        )
+        self.assertEqual([2, 1], [site.vacancy_limit for site in sites])
+        for site in sites:
+            claimed = await self.repository.claim_site_by_id(site.id)
+            self.assertEqual(site.vacancy_limit, claimed.vacancy_limit)
+
     async def test_catalog_is_frozen_into_site_job_snapshots(self):
         with self.assertRaisesRegex(ValueError, "parsers_empty"):
             await self.repository.create_job_with_parsers(self.user_id, "python")

@@ -17,7 +17,12 @@ class ParsingSiteJob(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     parsing_job_id: int = Field(
-        foreign_key="parsing_jobs.id", index=True, nullable=False
+        sa_column=Column(
+            Integer,
+            ForeignKey("parsing_jobs.id", ondelete="CASCADE"),
+            index=True,
+            nullable=False,
+        ),
     )
     site_key: str = Field(nullable=False)
     parser_id: int | None = Field(
@@ -27,6 +32,7 @@ class ParsingSiteJob(SQLModel, table=True):
         ),
     )
     parser_version: int | None = Field(default=None, nullable=True)
+    vacancy_limit: int | None = Field(default=None, nullable=True, ge=1)
     parser_snapshot: dict[str, Any] | None = Field(
         default=None, sa_column=Column(JSONB, nullable=True)
     )

@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.generation_mode import GenerationMode
 
@@ -13,6 +14,7 @@ class AutoParseResponse(BaseModel):
 class StartParseRequest(BaseModel):
     query: str
     generation_mode: GenerationMode = GenerationMode.AI
+    vacancy_limit: int | None = Field(default=None, ge=1, le=1000, strict=True)
 
 
 class MarkAppliedRequest(BaseModel):
@@ -41,4 +43,14 @@ class ParsingVacancySavedEvent(BaseModel):
     user_id: int
     parsing_job_id: int
     site_key: str
+    vacancy: AutoParsedJobRead
+
+
+class TemplateVacancyReadyEvent(BaseModel):
+    type: Literal["generation.vacancy_ready"] = "generation.vacancy_ready"
+    user_id: int
+    batch_id: str | int
+    parsing_job_id: int
+    status: Literal["generated"] = "generated"
+    generation_mode: Literal["template"] = "template"
     vacancy: AutoParsedJobRead

@@ -28,6 +28,11 @@ import {
 } from '@/features/auto-parse';
 import type { ParsingJobStatus, AutoParsedJob, GenerationMode } from '@/features/auto-parse';
 import type { GenerationState } from '@/features/auto-parse/hooks/useAutoParse';
+import {
+  DEFAULT_VACANCY_LIMIT,
+  isValidVacancyLimit,
+  VacancyLimitControl,
+} from '@/features/auto-parse/components/VacancyLimitControl';
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
   pending: 'yellow',
@@ -56,19 +61,20 @@ function StatusBadge({ status }: { status: ParsingJobStatus }) {
 interface ParseSearchBarProps {
   isDisabled: boolean;
   isLoading: boolean;
-  onSubmit: (query: string, mode: GenerationMode) => void;
+  onSubmit: (query: string, mode: GenerationMode, vacancyLimit: number) => void;
 }
 
 function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<GenerationMode>('ai');
+  const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const trimmed = query.trim();
-    if (!trimmed) return;
-    onSubmit(trimmed, mode);
+    if (!trimmed || !isValidVacancyLimit(vacancyLimit)) return;
+    onSubmit(trimmed, mode, Number(vacancyLimit));
   };
 
   return (
@@ -98,7 +104,7 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
           </Box>
           <GradientButton
             type="submit"
-            isDisabled={isDisabled || isLoading || !query.trim()}
+            isDisabled={isDisabled || isLoading || !query.trim() || !isValidVacancyLimit(vacancyLimit)}
             isLoading={isLoading}
             loadingText={t('autoParse.parsing')}
             flexShrink={0}
@@ -106,6 +112,11 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
             {t('autoParse.parse')}
           </GradientButton>
         </Flex>
+        <VacancyLimitControl
+          value={vacancyLimit}
+          onChange={setVacancyLimit}
+          isDisabled={isDisabled || isLoading}
+        />
         <Flex mt={4} align="center" gap={3} fontSize="sm">
           <Text fontWeight={mode === 'template' ? 700 : 400}>{t('autoParse.templates')}</Text>
           <Switch isChecked={mode === 'ai'} onChange={(e) => setMode(e.target.checked ? 'ai' : 'template')}
@@ -244,11 +255,45 @@ interface VacancyListProps {
   isTemplateGenerationPending: boolean;
 }
 
+type PaginationItem = number | 'ellipsis-start' | 'ellipsis-end';
+
+function getPaginationItems(currentPage: number, pageCount: number): PaginationItem[] {
+  if (pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 6) {
+    return [1, 2, 3, 4, 5, 6, 'ellipsis-end', pageCount];
+  }
+
+  if (currentPage >= pageCount - 5) {
+    return [
+      1,
+      'ellipsis-start',
+      ...Array.from({ length: 6 }, (_, index) => pageCount - 5 + index),
+    ];
+  }
+
+  return [
+    1,
+    'ellipsis-start',
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    'ellipsis-end',
+    pageCount,
+  ];
+}
+
 function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationPending }: VacancyListProps) {
   const { t } = useTranslation();
   const pageSize = 8;
   const [page, setPage] = useState(1);
   const pageCount = Math.max(1, Math.ceil(vacancies.length / pageSize));
+  const paginationItems = useMemo(
+    () => getPaginationItems(page, pageCount),
+    [page, pageCount],
+  );
   const visibleVacancies = useMemo(
     () => vacancies.slice((page - 1) * pageSize, page * pageSize),
     [vacancies, page],
@@ -276,27 +321,75 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
         ))}
       </SimpleGrid>
       {pageCount > 1 && (
-        <Flex mt={6} justify="center" align="center" gap={3}>
+        <Flex
+          as="nav"
+          aria-label="Пагинация вакансий"
+          mt={6}
+          justify="center"
+          align="center"
+          gap={{ base: 0.5, sm: 1 }}
+        >
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
+            minW={8}
+            h={8}
+            p={0}
+            color="slate.500"
             onClick={() => setPage((current) => current - 1)}
             isDisabled={page === 1}
             aria-label="Предыдущая страница"
           >
-            <IconChevronLeft size={18} />
+            <IconChevronLeft size={17} stroke={2} />
           </Button>
-          <Text fontSize="sm" color="slate.600" fontWeight={600}>
-            {page} / {pageCount}
-          </Text>
+          {paginationItems.map((item) =>
+            typeof item === 'number' ? (
+              <Button
+                key={item}
+                size="sm"
+                variant="ghost"
+                minW={8}
+                h={8}
+                p={0}
+                borderRadius="lg"
+                fontSize="sm"
+                color={item === page ? 'white' : 'slate.600'}
+                bg={item === page ? 'aurora.indigo' : 'transparent'}
+                boxShadow={item === page ? '0 4px 12px rgba(99, 102, 241, 0.28)' : 'none'}
+                _hover={{
+                  bg: item === page ? 'aurora.indigo' : 'rgba(255, 255, 255, 0.72)',
+                }}
+                aria-label={`Страница ${item}`}
+                aria-current={item === page ? 'page' : undefined}
+                onClick={() => setPage(item)}
+              >
+                {item}
+              </Button>
+            ) : (
+              <Text
+                key={item}
+                w={6}
+                textAlign="center"
+                fontSize="sm"
+                color="slate.500"
+                aria-hidden="true"
+              >
+                …
+              </Text>
+            ),
+          )}
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
+            minW={8}
+            h={8}
+            p={0}
+            color="slate.500"
             onClick={() => setPage((current) => current + 1)}
             isDisabled={page === pageCount}
             aria-label="Следующая страница"
           >
-            <IconChevronRight size={18} />
+            <IconChevronRight size={17} stroke={2} />
           </Button>
         </Flex>
       )}
@@ -318,9 +411,9 @@ export default function AutoParsePage() {
     startGeneration,
   } = useAutoParse();
   const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('hh');
-  const handleStartParse = async (query: string, mode: GenerationMode) => {
+  const handleStartParse = async (query: string, mode: GenerationMode, vacancyLimit: number) => {
     try {
-      await startParse(query, mode);
+      await startParse(query, mode, vacancyLimit);
       toast({
         title: 'Задача парсинга запущена',
         description: 'Вакансии появятся в списке по мере обработки.',

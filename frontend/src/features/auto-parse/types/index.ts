@@ -36,3 +36,12 @@ export interface ParsingVacancySavedEvent {
   site_key: string;
   vacancy: AutoParsedJob;
 }
+
+export interface TemplateVacancyReadyEvent {
+  type: 'generation.vacancy_ready';
+  batch_id: string | number;
+  parsing_job_id: number;
+  status: 'generated';
+  generation_mode: 'template';
+  vacancy: AutoParsedJob;
+}
