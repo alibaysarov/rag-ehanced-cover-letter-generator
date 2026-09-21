@@ -15,7 +15,6 @@ import {
 import {
   IconBriefcase,
   IconChartBar,
-  IconFile,
   IconMenu2,
   IconSearch,
   IconWorldSearch,
@@ -59,12 +58,11 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
 
   const navItems = [
     { to: '/', end: true, icon: IconSparkles, label: t('nav.generate') },
-    { to: '/projects', icon: IconBriefcase, label: t('nav.projects') },
-    { to: '/my-cvs', icon: IconFile, label: t('nav.resumes') },
-    { to: '/stats', icon: IconChartBar, label: t('nav.stats') },
     { to: '/auto-parse', icon: IconSearch, label: t('nav.autoParse') },
+    { to: '/projects', icon: IconBriefcase, label: t('nav.projects') },
     { to: '/search-sites', icon: IconWorldSearch, label: t('nav.searchSites') },
     { to: '/letter-constructor/templates', icon: IconTemplate, label: t('nav.letterConstructor') },
+    { to: '/stats', icon: IconChartBar, label: t('nav.stats') },
   ];
 
   return (
