@@ -11,6 +11,7 @@ from app.commands import (
 from app.database import celery_async_session_maker
 from app.decorators import async_task
 from app.pubsub.publish_event import publish_event_sync
+from app.schemas.generation_mode import GenerationMode
 from app.services.task_progress import set_cover_letter_task_status
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,13 @@ async def test_task(
 )
 @async_task
 async def single_generation(
-    self, user_id: int, vacancy_id: int, first_name: str, last_name: str, batch_id: str
+    self,
+    user_id: int,
+    vacancy_id: int,
+    first_name: str,
+    last_name: str,
+    batch_id: str,
+    generation_mode: str = "ai",
 ):
     async with celery_async_session_maker() as session:
         command = GenerateLetterCommand(
@@ -53,11 +60,14 @@ async def single_generation(
             first_name=first_name,
             last_name=last_name,
             batch_id=batch_id,
+            generation_mode=GenerationMode(generation_mode),
         )
         handler = build_handler(session=session)
         try:
             set_cover_letter_task_status(batch_id, vacancy_id, "started")
             cover_letter_text = await handler.handle(command=command)
+            if not isinstance(cover_letter_text, str) or not cover_letter_text.strip():
+                raise ValueError("empty cover letter")
             set_cover_letter_task_status(batch_id, vacancy_id, "generated")
             data = {
                 "user_id": user_id,

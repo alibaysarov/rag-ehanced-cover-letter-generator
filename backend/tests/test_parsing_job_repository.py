@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlmodel import select
 
 from app.core.config import settings
-from app.models import AutoParsedJob, ParsingJob, ParsingSiteJob, User
+from app.models import AutoParsedJob, Parser, ParsingJob, ParsingSiteJob, User
 from app.repository.parsing_job_repository import ParsingJobRepository
+from app.services.scraper.parser_defaults import default_parser_values
 
 
 @unittest.skipUnless(
@@ -28,6 +29,7 @@ class ParsingJobRepositoryTests(unittest.IsolatedAsyncioTestCase):
             for table in (
                 User.__table__,
                 ParsingJob.__table__,
+                Parser.__table__,
                 ParsingSiteJob.__table__,
                 AutoParsedJob.__table__,
             ):
@@ -131,6 +133,33 @@ class ParsingJobRepositoryTests(unittest.IsolatedAsyncioTestCase):
             final = await session.get(ParsingJob, dispatch_job.id)
             self.assertEqual("failed", final.status)
             self.assertIn("geekjob.ru: dispatch failure", final.error)
+
+    async def test_catalog_is_frozen_into_site_job_snapshots(self):
+        with self.assertRaisesRegex(ValueError, "parsers_empty"):
+            await self.repository.create_job_with_parsers(self.user_id, "python")
+
+        async with self.sessions() as session:
+            parsers = [Parser(**item) for item in default_parser_values(self.user_id)]
+            session.add_all(parsers)
+            await session.commit()
+
+        job, sites = await self.repository.create_job_with_parsers(
+            self.user_id, "python"
+        )
+        self.assertEqual(2, len(sites))
+        self.assertTrue(all(site.parser_snapshot for site in sites))
+        hh_site = next(site for site in sites if site.site_key == "hh.ru")
+        self.assertEqual(1, hh_site.parser_snapshot["version"])
+        self.assertEqual("hh.ru", hh_site.parser_snapshot["site_key"])
+
+        async with self.sessions() as session:
+            hh = await session.get(Parser, hh_site.parser_id)
+            hh.name = "Changed later"
+            hh.version += 1
+            await session.commit()
+            stored = await session.get(ParsingSiteJob, hh_site.id)
+            self.assertEqual("hh.ru", stored.parser_snapshot["name"])
+            self.assertEqual(job.id, stored.parsing_job_id)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from app.celery_app import celery_app
@@ -8,10 +9,12 @@ from app.models import AutoParsedJob
 from app.pubsub.publish_event import publish_event_sync
 from app.repository.parsing_job_repository import ParsingJobRepository
 from app.schemas.api.auto_parse import AutoParsedJobRead, ParsingVacancySavedEvent
+from app.services.auto_generate import maybe_start_template_generation
 from app.services.scraper.parsers.registry import create_parser
 from app.services.scraper.site_parse_service import SiteParseService
 
 logger = logging.getLogger(__name__)
+SITE_PARSE_DEADLINE_SECONDS = 15 * 60
 
 
 def publish_vacancy_saved(record: AutoParsedJob) -> None:
@@ -28,29 +31,42 @@ def publish_vacancy_saved(record: AutoParsedJob) -> None:
 
 @celery_app.task(name="app.tasks.parse_site", queue="default")
 @async_task
-async def parse_site(job_id: int, site_key: str) -> None:
+async def parse_site(parsing_site_job_id: int) -> None:
     repository = ParsingJobRepository(celery_async_session_maker)
-    claimed = await repository.claim_site(job_id, site_key)
+    claimed = await repository.claim_site_by_id(parsing_site_job_id)
     if claimed is None:
         return
+    job_id = claimed.parsing_job_id
+    site_key = claimed.site_key
     job = await repository.get_job(job_id)
     if job is None:
         return
     try:
-        parser = create_parser(site_key)
+        if claimed.parser_snapshot is None:
+            raise ValueError("Parser snapshot is missing")
+        parser = create_parser(claimed.parser_snapshot)
         async with pw_browser(headless=True) as browser:
             service = SiteParseService(repository, publish_vacancy_saved)
-            await service.run(
-                job_id=job_id,
-                user_id=job.user_id,
-                site_key=site_key,
-                query=job.query,
-                parser=parser,
-                browser=browser,
+            await asyncio.wait_for(
+                service.run(
+                    job_id=job_id,
+                    user_id=job.user_id,
+                    site_key=site_key,
+                    query=job.query,
+                    parser=parser,
+                    browser=browser,
+                ),
+                timeout=SITE_PARSE_DEADLINE_SECONDS,
             )
+        await maybe_start_template_generation(
+            job_id, repository, celery_async_session_maker
+        )
     except Exception:
         logger.exception("Site parse failed for job=%s site=%s", job_id, site_key)
         await repository.finish_site(
             job_id, site_key, failed=True, error="site parsing failed"
+        )
+        await maybe_start_template_generation(
+            job_id, repository, celery_async_session_maker
         )
         raise

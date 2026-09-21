@@ -1,169 +1,105 @@
 import asyncio
+import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
-from app.database import async_session_maker as DbSession
-from app.decorators.time_perf import with_timer
-from app.helper import get_body_from_page, get_domain_by_url
-from app.models import AutoParsedJob
-from app.models.parsing_job import ParsingJob
+from app.helper import get_body_from_page, get_domain_by_url, secure_request_route
+from app.models import ParserUsage, User
 from app.pw_instances import chromium as chromium_module
+from app.repository.parser_repository import ParserRepository
 from app.schemas.vacancy.single_vacancy import SingleVacancy
-from app.schemas.vacancy.vacancy import Vacancy
-from app.services.scraper.parsers.general import GeneralVacancyParser
-from app.services.scraper.parsers.registry import create_parser, get_parser_keys
+from app.services.parser_catalog import ParserCatalogService
+from app.services.scraper.parsers.configured import ConfiguredVacancyParser
 
 logger = logging.getLogger(__name__)
+SINGLE_PARSE_DEADLINE_SECONDS = 120
 
 
 class VacancyScrapingService:
-    def __init__(self):
-        self._parsers: list[GeneralVacancyParser] = [
-            create_parser(site_key) for site_key in get_parser_keys()
-        ]
-        self._parser_map: dict[str, GeneralVacancyParser] = {
-            p.get_name(): p for p in self._parsers
-        }
+    """Request-scoped, user-aware parser catalog and single-URL extraction."""
 
-    async def parse_single(self, url: str) -> SingleVacancy:
-        page = await chromium_module.chromium.new_page()
+    def __init__(self, session: AsyncSession, cache: Redis | None = None):
+        self._session = session
+        self._cache = cache
+
+    async def parse_single(self, url: str, user_id: int) -> SingleVacancy:
+        repository = ParserRepository(self._session)
+        user = await self._session.scalar(
+            select(User).where(User.id == user_id).with_for_update()
+        )
+        if user is None:
+            raise LookupError("user not found")
+        revision = user.parsers_revision
+        cache_key = self._vacancy_cache_key(user_id, revision, url)
+        if self._cache is not None:
+            try:
+                cached = await asyncio.wait_for(self._cache.get(cache_key), timeout=0.5)
+                if cached:
+                    await self._session.rollback()
+                    return SingleVacancy.model_validate_json(cached)
+            except Exception:
+                logger.warning("Vacancy text cache read failed", exc_info=True)
+
+        _, snapshots = await ParserCatalogService(
+            self._session, self._cache
+        ).get_catalog(user_id, revision)
+        parser_map = {item.site_key: item for item in snapshots}
+        domain = get_domain_by_url(url)
+        snapshot = parser_map.get(domain.lower() if domain else "")
+        usage: ParserUsage | None = None
+        if snapshot is not None:
+            persisted = await repository.get_owned(snapshot.id, user_id)
+            if persisted is None:
+                raise LookupError("parser was removed")
+            usage = ParserUsage(
+                parser_id=snapshot.id,
+                user_id=user_id,
+                expires_at=datetime.utcnow()
+                + timedelta(seconds=SINGLE_PARSE_DEADLINE_SECONDS),
+            )
+            self._session.add(usage)
+        await self._session.commit()
+
+        page = None
         try:
-            parser = self.get_parser(url)
-            if parser is not None:
-                logger.info("Parsing {%s}", parser.get_name())
-                single_vacancy = await parser.parse_single_by_url(page, url)
-                return single_vacancy
-            else:
-                logger.info("Parsing unknown url:\n {%s}", url)
+            page = await chromium_module.chromium.new_page()
+            await page.route("**/*", secure_request_route)
+            assert page is not None
+
+            async def extract() -> SingleVacancy:
+                if snapshot is not None:
+                    return await ConfiguredVacancyParser(snapshot).parse_single_by_url(
+                        page, url
+                    )
                 body = await get_body_from_page(page, url)
                 return SingleVacancy(job_title="", job_text=body, job_url=url)
-        except Exception as e:
-            logger.error(f"An exception occured {e}")
-            raise
+
+            result = await asyncio.wait_for(
+                extract(), timeout=SINGLE_PARSE_DEADLINE_SECONDS
+            )
+            if self._cache is not None:
+                try:
+                    await asyncio.wait_for(
+                        self._cache.set(cache_key, result.model_dump_json(), ex=3600),
+                        timeout=0.5,
+                    )
+                except Exception:
+                    logger.warning("Vacancy text cache write failed", exc_info=True)
+            return result
         finally:
-            await page.close()
-
-    def get_parser(self, url: str) -> GeneralVacancyParser | None:
-        domain = get_domain_by_url(url)
-        return self._parser_map.get(domain)
-
-    async def run_parse_job(self, job_id: int, query: str, user_id: int) -> int | None:
-        """
-        Run a full parse in the background. Progress is persisted to the
-        ParsingJob row in the DB; SSE clients read it from there, so the parse is
-        fully decoupled from any connected browser and survives page reloads.
-        """
-        try:
-            async with DbSession() as session:
-                parsing_job = await session.get(ParsingJob, job_id)
-                if parsing_job:
-                    parsing_job.status = "running"
-                    session.add(parsing_job)
-                    await session.commit()
-
-            result: list[Vacancy] = []
-            async with with_timer("browser"):
-                semaphore = asyncio.Semaphore(4)
-                for parser in self._parsers:
-                    try:
-                        logger.info(f"Started parsing {parser.get_name()}")
-                        vacancy_items = await parser.get_list(
-                            chromium_module.chromium, query, job_id
-                        )
-                        result.extend(vacancy_items)
-                        async with DbSession() as session:
-                            parsing_job = await session.get(ParsingJob, job_id)
-                            if parsing_job:
-                                parsing_job.total_found = parsing_job.total_found + len(
-                                    vacancy_items
-                                )
-                                await session.commit()
-
-                                results = await asyncio.gather(
-                                    *[
-                                        self.__fetch_single_auto_parse_vacancy(
-                                            semaphore,
-                                            session,
-                                            parser,
-                                            vacancy=vacancy,
-                                            job_id=job_id,
-                                            user_id=user_id,
-                                        )
-                                        for vacancy in vacancy_items
-                                    ],
-                                    return_exceptions=True,
-                                )
-                                await session.commit()
-
-                                for res in results:
-                                    if isinstance(res, Exception):
-                                        logger.warning(
-                                            f"[job={job_id}] Vacancy processing error: {res}"
-                                        )
-                                    else:
-                                        logger.info("item completed")
-                    except Exception as e:
-                        logger.error(f"[job={job_id}] Parse failed: {e}")
-            logger.info(f"total items: {len(result)} {result}")
-
-            async with DbSession() as session:
-                parsing_job = await session.get(ParsingJob, job_id)
-                if parsing_job:
-                    parsing_job.status = "done"
-                    parsing_job.finished_at = datetime.utcnow()
-                    session.add(parsing_job)
-                    await session.commit()
-            return parsing_job.id
-        except Exception as e:
-            logger.error(f"[job={job_id}] Parse failed: {e}")
-            async with DbSession() as session:
-                parsing_job = await session.get(ParsingJob, job_id)
-                if parsing_job:
-                    parsing_job.status = "failed"
-                    parsing_job.error = str(e)
-                    parsing_job.finished_at = datetime.utcnow()
-                    session.add(parsing_job)
-                    await session.commit()
-                    return parsing_job.id
-
-    async def __fetch_single_auto_parse_vacancy(
-        self,
-        semaphore: asyncio.Semaphore,
-        session: AsyncSession,
-        parser: GeneralVacancyParser,
-        vacancy: Vacancy,
-        job_id: int,
-        user_id: int,
-    ):
-        async with semaphore:
-            parsing_job = await session.get(ParsingJob, job_id)
-            page = await chromium_module.chromium.context.new_page()
-            try:
-                item = await parser.parse_single_vacancy(
-                    page, vacancy_id=vacancy.vacancy_id
-                )
-                url = parser.get_single_url(vacancy.vacancy_id)
-
-                parsing_job.saved_count += 1
-                auto_parsed_job = AutoParsedJob(
-                    cover_letter_text="",
-                    is_applied=False,
-                    job_text=item.job_text,
-                    job_title=item.job_title,
-                    vacancy_id=vacancy.vacancy_id,
-                    parsing_job_id=parsing_job.id,
-                    web_site="",
-                    user_id=user_id,
-                    url=url,
-                    is_viewed=False,
-                    is_generated=False,
-                )
-                session.add(auto_parsed_job)
-                session.add(parsing_job)
-                return item
-            except Exception as e:
-                raise e
-            finally:
+            if page is not None:
                 await page.close()
+            if usage is not None and usage.id is not None:
+                stored = await self._session.get(ParserUsage, usage.id)
+                if stored is not None:
+                    await self._session.delete(stored)
+                    await self._session.commit()
+
+    @staticmethod
+    def _vacancy_cache_key(user_id: int, revision: int, url: str) -> str:
+        url_hash = hashlib.sha256(url.encode()).hexdigest()
+        return f"vacancy-text:v1:{user_id}:{revision}:{url_hash}"

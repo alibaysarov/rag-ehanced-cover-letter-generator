@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from typing import AsyncIterator
@@ -16,6 +17,7 @@ from sqlmodel import desc, select
 from starlette.concurrency import run_in_threadpool
 
 from app.cache.redis import async_client
+from app.commands import GenerateLetterCommand, build_handler
 from app.database import async_session_maker
 from app.dependencies import (
     DBSession,
@@ -34,8 +36,8 @@ from app.schemas.api.auto_parse import (
     MarkAppliedRequest,
     StartParseRequest,
 )
+from app.schemas.generation_mode import GenerationMode
 from app.services.auto_generate import start_batch, start_test_batch, stream_gen_events
-from app.services.scraper.parsers.registry import get_parser_keys
 from app.services.websocket.websocket_manager import WebSocketManager
 from app.tasks.parse_site import parse_site
 
@@ -54,7 +56,9 @@ async def test_send(
     #   await ws_manager.send_text(user.id,"Example text")
     job_id = 54
     vacancies = await auto_parse_job_repo.get_by_job_id(job_id)
-    vacancy_ids: list[int] = [item.id for item in vacancies[0:10]]
+    vacancy_ids: list[int] = [
+        item.id for item in vacancies[0:10] if item.id is not None
+    ]
     start_test_batch(user.id, job_id, vacancy_ids)
     # start_batch()
     return {"Message": "123"}
@@ -86,9 +90,21 @@ async def start_parse_test(
     body: StartParseRequest,
 ):
     repository = ParsingJobRepository(async_session_maker)
-    parsing_job = await repository.create_job_with_sites(
-        user.id, body.query, get_parser_keys()
-    )
+    try:
+        parsing_job, site_jobs = await repository.create_job_with_parsers(
+            user.id, body.query, body.generation_mode
+        )
+    except ValueError as exc:
+        if str(exc) == "parsers_empty":
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "parsers_empty",
+                    "message": "Добавьте хотя бы один сайт для поиска",
+                    "href": "/search-sites",
+                },
+            ) from exc
+        raise
     if parsing_job.id is None:
         logger.error("failed to create parsing job")
         raise HTTPException(
@@ -97,10 +113,10 @@ async def start_parse_test(
         )
 
     try:
-        for site_key in get_parser_keys():
-            await run_in_threadpool(
-                parse_site.apply_async, args=(parsing_job.id, site_key)
-            )
+        for site_job in site_jobs:
+            if site_job.id is None:
+                raise RuntimeError("Parsing site job was not assigned an id")
+            await run_in_threadpool(parse_site.apply_async, args=(site_job.id,))
     except Exception:
         logger.exception("Could not dispatch parsing job %s", parsing_job.id)
         await repository.fail_pending_dispatch(parsing_job.id, "dispatch failure")
@@ -194,6 +210,44 @@ async def mark_viewed(
     return vacancy
 
 
+@router.post("/vacancies/{vacancy_id}/generate-stream")
+async def generate_vacancy_stream(vacancy_id: int, user: CurrentUser, db: DBSession):
+    """Generate against the persisted vacancy, so its parent's mode is authoritative."""
+    vacancy = await db.get(AutoParsedJob, vacancy_id)
+    if not vacancy or vacancy.user_id != user.id or vacancy.parsing_job_id is None:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    parent = await db.get(ParsingJob, vacancy.parsing_job_id)
+    if not parent:
+        raise HTTPException(status_code=404, detail="Parsing job not found")
+    meta_total = await async_client.hget(f"batch_meta:{parent.id}", "total")
+    statuses = await async_client.hgetall(f"batch:{parent.id}") or {}
+    terminal = {"generated", "failed", "not_found"}
+    if meta_total and sum(
+        json.loads(value)["status"] in terminal for value in statuses.values()
+    ) < int(meta_total):
+        raise HTTPException(status_code=409, detail="Batch generation is running")
+
+    async def events() -> AsyncIterator[str]:
+        try:
+            letter = await build_handler(db).handle(
+                GenerateLetterCommand(
+                    vacancy_id=vacancy_id,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    generation_mode=parent.generation_mode,
+                )
+            )
+            yield f"data: {json.dumps({'delta': letter}, ensure_ascii=False)}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as exc:
+            logger.exception("Single vacancy generation failed")
+            yield f"data: {json.dumps({'error': str(exc)})}\n\n"
+
+    return StreamingResponse(
+        events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+    )
+
+
 @router.get("/history")
 async def get_history(
     user: CurrentUser,
@@ -220,11 +274,27 @@ async def start_test_generation(
     if job.status != "done":
         raise HTTPException(status_code=400, detail="Parsing job is not done yet")
 
+    active_total = await async_client.hget(f"batch_meta:{parsing_job_id}", "total")
+    active_statuses = await async_client.hgetall(f"batch:{parsing_job_id}") or {}
+    terminal_statuses = {"generated", "failed", "not_found"}
+    if active_total:
+        completed = sum(
+            json.loads(value)["status"] in terminal_statuses
+            for value in active_statuses.values()
+        )
+        if completed < int(active_total):
+            raise HTTPException(status_code=409, detail="Generation is already running")
+
     try:
         vacancies = await auto_parse_job_repo.get_by_job_id(parsing_job_id)
-        vacancy_ids: list[int] = [item.id for item in vacancies]
+        vacancy_ids: list[int] = [item.id for item in vacancies if item.id is not None]
         start_batch(
-            user.id, parsing_job_id, vacancy_ids, user.first_name, user.last_name
+            user.id,
+            parsing_job_id,
+            vacancy_ids,
+            user.first_name,
+            user.last_name,
+            job.generation_mode.value,
         )
         return {
             "status": "started",
@@ -279,6 +349,20 @@ async def get_generate_status(
         "failed": failed_count,
         "total": total,
         "statuses": statuses,  # опционально: детальный статус по каждой вакансии
+        "auto_generation_status": (
+            "not_applicable"
+            if job.generation_mode == GenerationMode.AI
+            else "waiting_for_parse"
+            if job.status in {"pending", "running"}
+            else "failed"
+            if job.auto_generation_error
+            else "skipped"
+            if job.status != "done" or total == 0
+            else "started"
+            if job.auto_generation_started_at
+            else "pending"
+        ),
+        "auto_generation_error": job.auto_generation_error,
     }
 
 
@@ -326,6 +410,8 @@ async def stream_progress(
                 "total_found": job.total_found,
                 "created_at": job.created_at.isoformat() if job.created_at else None,
                 "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+                "generation_mode": job.generation_mode.value,
+                "error": job.error,
             }
         )
 

@@ -25,7 +25,7 @@ import { TodayStatsCard, TODAY_SUMMARY_QUERY_KEY } from '@/components/ui/TodaySt
 import { useStreamLetter } from '@/hooks/useStreamLetter';
 import { LANGUAGES } from '@/types/letter';
 import { autoParseApi } from '../api/auto-parse-client';
-import type { AutoParsedJob } from '../types';
+import type { AutoParsedJob, GenerationMode } from '../types';
 
 // ─── Animations ───────────────────────────────────────────────────────────────
 
@@ -129,12 +129,14 @@ interface VacancyModalProps {
   onClose: () => void;
   autoGenerate?: boolean;
   onApplied?: (id: number) => void;
+  generationMode?: GenerationMode;
+  isTemplateGenerationPending?: boolean;
 }
 
-export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied }: VacancyModalProps) {
+export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied, generationMode = 'ai', isTemplateGenerationPending = false }: VacancyModalProps) {
   const { i18n, t } = useTranslation();
   const queryClient = useQueryClient();
-  const { content, status, streamFromText, reset, preload } = useStreamLetter();
+  const { content, status, streamFromVacancy, reset, preload } = useStreamLetter();
   const { hasCopied, onCopy } = useClipboard(content);
   const [selectedLang, setSelectedLang] = useState(() => resolveDefaultLang(i18n.language));
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
@@ -146,9 +148,9 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
       if (vacancy.cover_letter_text) {
         // Letter was pre-generated via batch — show it immediately
         preload(vacancy.cover_letter_text);
-      } else if (autoGenerate && !didAutoGenerate.current) {
+      } else if (autoGenerate && !isTemplateGenerationPending && !didAutoGenerate.current) {
         didAutoGenerate.current = true;
-        streamFromText({ name: vacancy.job_title, description: vacancy.job_text, lang: selectedLang });
+        streamFromVacancy(vacancy.id);
       }
     }
     if (!isOpen) {
@@ -156,14 +158,15 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
       reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, autoGenerate]);
+  }, [isOpen, autoGenerate, isTemplateGenerationPending, vacancy.id]);
 
   useEffect(() => {
     setIsApplied(vacancy.is_applied);
   }, [vacancy.is_applied]);
 
   const handleGenerate = () => {
-    streamFromText({ name: vacancy.job_title, description: vacancy.job_text, lang: selectedLang });
+    if (isTemplateGenerationPending) return;
+    streamFromVacancy(vacancy.id);
   };
 
   const handleMarkApplied = async () => {
@@ -302,7 +305,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 size="xs"
                 value={selectedLang}
                 onChange={(e) => setSelectedLang(e.target.value)}
-                isDisabled={isGenerating}
+                isDisabled={isGenerating || generationMode === 'template'}
                 bg="rgba(255,255,255,0.7)"
                 border="1px solid rgba(226,232,240,0.8)"
                 borderRadius="lg"
@@ -313,7 +316,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 minW="110px"
                 _focus={{ borderColor: 'aurora.indigo', boxShadow: '0 0 0 2px rgba(99,102,241,0.15)' }}
               >
-                {LANGUAGES.map((l) => (
+                {(generationMode === 'template' ? LANGUAGES.filter((l) => l.code === 'ru') : LANGUAGES).map((l) => (
                   <option key={l.code} value={l.label}>
                     {l.label}
                   </option>
@@ -342,7 +345,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               )}
 
               {/* Generate / Regenerate — separated with margin */}
-              {!isGenerating && (
+              {!isGenerating && !isTemplateGenerationPending && (
                 <GradientButton
                   size="xs"
                   onClick={handleGenerate}
@@ -365,7 +368,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             overflow="hidden"
           >
             {/* Idle */}
-            {status === 'idle' && <IdleOrb />}
+            {status === 'idle' && (isTemplateGenerationPending ? <Flex direction="column" align="center" py={10} gap={2}><Text fontWeight={600}>Шаблонное письмо готовится автоматически</Text><Text fontSize="sm" color="slate.500">Оно появится после завершения парсинга всех источников.</Text></Flex> : <IdleOrb />)}
 
             {/* Parsing skeleton */}
             {isGenerating && !hasContent && <ShimmerSkeleton />}
@@ -406,6 +409,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               fontWeight={600}
               color="aurora.indigo"
               _hover={{ textDecoration: 'underline' }}
+              onClick={() => { if (content.trim()) void navigator.clipboard?.writeText(content); }}
             >
               Открыть страницу вакансии
               <IconExternalLink size={14} stroke={2} />

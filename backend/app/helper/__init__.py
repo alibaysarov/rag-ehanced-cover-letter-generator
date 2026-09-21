@@ -1,6 +1,11 @@
 """Helper package exports for shared auth and utility helpers."""
 
-from .browser import block_resources, get_body_from_page, scroll_page_bottom
+from .browser import (
+    block_resources,
+    get_body_from_page,
+    scroll_page_bottom,
+    secure_request_route,
+)
 from .flatten_list import flatten_list
 from .url import get_domain_by_url
 
@@ -13,6 +18,7 @@ __all__ = [
     "get_body_from_page",
     "block_resources",
     "scroll_page_bottom",
+    "secure_request_route",
 ]
 
 

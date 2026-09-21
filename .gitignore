@@ -27,3 +27,5 @@ Thumbs.db
 postgres_data/
 
 backend/browsers/*
+datasets/*.json
+datasets/*.csv

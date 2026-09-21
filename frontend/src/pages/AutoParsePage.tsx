@@ -5,8 +5,10 @@ import {
   Button,
   Flex,
   Heading,
+  Link,
   Input,
   Progress,
+  Switch,
   SimpleGrid,
   Spinner,
   Text,
@@ -14,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList, IconSparkles } from '@tabler/icons-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
@@ -23,7 +26,7 @@ import {
   VacancyCard,
   ParseHistory,
 } from '@/features/auto-parse';
-import type { ParsingJobStatus, AutoParsedJob } from '@/features/auto-parse';
+import type { ParsingJobStatus, AutoParsedJob, GenerationMode } from '@/features/auto-parse';
 import type { GenerationState } from '@/features/auto-parse/hooks/useAutoParse';
 
 const STATUS_COLOR: Record<ParsingJobStatus, string> = {
@@ -53,18 +56,19 @@ function StatusBadge({ status }: { status: ParsingJobStatus }) {
 interface ParseSearchBarProps {
   isDisabled: boolean;
   isLoading: boolean;
-  onSubmit: (query: string) => void;
+  onSubmit: (query: string, mode: GenerationMode) => void;
 }
 
 function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [mode, setMode] = useState<GenerationMode>('ai');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
-    onSubmit(trimmed);
+    onSubmit(trimmed, mode);
   };
 
   return (
@@ -101,6 +105,13 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
           >
             {t('autoParse.parse')}
           </GradientButton>
+        </Flex>
+        <Flex mt={4} align="center" gap={3} fontSize="sm">
+          <Text fontWeight={mode === 'template' ? 700 : 400}>{t('autoParse.templates')}</Text>
+          <Switch isChecked={mode === 'ai'} onChange={(e) => setMode(e.target.checked ? 'ai' : 'template')}
+            isDisabled={isDisabled || isLoading} aria-label={t('autoParse.useAi')} />
+          <Text fontWeight={mode === 'ai' ? 700 : 400}>{t('autoParse.useAi')}</Text>
+          <Text color="slate.500" title={t('autoParse.modeHint')}>ⓘ</Text>
         </Flex>
       </form>
     </GlassCard>
@@ -152,7 +163,7 @@ interface GenerationPanelProps {
   onGenerate: () => void;
 }
 
-function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPanelProps) {
+function GenerationPanel({ genState, isStartingGen, onGenerate, mode }: GenerationPanelProps & { mode: GenerationMode }) {
   const isDisabled =
     genState.status === 'running' ||
     isStartingGen ||
@@ -172,6 +183,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPane
         flexWrap="wrap"
         gap={3}
       >
+        <Text fontSize="sm" color="slate.600">{mode === 'ai' ? 'Режим: ИИ' : 'Режим: Шаблоны'}</Text>
         <Flex align="center" gap={2}>
           {genState.status === 'running' && <Spinner size="xs" color="purple.500" />}
           {genState.status === 'done' && (
@@ -193,7 +205,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPane
             </Text>
           )}
         </Flex>
-        <GradientButton
+        {mode === 'ai' && <GradientButton
           size="sm"
           leftIcon={<IconSparkles size={14} stroke={2} />}
           onClick={onGenerate}
@@ -203,7 +215,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPane
           flexShrink={0}
         >
           Сгенерировать сопроводительные
-        </GradientButton>
+        </GradientButton>}
       </Flex>
       {genState.status === 'running' && (
         <Progress
@@ -228,9 +240,11 @@ function GenerationPanel({ genState, isStartingGen, onGenerate }: GenerationPane
 interface VacancyListProps {
   vacancies: AutoParsedJob[];
   variant: 'compact' | 'hh';
+  generationMode: GenerationMode;
+  isTemplateGenerationPending: boolean;
 }
 
-function VacancyList({ vacancies, variant }: VacancyListProps) {
+function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationPending }: VacancyListProps) {
   const { t } = useTranslation();
   const pageSize = 8;
   const [page, setPage] = useState(1);
@@ -258,7 +272,7 @@ function VacancyList({ vacancies, variant }: VacancyListProps) {
     <>
       <SimpleGrid columns={variant === 'hh' ? 1 : { base: 1, md: 2, lg: 3 }} spacing={4}>
         {visibleVacancies.map((v) => (
-          <VacancyCard key={v.id} vacancy={v} variant={variant} />
+          <VacancyCard key={v.id} vacancy={v} variant={variant} generationMode={generationMode} isTemplateGenerationPending={isTemplateGenerationPending} />
         ))}
       </SimpleGrid>
       {pageCount > 1 && (
@@ -304,9 +318,9 @@ export default function AutoParsePage() {
     startGeneration,
   } = useAutoParse();
   const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('hh');
-  const handleStartParse = async (query: string) => {
+  const handleStartParse = async (query: string, mode: GenerationMode) => {
     try {
-      await startParse(query);
+      await startParse(query, mode);
       toast({
         title: 'Задача парсинга запущена',
         description: 'Вакансии появятся в списке по мере обработки.',
@@ -314,9 +328,13 @@ export default function AutoParsePage() {
         duration: 4000,
         isClosable: true,
       });
-    } catch {
+    } catch (error) {
+      const detail = (error as { response?: { data?: { detail?: { code?: string; message?: string } } } })?.response?.data?.detail;
       toast({
-        title: 'Не удалось запустить парсинг',
+        title: detail?.message || 'Не удалось запустить парсинг',
+        description: detail?.code === 'parsers_empty'
+          ? <Link as={RouterLink} to="/search-sites" textDecoration="underline">{t('nav.searchSites')}</Link>
+          : undefined,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -376,6 +394,7 @@ export default function AutoParsePage() {
               genState={genState}
               isStartingGen={isStartingGen}
               onGenerate={startGeneration}
+              mode={job.generation_mode ?? 'ai'}
             />
           </Box>
         )}
@@ -407,7 +426,7 @@ export default function AutoParsePage() {
                 </Button>
               </Flex>
             )}
-            <VacancyList vacancies={vacancies} variant={cardVariant} />
+            <VacancyList vacancies={vacancies} variant={cardVariant} generationMode={job?.generation_mode ?? 'ai'} isTemplateGenerationPending={job?.generation_mode === 'template' && genState.status !== 'done'} />
           </Box>
         )}
 

@@ -4,6 +4,7 @@ from .base import Base, BaseModel
 from .cv import CV
 from .cv_chunk import CVChunk
 from .letter import Letter
+from .parser import Parser, ParserUsage
 from .parsing_job import ParsingJob
 from .parsing_site_job import ParsingSiteJob
 from .project import Project
@@ -20,6 +21,8 @@ __all__ = [
     "SentCoverLetter",
     "ParsingJob",
     "ParsingSiteJob",
+    "Parser",
+    "ParserUsage",
     "AutoParsedJob",
     "Project",
 ]

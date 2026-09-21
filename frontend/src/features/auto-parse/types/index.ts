@@ -1,4 +1,5 @@
 export type ParsingJobStatus = 'pending' | 'running' | 'done' | 'failed';
+export type GenerationMode = 'ai' | 'template';
 
 export interface ParsingJob {
   id: number;
@@ -9,6 +10,9 @@ export interface ParsingJob {
   created_at: string;
   finished_at: string | null;
   error: string | null;
+  generation_mode: GenerationMode;
+  auto_generation_started_at?: string | null;
+  auto_generation_error?: string | null;
 }
 
 export interface AutoParsedJob {

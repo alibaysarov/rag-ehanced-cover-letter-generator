@@ -11,6 +11,9 @@ import ProjectsPage from '@/pages/ProjectsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import StatsPage from '@/pages/StatsPage';
 import AutoParsePage from '@/pages/AutoParsePage';
+import SearchSitesPage from '@/pages/SearchSitesPage';
+import NewSearchSitePage from '@/pages/NewSearchSitePage';
+import EditSearchSitePage from '@/pages/EditSearchSitePage';
 
 import AppShell from '@/layouts/AppShell';
 
@@ -95,6 +98,11 @@ function App() {
           </PrivateRoute>
         }
       />
+      {[
+        ['/search-sites', <SearchSitesPage />],
+        ['/search-sites/new', <NewSearchSitePage />],
+        ['/search-sites/:id/edit', <EditSearchSitePage />],
+      ].map(([path, page]) => <Route key={path as string} path={path as string} element={<PrivateRoute><AppShell>{page}</AppShell></PrivateRoute>} />)}
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

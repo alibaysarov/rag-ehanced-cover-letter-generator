@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.generation_mode import GenerationMode
+
 
 class AutoParseResponse(BaseModel):
     total: int
@@ -10,6 +12,7 @@ class AutoParseResponse(BaseModel):
 
 class StartParseRequest(BaseModel):
     query: str
+    generation_mode: GenerationMode = GenerationMode.AI
 
 
 class MarkAppliedRequest(BaseModel):

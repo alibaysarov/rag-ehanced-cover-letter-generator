@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { autoParseApi } from '../api/auto-parse-client';
-import type { ParsingJob, AutoParsedJob } from '../types';
+import type { ParsingJob, AutoParsedJob, GenerationMode } from '../types';
 import useWebSocket from '@/hooks/useWebSocket';
 import { AUTO_PARSE_HISTORY_KEY } from '../components/ParseHistory';
 
@@ -17,7 +17,7 @@ interface UseAutoParseReturn {
   job: ParsingJob | null;
   vacancies: AutoParsedJob[];
   isStarting: boolean;
-  startParse: (query: string) => Promise<void>;
+  startParse: (query: string, mode: GenerationMode) => Promise<void>;
   loadVacanciesForJob: (jobId: number) => Promise<void>;
   // generation
   genState: GenerationState;
@@ -98,6 +98,7 @@ export function useAutoParse(): UseAutoParseReturn {
           if (parsed.status === 'done' || parsed.status === 'failed') {
             closeEventSource();
             void fetchVacancies(id);
+            void queryClient.invalidateQueries({ queryKey: ['parsers'] });
           }
         } catch {
           // ignore
@@ -110,7 +111,7 @@ export function useAutoParse(): UseAutoParseReturn {
         }
       };
     },
-    [closeEventSource, fetchVacancies, job?.status],
+    [closeEventSource, fetchVacancies, job?.status, queryClient],
   );
 
   const handleWebSocket = useCallback((event: MessageEvent<string>) => {
@@ -142,40 +143,34 @@ export function useAutoParse(): UseAutoParseReturn {
       const es = autoParseApi.createGenerateEventSource(id);
       genEsRef.current = es;
 
-      es.onmessage = (event: MessageEvent<string>) => {
+      const applyGenerationEvent = (event: MessageEvent<string>) => {
         try {
-          const data = JSON.parse(event.data) as {
-            generated: number;
-            total: number;
-            status: 'running' | 'done' | 'failed';
-            vacancy_id?: number;
-          };
-
-          setGenState({
-            status: data.status,
-            generated: data.generated,
-            total: data.total,
-          });
-
-          if (data.vacancy_id) {
+          const raw = JSON.parse(event.data) as Record<string, string | { status: string }>;
+          const entries = event.type === 'snapshot'
+            ? Object.entries(raw).map(([id, value]) => [Number(id), typeof value === 'string' ? JSON.parse(value) : value] as const)
+            : [[Number(raw.vacancy_id), raw] as const];
+          let generated = 0; let failed = 0;
+          for (const [, item] of entries) { if (item.status === 'generated') generated++; if (item.status === 'failed') failed++; }
+          if (event.type === 'snapshot') setGenState((old) => ({ status: generated + failed >= old.total && old.total > 0 ? (failed ? 'failed' : 'done') : 'running', generated, total: Math.max(old.total, entries.length) }));
+          const data = entries[0]?.[1];
+          if (data && Number.isFinite(entries[0][0]) && data.status === 'generated') {
             setVacancies((prev) =>
               prev.map((v) =>
-                v.id === data.vacancy_id ? { ...v, is_generated: true } : v,
+                v.id === entries[0][0] ? { ...v, is_generated: true, cover_letter_text: typeof (data as { cover_letter_text?: unknown }).cover_letter_text === 'string' ? (data as { cover_letter_text: string }).cover_letter_text : v.cover_letter_text } : v,
               ),
             );
-          }
-
-          if (data.status === 'done' || data.status === 'failed') {
-            closeGenEventSource();
           }
         } catch {
           // ignore
         }
       };
+      es.onmessage = applyGenerationEvent;
+      es.addEventListener('snapshot', applyGenerationEvent as EventListener);
+      es.addEventListener('complete', () => { void fetchVacancies(id); closeGenEventSource(); });
 
       es.onerror = () => closeGenEventSource();
     },
-    [closeGenEventSource],
+    [closeGenEventSource, fetchVacancies],
   );
 
   const restoreGenState = useCallback(
@@ -196,6 +191,15 @@ export function useAutoParse(): UseAutoParseReturn {
     },
     [subscribeToGenSSE],
   );
+
+  // Template dispatch belongs to the backend and may happen shortly after the
+  // parsing SSE reaches `done`. Poll only its status; never issue POST /generate.
+  useEffect(() => {
+    if (jobId === null || job?.generation_mode !== 'template' || job.status !== 'done' || genState.status === 'done') return;
+    void restoreGenState(jobId);
+    const timer = window.setInterval(() => void restoreGenState(jobId), 2000);
+    return () => window.clearInterval(timer);
+  }, [jobId, job?.generation_mode, job?.status, genState.status, restoreGenState]);
 
   // On mount: restore from localStorage
   useEffect(() => {
@@ -241,10 +245,11 @@ export function useAutoParse(): UseAutoParseReturn {
   }, [closeEventSource, closeGenEventSource]);
 
   const startParse = useCallback(
-    async (query: string) => {
+    async (query: string, mode: GenerationMode) => {
       setIsStarting(true);
       try {
-        const { parsing_job_id } = await autoParseApi.startParse(query);
+        const { parsing_job_id } = await autoParseApi.startParse(query, mode);
+        await queryClient.invalidateQueries({ queryKey: ['parsers'] });
         localStorage.setItem(STORAGE_KEY, String(parsing_job_id));
         setJobId(parsing_job_id);
         setVacancies([]);
@@ -257,6 +262,7 @@ export function useAutoParse(): UseAutoParseReturn {
           created_at: new Date().toISOString(),
           finished_at: null,
           error: null,
+          generation_mode: mode,
         };
         setJob(pendingJob);
         queryClient.setQueryData<ParsingJob[]>(AUTO_PARSE_HISTORY_KEY, (history = []) => [

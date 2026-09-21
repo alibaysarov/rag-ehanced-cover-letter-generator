@@ -5,10 +5,16 @@ from fastapi import Request
 
 from app.cache import sync_client
 from app.cache.redis import async_client
-from app.tasks import single_generation, test_task
+from app.repository.auto_parse_job_repository import AutoParseJobRepository
+from app.repository.parsing_job_repository import ParsingJobRepository
+from app.schemas.generation_mode import GenerationMode
 
 
 def start_test_batch(user_id: int, parsing_job_id: int, vacancy_ids: list[int]):
+    # Import lazily: parse_site invokes the auto-start service after parsing,
+    # while the tasks package imports parse_site during application startup.
+    from app.tasks.single_generation import test_task
+
     first_name = "ali"
     last_name = "baisarov"
 
@@ -17,18 +23,57 @@ def start_test_batch(user_id: int, parsing_job_id: int, vacancy_ids: list[int]):
 
 
 def start_batch(
-    user_id: int, parsing_job_id: int, vacancy_ids: list[int], first_name, last_name
+    user_id: int,
+    parsing_job_id: int,
+    vacancy_ids: list[int],
+    first_name,
+    last_name,
+    generation_mode: str = "ai",
 ):
+    # See start_test_batch: a module-level import would create a cycle with
+    # app.tasks.parse_site -> this module.
+    from app.tasks.single_generation import single_generation
 
     # инициализируем счётчик total, чтобы понимать, когда всё закончилось
     sync_client.hset(f"batch_meta:{parsing_job_id}", "total", len(vacancy_ids))
 
     for vacancy_id in vacancy_ids:
         single_generation.delay(
-            user_id, vacancy_id, first_name, last_name, parsing_job_id
+            user_id,
+            vacancy_id,
+            first_name,
+            last_name,
+            parsing_job_id,
+            generation_mode=generation_mode,
         )
 
     return parsing_job_id
+
+
+async def maybe_start_template_generation(
+    job_id: int, repository: ParsingJobRepository, session_factory
+) -> bool:
+    """Dispatch a template batch exactly once after the parent parsing transaction."""
+    claimed = await repository.claim_template_generation(job_id)
+    if claimed is None:
+        return False
+    if claimed.saved_count == 0:
+        return True
+    try:
+        async with session_factory() as session:
+            vacancies = await AutoParseJobRepository(session).get_by_job_id(job_id)
+        start_batch(
+            claimed.user_id,
+            job_id,
+            [v.id for v in vacancies if v.id is not None],
+            "",
+            "",
+            GenerationMode.TEMPLATE.value,
+        )
+        return True
+    except Exception as exc:
+        await repository.set_auto_generation_error(job_id, str(exc)[:500])
+        raise
 
 
 async def stream_gen_events(

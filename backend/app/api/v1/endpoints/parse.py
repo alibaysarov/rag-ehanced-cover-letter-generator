@@ -3,13 +3,13 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from app.cache import redis as redis_db
-from app.dependencies import get_project_service
+from app.cache.redis import async_client
+from app.dependencies import DBSession, get_project_service
 from app.helper import CurrentUser
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 from app.services import ProjectStorageService
-from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.services.llm.job_requirements import JobParsePrompt
+from app.services.scraper.vacancy_scraper import VacancyScrapingService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -23,19 +23,18 @@ class ParseDto(BaseModel):
 async def parse(
     user: CurrentUser,
     body: ParseDto,
+    db: DBSession,
     projects_service: ProjectStorageService = Depends(get_project_service),
 ):
 
-    cached = await redis_db.redis_client.get(body.url)
-    if cached is None:
-        text = await parse_hh(body.url)
-        if not text:
-            raise HTTPException(
-                status_code=502, detail="Не удалось распарсить вакансию по URL"
-            )
-        await redis_db.redis_client.set(body.url, text, ex=3600)
-    else:
-        text = cached
+    vacancy_page = await VacancyScrapingService(db, async_client).parse_single(
+        body.url, user.id
+    )
+    text = vacancy_page.job_text
+    if not text:
+        raise HTTPException(
+            status_code=502, detail="Не удалось распарсить вакансию по URL"
+        )
 
     job_parse = JobParsePrompt()
     chain = job_parse.prompt_template | job_parse.get_model

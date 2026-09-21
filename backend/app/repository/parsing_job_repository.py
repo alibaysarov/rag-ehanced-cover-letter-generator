@@ -2,9 +2,11 @@ from datetime import datetime
 from typing import Callable
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
+from sqlmodel import col, select
 
-from app.models import AutoParsedJob, ParsingJob, ParsingSiteJob
+from app.models import AutoParsedJob, Parser, ParsingJob, ParsingSiteJob, User
+from app.schemas.generation_mode import GenerationMode
+from app.schemas.parser import ParserSnapshot
 
 SessionFactory = Callable[[], AsyncSession]
 TERMINAL_SITE_STATUSES = {"done", "failed"}
@@ -17,10 +19,19 @@ class ParsingJobRepository:
         self._session_factory = session_factory
 
     async def create_job_with_sites(
-        self, user_id: int, query: str, site_keys: tuple[str, ...]
+        self,
+        user_id: int,
+        query: str,
+        site_keys: tuple[str, ...],
+        generation_mode: GenerationMode = GenerationMode.AI,
     ) -> ParsingJob:
         async with self._session_factory() as session, session.begin():
-            job = ParsingJob(user_id=user_id, query=query, status="pending")
+            job = ParsingJob(
+                user_id=user_id,
+                query=query,
+                status="pending",
+                generation_mode=generation_mode,
+            )
             session.add(job)
             await session.flush()
             if job.id is None:
@@ -33,6 +44,76 @@ class ParsingJobRepository:
             )
         return job
 
+    async def create_job_with_parsers(
+        self,
+        user_id: int,
+        query: str,
+        generation_mode: GenerationMode = GenerationMode.AI,
+    ) -> tuple[ParsingJob, list[ParsingSiteJob]]:
+        """Atomically freeze the user's complete parser catalog into site jobs."""
+        async with self._session_factory() as session, session.begin():
+            user = await session.scalar(
+                select(User).where(User.id == user_id).with_for_update()
+            )
+            if user is None:
+                raise LookupError("user not found")
+            parsers = list(
+                (
+                    await session.scalars(
+                        select(Parser)
+                        .where(Parser.user_id == user_id)
+                        .order_by(col(Parser.created_at).desc(), col(Parser.id).desc())
+                    )
+                ).all()
+            )
+            if not parsers:
+                raise ValueError("parsers_empty")
+            job = ParsingJob(
+                user_id=user_id,
+                query=query,
+                status="pending",
+                generation_mode=generation_mode,
+            )
+            session.add(job)
+            await session.flush()
+            if job.id is None:
+                raise RuntimeError("Parsing job was not assigned an id")
+            sites = []
+            for parser in parsers:
+                snapshot = ParserSnapshot.model_validate(parser).model_dump(mode="json")
+                site = ParsingSiteJob(
+                    parsing_job_id=job.id,
+                    site_key=parser.site_key,
+                    parser_id=parser.id,
+                    parser_version=parser.version,
+                    parser_snapshot=snapshot,
+                )
+                session.add(site)
+                sites.append(site)
+            await session.flush()
+        return job, sites
+
+    async def claim_template_generation(self, job_id: int) -> ParsingJob | None:
+        """Persist an auto-dispatch intent once; safe when multiple sites finish together."""
+        async with self._session_factory() as session, session.begin():
+            job = await self._locked_job(session, job_id)
+            if (
+                job is None
+                or job.status != "done"
+                or job.generation_mode != GenerationMode.TEMPLATE
+                or job.auto_generation_started_at is not None
+            ):
+                return None
+            job.auto_generation_started_at = datetime.utcnow()
+            job.auto_generation_error = None
+            return job
+
+    async def set_auto_generation_error(self, job_id: int, error: str | None) -> None:
+        async with self._session_factory() as session, session.begin():
+            job = await self._locked_job(session, job_id)
+            if job is not None:
+                job.auto_generation_error = error
+
     async def claim_site(self, job_id: int, site_key: str) -> ParsingSiteJob | None:
         async with self._session_factory() as session, session.begin():
             job = await self._locked_job(session, job_id)
@@ -42,6 +123,24 @@ class ParsingJobRepository:
             if site is None or site.status != "pending":
                 return None
 
+            site.status = "running"
+            site.started_at = datetime.utcnow()
+            if job.status == "pending":
+                job.status = "running"
+            return site
+
+    async def claim_site_by_id(self, site_job_id: int) -> ParsingSiteJob | None:
+        async with self._session_factory() as session, session.begin():
+            site = await session.scalar(
+                select(ParsingSiteJob)
+                .where(ParsingSiteJob.id == site_job_id)
+                .with_for_update()
+            )
+            if site is None or site.status != "pending":
+                return None
+            job = await self._locked_job(session, site.parsing_job_id)
+            if job is None:
+                return None
             site.status = "running"
             site.started_at = datetime.utcnow()
             if job.status == "pending":

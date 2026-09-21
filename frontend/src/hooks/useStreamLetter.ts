@@ -14,6 +14,7 @@ interface UseStreamLetterReturn {
   generationTimeMs: number | null;
   streamFromUrl: (req: StreamLetterFromUrlRequest) => void;
   streamFromText: (req: StreamLetterFromTextRequest) => void;
+  streamFromVacancy: (vacancyId: number) => void;
   reset: () => void;
   preload: (text: string) => void;
 }
@@ -50,7 +51,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
     const token = TokenManager.getAccessToken();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/letter/${endpoint}`, {
+      const response = await fetch(endpoint.startsWith('/') ? `${API_BASE_URL}${endpoint}` : `${API_BASE_URL}/letter/${endpoint}`, {
         method: 'POST',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -133,6 +134,12 @@ export function useStreamLetter(): UseStreamLetterReturn {
     [_stream],
   );
 
+  const streamFromVacancy = useCallback((vacancyId: number) => {
+    const fd = new FormData();
+    // The auto-parse endpoint deliberately has no body; reuse the SSE reader.
+    _stream(`/auto-parse/vacancies/${vacancyId}/generate-stream`, fd);
+  }, [_stream]);
+
   const preload = useCallback((text: string) => {
     abortRef.current?.abort();
     setContent(text);
@@ -141,5 +148,5 @@ export function useStreamLetter(): UseStreamLetterReturn {
     setGenerationTimeMs(null);
   }, []);
 
-  return { content, status, error, generationTimeMs, streamFromUrl, streamFromText, reset, preload };
+  return { content, status, error, generationTimeMs, streamFromUrl, streamFromText, streamFromVacancy, reset, preload };
 }

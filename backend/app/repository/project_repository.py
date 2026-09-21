@@ -66,7 +66,7 @@ class ProjectRepository:
         return project
 
     async def get_projects_by_vacancy_text(
-        self, vacancy_text: str, user_id: str
+        self, vacancy_text: str, user_id: int
     ) -> list[RelevantProjectResponse]:
         """
         Берет текст вакансии и при помощи векторного поиска подбирает релевантные проекты

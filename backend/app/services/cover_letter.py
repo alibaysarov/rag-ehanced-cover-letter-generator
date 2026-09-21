@@ -4,13 +4,11 @@ import logging
 import re
 from typing import Any
 
-from app.cache import redis as redis_db
 from app.commands import GenerateCoverCommandLetterHandler, GenerateLetterCommand
 from app.models import AutoParsedJob, Project, User
 from app.repository import AutoParseJobRepository, ProjectRepository
 from app.repository.user_repository import UserRepository
 from app.schemas.llm_outputs.relevant_projects import RelevantProject
-from app.services.llm.agents.tools.fetch_url import parse_hh
 from app.services.llm.cover_letter_prompt import CoverLetterPrompt
 from app.services.llm.relevant_projects import RelevantProjectsPrompt
 from app.services.scraper.vacancy_scraper import VacancyScrapingService
@@ -52,7 +50,10 @@ class CoverLetterService:
             self.cover_letter_prompt.prompt_template
             | self.cover_letter_prompt.get_model
         )
-        body = await self.__get_data_from_url(url, user_id)
+        user = await self.user_repo.get_user_by_id(user_id)
+        if user is None:
+            raise LookupError("user not found")
+        body = await self.__get_data_from_url(url, user)
         result = await chain.ainvoke(body)
         return result.content
 
@@ -89,7 +90,9 @@ class CoverLetterService:
 
     async def stream_by_url(self, url: str, user: User):
         try:
-            single_vacancy = await self.vacancy_scraping_service.parse_single(url)
+            single_vacancy = await self.vacancy_scraping_service.parse_single(
+                url, user.id
+            )
             create_vacancy_dto = {
                 "user_id": user.id,
                 "parsing_job_id": None,
@@ -233,24 +236,11 @@ class CoverLetterService:
 
     async def __get_data_from_url(self, url: str, user: User):
 
-        text = await self.__fetch_from_browser(url)
+        text = (await self.vacancy_scraping_service.parse_single(url, user.id)).job_text
         job_parse = JobParsePrompt()
         chain = job_parse.prompt_template | job_parse.get_model
         vacancy: JobRequirement = chain.invoke({"job_text": text})
 
-        create_vacancy_dto = {
-            "user_id": user.id,
-            "parsing_job_id": None,
-            "vacancy_id": None,
-            "url": "",
-            "job_title": vacancy.jo,
-            "job_text": vacancy_text,
-            "is_applied": False,
-            "is_viewed": False,
-            "cover_letter_text": "",
-        }
-
-        self.auto_parse_job_repository.create()
         ranked = await self._get_ranked_projects(
             user_id=user.id, vacancy_text=text, job_requirement=vacancy
         )
@@ -258,23 +248,15 @@ class CoverLetterService:
         user_projects = self.__projects_normalize(ranked=ranked)
         body = {
             "name": vacancy.name,
-            "lang": vacancy.lang,
-            "project_name": vacancy.project_name,
+            "lang": "ru",
+            "project_name": vacancy.name,
             "user_projects": user_projects,
-            "vacancy_requirements": vacancy.requirements,
+            "vacancy_requirements": vacancy.technologies,
             "vacancy_technologies": vacancy.technologies,
             "user_first_name": (user.first_name or "") if user else "",
             "user_last_name": (user.last_name or "") if user else "",
         }
         return body
-
-    async def __fetch_from_browser(self, url: str):
-        if await redis_db.redis_client.get(url) is None:
-            text = await parse_hh(url)
-            await redis_db.redis_client.set(url, text, ex=3600)
-        else:
-            text = await redis_db.redis_client.get(url)
-        return text
 
     def __projects_normalize(self, ranked: list[Project]) -> str:
         result = [

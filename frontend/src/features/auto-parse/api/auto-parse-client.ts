@@ -1,13 +1,13 @@
 import { authApi } from '@/api/client';
 import { API_BASE_URL } from '@/api/client';
 import { TokenManager } from '@/features/auth';
-import type { ParsingJob, AutoParsedJob } from '../types';
+import type { ParsingJob, AutoParsedJob, GenerationMode } from '../types';
 
 export const autoParseApi = {
-  async startParse(query: string): Promise<{ parsing_job_id: number }> {
+  async startParse(query: string, generationMode: GenerationMode = 'ai'): Promise<{ parsing_job_id: number }> {
     const res = await authApi.post<{ parsing_job_id: number }>(
       '/auto-parse/start',
-      { query },
+      { query, generation_mode: generationMode },
     );
     return res.data;
   },
@@ -67,5 +67,12 @@ export const autoParseApi = {
     const token = TokenManager.getAccessToken() ?? '';
     const url = `${API_BASE_URL}/auto-parse/jobs/${jobId}/generate-stream?token=${encodeURIComponent(token)}`;
     return new EventSource(url);
+  },
+
+  async generateVacancyStream(vacancyId: number): Promise<Response> {
+    const token = TokenManager.getAccessToken();
+    return fetch(`${API_BASE_URL}/auto-parse/vacancies/${vacancyId}/generate-stream`, {
+      method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
   },
 };

@@ -4,7 +4,8 @@
     "projects": "Projects",
     "resumes": "Resumes",
     "stats": "Statistics",
-    "autoParse": "Auto Parse"
+    "autoParse": "Auto Parse",
+    "searchSites": "Search sites"
   },
   "auth": {
     "login": {
@@ -269,7 +270,7 @@
   },
   "autoParse": {
     "title": "Auto Parse",
-    "subtitle": "Search and scrape vacancies from hh.ru automatically",
+    "subtitle": "Search and scrape vacancies from your configured sites",
     "parse": "Parse",
     "parsing": "Parsing...",
     "saved": "saved",
@@ -279,7 +280,25 @@
     "history": "History",
     "noVacancies": "No vacancies yet",
     "vacancyLink": "View on hh.ru",
-    "employerLink":"Employer site"
+    "employerLink":"Employer site",
+    "templates": "Use templates",
+    "useAi": "Use AI",
+    "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. Template letters are generated automatically after parsing from prepared phrases, projects and technologies, without an AI request."
+  },
+  "searchSites": {
+    "title": "Search sites", "subtitle": "Manage your personal vacancy sources", "newTitle": "Add site", "editTitle": "Edit site", "add": "Add site", "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel", "empty": "No sites yet", "loadError": "Could not load sites", "saveError": "Could not save site", "deleteError": "Could not delete site", "confirmDelete": "Delete site “{{name}}”?", "inUse": "In use", "cannotDelete": "Wait for parsing to finish", "editInUse": "Changes apply to future runs. Current parsing uses the previous settings.", "paginationOn": "Pagination enabled", "paginationOff": "No pagination", "previous": "Previous", "next": "Next", "addParam": "Add parameter",
+    "sections": { "main": "Main", "search": "Search", "pagination": "Pagination", "extraction": "Extraction" },
+    "fields": { "name": "Name", "baseUrl": "Search URL", "singleUrl": "Vacancy URL template", "urlTemplate": "URL template", "queryParams": "Query parameters", "hasPagination": "Visit multiple pages", "paginationStart": "First page number", "maxPages": "Maximum pages" },
+    "hints": {
+      "vacancyId": "The {vacancy_id} placeholder is required",
+      "templates": "Use {base_url}, {text}, and {page}",
+      "js": "No-argument JavaScript functions. List returns {title, vacancy_id, link}; detail returns {job_title, job_text}.",
+      "example": "Example:",
+      "baseUrlTooltip": "The page containing the vacancy list or search results. The backend adds the search text, page number, and other query parameters to this address.",
+      "baseUrlExample": "Previously this address was passed to GeneralVacancyParser as base_url.",
+      "singleUrlTooltip": "Template for an individual vacancy page. After searching, the backend replaces {vacancy_id} with the ID returned by evaluate_vacancy_list.",
+      "singleUrlExample": "The {vacancy_id} placeholder is required; for ID 123, /vacancy/123 will be opened."
+    }
   },
   "datePicker": {
     "weekDays": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],

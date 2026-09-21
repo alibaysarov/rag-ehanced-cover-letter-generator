@@ -88,6 +88,9 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                 >
                   {histJob.status}
                 </Badge>
+                <Badge colorScheme={histJob.generation_mode === 'template' ? 'purple' : 'blue'} borderRadius="lg" px={2} py={0.5} fontSize="xs" textTransform="none">
+                  {histJob.generation_mode === 'template' ? 'Шаблоны' : 'ИИ'}
+                </Badge>
                 <Text
                   fontSize="sm"
                   fontWeight={500}

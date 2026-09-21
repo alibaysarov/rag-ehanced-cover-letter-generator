@@ -93,7 +93,7 @@ class SiteParseService:
                     site_key=site_key,
                     user_id=user_id,
                     vacancy_id=vacancy.vacancy_id,
-                    url=parser.get_single_url(vacancy.vacancy_id),
+                    url=item.job_url or parser.get_single_url(vacancy.vacancy_id),
                     job_title=self._normalize_text(item.job_title),
                     job_text=self._normalize_text(item.job_text),
                 )

@@ -68,8 +68,7 @@ export const useAuth = () => {
   const logoutMutation = useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: () => {
-      // Clear user data from cache
-      queryClient.removeQueries({ queryKey: authKeys.all });
+      queryClient.clear();
     },
   });
 

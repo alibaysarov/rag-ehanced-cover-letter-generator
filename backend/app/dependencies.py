@@ -6,6 +6,7 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.readers.file import PDFReader
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.cache.redis import async_client
 from app.commands import GenerateCoverCommandLetterHandler, build_handler
 from app.database import get_db
 from app.pubsub.pubsub_listener import PubsubListener
@@ -75,8 +76,10 @@ async def get_generate_letter_handler(
     return build_handler(session)
 
 
-def get_vacancy_scraping_service() -> VacancyScrapingService:
-    return VacancyScrapingService()
+def get_vacancy_scraping_service(
+    session: AsyncSession = Depends(get_db),
+) -> VacancyScrapingService:
+    return VacancyScrapingService(session, async_client)
 
 
 def get_cover_letter_service(

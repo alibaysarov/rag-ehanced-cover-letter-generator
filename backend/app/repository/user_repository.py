@@ -5,6 +5,7 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
+from app.models.parser import Parser
 from app.models.user import User
 
 
@@ -27,6 +28,15 @@ class UserRepository:
             last_name=last_name,
         )
         self._session.add(user)
+        await self._session.flush()
+        if user.id is None:
+            raise RuntimeError("User was not assigned an id")
+        from app.services.scraper.parser_defaults import default_parser_values
+
+        self._session.add_all(
+            [Parser(**values) for values in default_parser_values(user.id)]
+        )
+        user.parsers_revision = 1
         await self._session.commit()
         await self._session.refresh(user)
         return user

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
+from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -22,6 +23,9 @@ class User(SQLModel, table=True):
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    parsers_revision: int = Field(
+        default=0, sa_column=Column(BigInteger, nullable=False, server_default="0")
+    )
 
     # Relationships
     cvs: List["CV"] = Relationship(
