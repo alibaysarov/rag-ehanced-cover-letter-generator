@@ -16,9 +16,11 @@ HH_PAGE_JS = """
         ()=>{
             const job_title = document.querySelector('[data-qa="vacancy-title"]')?.textContent?.trim() || '';
             const job_text = document.querySelector('[data-qa="vacancy-description"]')?.textContent?.trim() || '';
+            const company_name = document.querySelector('[data-qa="vacancy-company-name"]')?.textContent?.trim() || null;
             return {
                 job_title,
                 job_text,
+                company_name,
             }
         }
         """
@@ -57,9 +59,16 @@ GEEKJOB_PAGE_JS = """
                 ''
             );
 
+            const company_name = (
+                document.querySelector('[class*="company"] a')?.textContent?.trim() ||
+                document.querySelector('[class*="company"]')?.textContent?.trim() ||
+                null
+            );
+
             return {
                 job_title,
                 job_text,
+                company_name,
             }
         }
         """

@@ -1,6 +1,15 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, cv, letter, parse, parsers, projects, user
+from app.api.v1.endpoints import (
+    auth,
+    cv,
+    letter,
+    letter_constructor,
+    parse,
+    parsers,
+    projects,
+    user,
+)
 from app.api.v1.endpoints.auto_parse_router import router as auto_parse_router
 from app.api.v1.endpoints.stats import router as stats_router
 
@@ -16,3 +25,4 @@ api_router.include_router(parse.router, prefix="/parse", tags=["parse"])
 api_router.include_router(stats_router, prefix="/stats", tags=["stats"])
 api_router.include_router(auto_parse_router, prefix="/auto-parse", tags=["auto-parse"])
 api_router.include_router(parsers.router, prefix="/parsers", tags=["parsers"])
+api_router.include_router(letter_constructor.router, tags=["letter-constructor"])

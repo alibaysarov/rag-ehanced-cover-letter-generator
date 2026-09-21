@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import BigInteger, Column
+from sqlalchemy import BigInteger, Column, DateTime
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -25,6 +25,9 @@ class User(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     parsers_revision: int = Field(
         default=0, sa_column=Column(BigInteger, nullable=False, server_default="0")
+    )
+    defaults_provisioned_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
     )
 
     # Relationships

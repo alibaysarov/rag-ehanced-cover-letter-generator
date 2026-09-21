@@ -37,7 +37,10 @@ class UserRepository:
             [Parser(**values) for values in default_parser_values(user.id)]
         )
         user.parsers_revision = 1
-        await self._session.commit()
+        await self._session.flush()
+        from app.services.default_template_provisioner import DefaultTemplateProvisioner
+
+        await DefaultTemplateProvisioner(self._session).ensure_for_user(user.id)
         await self._session.refresh(user)
         return user
 

@@ -5,7 +5,18 @@
     "resumes": "Resumes",
     "stats": "Statistics",
     "autoParse": "Auto Parse",
-    "searchSites": "Search sites"
+    "searchSites": "Search sites",
+    "letterConstructor": "Letter constructor"
+  },
+  "letterConstructor": {
+    "tabs": { "templates": "Templates", "phrases": "Phrases" },
+    "common": { "search": "Search", "back": "Previous", "next": "Next", "delete": "Delete", "edit": "Edit", "activate": "Activate", "save": "Save", "close": "Close", "preview": "Preview" },
+    "phrases": { "title": "Phrases", "new": "New phrase", "allTypes": "All types", "anyStatus": "Any status", "active": "Active", "inactive": "Inactive", "used": "Used in templates: {{count}}", "textPrompt": "Phrase text", "typePrompt": "Type", "saveError": "Could not save phrase", "deleteConfirm": "Delete phrase?" },
+    "phraseForm": { "createTitle": "New phrase", "editTitle": "Edit phrase", "type": "Phrase type", "text": "Phrase text", "placeholder": "For example: Hello! I am interested in the [[job_title]] vacancy.", "tokens": "Available substitutions", "tokensHint": "Click a token to insert it at the cursor. Add projects using the dedicated graph node.", "active": "Phrase is active", "cancel": "Cancel", "save": "Save", "saveError": "Could not save phrase", "textRequired": "Enter phrase text", "textTooLong": "Text must not exceed 2000 characters", "impact": "This change affects templates: {{count}}" },
+    "phraseTypes": { "opening": "Opening", "experience_bridge": "Experience bridge", "portfolio_intro": "Portfolio introduction", "stack_summary": "Stack summary", "closing": "Closing", "custom": "Custom" },
+    "templates": { "title": "Templates", "create": "Create", "allCases": "All cases", "allStatuses": "All statuses", "missing": "Missing active templates: {{cases}}", "nodesEdges": "{{nodes}} nodes · {{edges}} edges", "withProjects": "with projects", "withoutProjects": "without projects", "deleteConfirm": "Delete template?", "activateError": "Could not activate template" },
+    "editor": { "name": "Name", "library": "Phrase library", "newPhrase": "New phrase", "addProjects": "Add projects", "phrases": "Phrases", "inspector": "Inspector", "makeRoot": "Set as START", "branchOrder": "Branch order", "chooseRoot": "Double-click a node to select the root.", "loadError": "Could not load template", "createError": "Could not create phrase", "cycleError": "Cyclic connections are not allowed", "saveError": "Could not save", "previewError": "Preview failed", "previewVacancy": "Vacancy ID for preview", "differentCase": "⚠ A different case was detected", "phraseText": "New phrase text", "phraseType": "Phrase type", "missingProjects": "Projects will not be included in the letter. Continue?", "partialProjects": "Some letter variants will not include projects. Continue?", "stale": "This version is stale. Reload?", "unsaved": "There are unsaved changes. Leave this page?" },
+    "cases": { "no_portfolio": "Portfolio is empty", "relevant_domain": "Relevant domain", "partial_match": "Partial match", "no_relevant_projects": "No relevant projects" }
   },
   "auth": {
     "login": {

@@ -1,6 +1,16 @@
 # Models package
 from .auto_parsed_job import AutoParsedJob
 from .base import Base, BaseModel
+from .cover_letter_template import (
+    CoverLetterTemplate,
+    CoverLetterTemplateEdge,
+    CoverLetterTemplateNode,
+    LetterPhrase,
+    LetterPhraseType,
+    TemplateCase,
+    TemplateNodeKind,
+    TemplateStatus,
+)
 from .cv import CV
 from .cv_chunk import CVChunk
 from .letter import Letter
@@ -25,4 +35,12 @@ __all__ = [
     "ParserUsage",
     "AutoParsedJob",
     "Project",
+    "LetterPhrase",
+    "CoverLetterTemplate",
+    "CoverLetterTemplateNode",
+    "CoverLetterTemplateEdge",
+    "TemplateCase",
+    "LetterPhraseType",
+    "TemplateNodeKind",
+    "TemplateStatus",
 ]

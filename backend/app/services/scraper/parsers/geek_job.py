@@ -33,9 +33,16 @@ class GeekJobVacancyParser(GeneralVacancyParser):
                 ''
             );
 
+            const company_name = (
+                document.querySelector('[class*="company"] a')?.textContent?.trim() ||
+                document.querySelector('[class*="company"]')?.textContent?.trim() ||
+                null
+            );
+
             return {
                 job_title,
                 job_text,
+                company_name,
             }
         }
         """

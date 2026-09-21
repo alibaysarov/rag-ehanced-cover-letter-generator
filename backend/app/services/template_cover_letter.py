@@ -1,8 +1,9 @@
 """Deterministic, dependency-free Russian cover-letter templates."""
 
-import re
 from dataclasses import dataclass
 from typing import Sequence
+
+from app.services.template_domain import matching_technologies, unique_technologies
 
 OPENINGS = (
     "Добрый день! Заинтересовала вакансия {title}.",
@@ -51,35 +52,6 @@ class TemplateProject:
     technologies: tuple[str, ...]
 
 
-def _unique_technologies(values: Sequence[str]) -> list[str]:
-    seen: set[str] = set()
-    result: list[str] = []
-    for value in values:
-        normalized = value.strip()
-        key = normalized.casefold()
-        if normalized and key not in seen:
-            seen.add(key)
-            result.append(normalized)
-    return result
-
-
-def _technology_pattern(technology: str) -> re.Pattern[str]:
-    # A non-word boundary is important for C++, C#, .NET and Node.js.
-    escaped = re.escape(" ".join(technology.split()))
-    return re.compile(r"(?<![\w+#.])" + escaped + r"(?![\w+#.])", re.IGNORECASE)
-
-
-def matching_technologies(vacancy_text: str, technologies: Sequence[str]) -> list[str]:
-    """Return at most four declared technologies found as complete technical names."""
-    result: list[str] = []
-    for technology in _unique_technologies(technologies):
-        if _technology_pattern(technology).search(vacancy_text):
-            result.append(technology)
-            if len(result) == 4:
-                break
-    return result
-
-
 def generate_template_cover_letter(
     *,
     vacancy_id: int,
@@ -98,7 +70,7 @@ def generate_template_cover_letter(
             TemplateProject(
                 project.id,
                 project.name.strip(),
-                tuple(_unique_technologies(project.technologies)),
+                tuple(unique_technologies(project.technologies)),
             )
         )
         if len(clean_projects) == 3:

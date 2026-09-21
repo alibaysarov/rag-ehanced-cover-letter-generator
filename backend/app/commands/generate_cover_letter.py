@@ -7,10 +7,7 @@ from app.models import ParsingJob
 from app.repository import AutoParseJobRepository, ProjectRepository, UserRepository
 from app.schemas.generation_mode import GenerationMode
 from app.services.llm import CoverLetterPrompt
-from app.services.template_cover_letter import (
-    TemplateProject,
-    generate_template_cover_letter,
-)
+from app.services.template_generation import TemplateGenerationService
 
 logger = logging.getLogger(__name__)
 
@@ -57,24 +54,16 @@ class GenerateCoverCommandLetterHandler:
                 )
             mode = parent.generation_mode
 
-        projects = await self.project_repository.get_projects_by_vacancy_text(
-            f"{vacancy.job_title}\n{vacancy.job_text}", vacancy.user_id
-        )
-        if not projects:
-            projects = await self.project_repository.get_by_user(vacancy.user_id)
-
         if mode == GenerationMode.TEMPLATE:
-            letter = generate_template_cover_letter(
-                vacancy_id=vacancy.id,
-                job_title=vacancy.job_title,
-                job_text=vacancy.job_text,
-                projects=[
-                    TemplateProject(p.id, p.name, tuple(p.technologies or []))
-                    for p in projects
-                    if p.id is not None
-                ],
+            return await TemplateGenerationService(self._session).generate(
+                vacancy, vacancy.user_id
             )
         else:
+            projects = await self.project_repository.get_projects_by_vacancy_text(
+                f"{vacancy.job_title}\n{vacancy.job_text}", vacancy.user_id
+            )
+            if not projects:
+                projects = await self.project_repository.get_by_user(vacancy.user_id)
             technologies = list(
                 dict.fromkeys(t for p in projects for t in (p.technologies or []))
             )
@@ -94,9 +83,7 @@ class GenerateCoverCommandLetterHandler:
             letter = response.content
         if not isinstance(letter, str) or not letter.strip():
             raise ValueError("Cover-letter generator returned an empty result")
-        await self.auto_parse_job_repository.update_vacancy(
-            vacancy.id, letter, is_generated=True
-        )
+        await self.auto_parse_job_repository.update_vacancy(vacancy.id, letter, True)
         return letter
 
 

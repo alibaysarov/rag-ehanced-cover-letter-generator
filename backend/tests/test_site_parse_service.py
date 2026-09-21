@@ -44,6 +44,7 @@ class SiteParseServiceCallbackTests(unittest.IsolatedAsyncioTestCase):
                 job_title="Python developer",
                 job_text="Build backend services",
                 job_url="https://example.test/vacancies/17",
+                company_name="  Acme   Group ",
             )
         )
 
@@ -62,6 +63,9 @@ class SiteParseServiceCallbackTests(unittest.IsolatedAsyncioTestCase):
         )
 
         callback.assert_awaited_once_with(saved)
+        self.assertEqual(
+            repository.save_vacancy.await_args.kwargs["company_name"], "Acme Group"
+        )
         repository.record_vacancy_failure.assert_not_awaited()
         page.close.assert_awaited_once()
 

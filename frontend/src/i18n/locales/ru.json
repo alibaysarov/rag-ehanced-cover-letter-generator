@@ -5,7 +5,18 @@
     "resumes": "Резюме",
     "stats": "Статистика",
     "autoParse": "Авто Парсинг",
-    "searchSites": "Сайты для поиска"
+    "searchSites": "Сайты для поиска",
+    "letterConstructor": "Конструктор писем"
+  },
+  "letterConstructor": {
+    "tabs": { "templates": "Шаблоны", "phrases": "Фразы" },
+    "common": { "search": "Поиск", "back": "Назад", "next": "Далее", "delete": "Удалить", "edit": "Изменить", "activate": "Активировать", "save": "Сохранить", "close": "Закрыть", "preview": "Preview" },
+    "phrases": { "title": "Фразы", "new": "Новая фраза", "allTypes": "Все типы", "anyStatus": "Любой статус", "active": "Активные", "inactive": "Неактивные", "used": "В шаблонах: {{count}}", "textPrompt": "Текст фразы", "typePrompt": "Тип", "saveError": "Не удалось сохранить фразу", "deleteConfirm": "Удалить фразу?" },
+    "phraseForm": { "createTitle": "Новая фраза", "editTitle": "Редактирование фразы", "type": "Тип фразы", "text": "Текст фразы", "placeholder": "Например: Добрый день! Меня заинтересовала вакансия [[job_title]].", "tokens": "Доступные подстановки", "tokensHint": "Нажмите на токен, чтобы вставить его в текущую позицию курсора. Блок проектов добавляется отдельным узлом.", "active": "Фраза активна", "cancel": "Отмена", "save": "Сохранить", "saveError": "Не удалось сохранить фразу", "textRequired": "Введите текст фразы", "textTooLong": "Текст не должен превышать 2000 символов", "impact": "Изменение затронет шаблоны: {{count}}" },
+    "phraseTypes": { "opening": "Приветствие", "experience_bridge": "Переход к опыту", "portfolio_intro": "Введение к портфолио", "stack_summary": "Описание стека", "closing": "Завершение", "custom": "Произвольная" },
+    "templates": { "title": "Шаблоны", "create": "Создать", "allCases": "Все случаи", "allStatuses": "Все статусы", "missing": "Нет активных шаблонов: {{cases}}", "nodesEdges": "{{nodes}} узлов · {{edges}} связей", "withProjects": "с проектами", "withoutProjects": "без проектов", "deleteConfirm": "Удалить шаблон?", "activateError": "Не удалось активировать шаблон" },
+    "editor": { "name": "Название", "library": "Библиотека фраз", "newPhrase": "Новая фраза", "addProjects": "Добавить проекты", "phrases": "Фразы", "inspector": "Inspector", "makeRoot": "Сделать START", "branchOrder": "Порядок ветки", "chooseRoot": "Выберите root двойным кликом.", "loadError": "Не удалось загрузить шаблон", "createError": "Не удалось создать фразу", "cycleError": "Циклическая связь запрещена", "saveError": "Не удалось сохранить", "previewError": "Preview не выполнен", "previewVacancy": "ID вакансии для preview", "differentCase": "⚠ Обнаружен другой case", "phraseText": "Текст новой фразы", "phraseType": "Тип фразы", "missingProjects": "В письме не будут указываться проекты. Продолжить?", "partialProjects": "В некоторых вариантах письма проекты не будут указаны. Продолжить?", "stale": "Версия устарела. Перезагрузить?", "unsaved": "Есть несохранённые изменения. Покинуть страницу?" },
+    "cases": { "no_portfolio": "Портфолио пусто", "relevant_domain": "Есть релевантная сфера", "partial_match": "Частичное совпадение", "no_relevant_projects": "Проекты есть, но релевантных нет" }
   },
   "auth": {
     "login": {

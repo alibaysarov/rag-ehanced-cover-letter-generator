@@ -31,6 +31,7 @@ class AutoParsedJobRead(BaseModel):
     web_site: str | None
     job_title: str
     job_text: str
+    company_name: str | None
     is_applied: bool
     is_viewed: bool
     is_generated: bool

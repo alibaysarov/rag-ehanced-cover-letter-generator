@@ -188,6 +188,7 @@ class ParsingJobRepository:
         url: str,
         job_title: str,
         job_text: str,
+        company_name: str | None = None,
     ) -> tuple[AutoParsedJob | None, bool]:
         if not vacancy_id:
             raise ValueError("vacancy_id is required")
@@ -214,6 +215,7 @@ class ParsingJobRepository:
                 url=url,
                 job_title=job_title,
                 job_text=job_text,
+                company_name=company_name,
                 web_site=site_key,
                 is_applied=False,
                 is_viewed=False,

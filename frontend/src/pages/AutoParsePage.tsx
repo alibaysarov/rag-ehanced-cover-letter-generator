@@ -67,7 +67,7 @@ interface ParseSearchBarProps {
 function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState<GenerationMode>('ai');
+  const [mode, setMode] = useState<GenerationMode>('template');
   const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
 
   const handleSubmit = (e: FormEvent) => {

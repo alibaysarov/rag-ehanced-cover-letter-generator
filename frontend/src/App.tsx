@@ -14,6 +14,9 @@ import AutoParsePage from '@/pages/AutoParsePage';
 import SearchSitesPage from '@/pages/SearchSitesPage';
 import NewSearchSitePage from '@/pages/NewSearchSitePage';
 import EditSearchSitePage from '@/pages/EditSearchSitePage';
+import LetterPhrasesPage from '@/pages/LetterPhrasesPage';
+import LetterTemplatesPage from '@/pages/LetterTemplatesPage';
+import LetterTemplateEditorPage from '@/pages/LetterTemplateEditorPage';
 
 import AppShell from '@/layouts/AppShell';
 
@@ -102,6 +105,12 @@ function App() {
         ['/search-sites', <SearchSitesPage />],
         ['/search-sites/new', <NewSearchSitePage />],
         ['/search-sites/:id/edit', <EditSearchSitePage />],
+      ].map(([path, page]) => <Route key={path as string} path={path as string} element={<PrivateRoute><AppShell>{page}</AppShell></PrivateRoute>} />)}
+      {[
+        ['/letter-constructor/templates', <LetterTemplatesPage />],
+        ['/letter-constructor/phrases', <LetterPhrasesPage />],
+        ['/letter-constructor/templates/new', <LetterTemplateEditorPage />],
+        ['/letter-constructor/templates/:id/edit', <LetterTemplateEditorPage />],
       ].map(([path, page]) => <Route key={path as string} path={path as string} element={<PrivateRoute><AppShell>{page}</AppShell></PrivateRoute>} />)}
 
       <Route path="*" element={<Navigate to="/" replace />} />

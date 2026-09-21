@@ -1,6 +1,9 @@
 import uvicorn
 
 
+def cover_template_test(): ...
+
+
 def main():
     """Main entry point for the application"""
     print("Starting Cover Letter RAG Backend...")

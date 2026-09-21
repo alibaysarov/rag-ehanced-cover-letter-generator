@@ -5,3 +5,4 @@ class SingleVacancy(BaseModel):
     job_title: str
     job_text: str
     job_url: str = ""
+    company_name: str | None = None

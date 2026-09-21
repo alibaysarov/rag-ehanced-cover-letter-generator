@@ -20,6 +20,7 @@ import {
   IconSearch,
   IconWorldSearch,
   IconSparkles,
+  IconTemplate,
   IconX,
 } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +64,7 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
     { to: '/stats', icon: IconChartBar, label: t('nav.stats') },
     { to: '/auto-parse', icon: IconSearch, label: t('nav.autoParse') },
     { to: '/search-sites', icon: IconWorldSearch, label: t('nav.searchSites') },
+    { to: '/letter-constructor/templates', icon: IconTemplate, label: t('nav.letterConstructor') },
   ];
 
   return (

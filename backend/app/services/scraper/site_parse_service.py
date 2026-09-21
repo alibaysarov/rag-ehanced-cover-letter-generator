@@ -102,6 +102,11 @@ class SiteParseService:
                     url=item.job_url or parser.get_single_url(vacancy.vacancy_id),
                     job_title=self._normalize_text(item.job_title),
                     job_text=self._normalize_text(item.job_text),
+                    company_name=(
+                        self._normalize_text(item.company_name)
+                        if item.company_name
+                        else None
+                    ),
                 )
                 if inserted and saved is not None and self._publish_saved is not None:
                     try:

@@ -1,0 +1,5 @@
+import type { Edge, Node } from '@xyflow/react';
+import type { CoverLetterTemplate, LetterPhrase, TemplateEdgeDto, TemplateNodeDto } from './types';
+
+export function apiGraphToFlow(template:CoverLetterTemplate):{nodes:Node[];edges:Edge[]}{return{nodes:template.nodes.map(node=>({id:node.id,type:node.node_kind,position:node.position,data:node.node_kind==='phrase'?{phrase:node.phrase,isRoot:node.id===template.root_node_id}:{isRoot:node.id===template.root_node_id}})),edges:template.edges.map(edge=>({id:edge.id,source:edge.source_node_id,target:edge.target_node_id,data:{branchOrder:edge.branch_order}}))}}
+export function flowGraphToApi(nodes:Node[],edges:Edge[],rootId:string|null):{nodes:TemplateNodeDto[];edges:TemplateEdgeDto[];root_node_id:string|null}{return{root_node_id:rootId,nodes:nodes.map(node=>({id:node.id,node_kind:node.type==='projects'?'projects':'phrase',phrase_id:node.type==='projects'?null:(node.data.phrase as LetterPhrase).id,position:node.position})),edges:edges.map(edge=>({id:edge.id,source_node_id:edge.source,target_node_id:edge.target,branch_order:Number(edge.data?.branchOrder??0)}))}}
