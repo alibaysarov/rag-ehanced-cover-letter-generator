@@ -140,7 +140,7 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
 
   return (
     <Flex
-      bg="rgba(255,255,255,0.5)"
+      bg="surface.raised"
       borderRadius="full"
       p={1}
       border="1px solid"
@@ -162,7 +162,7 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
             borderRadius="full"
             fontSize="sm"
             fontWeight={600}
-            color={active ? 'white' : 'slate.700'}
+            color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             zIndex={1}
           >
@@ -217,7 +217,7 @@ function SummaryTable({
         fontFamily="heading"
         fontSize="lg"
         fontWeight={600}
-        color="slate.900"
+        color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
       >
@@ -237,7 +237,7 @@ function SummaryTable({
       )}
 
       {data && data.length === 0 && (
-        <Text fontSize="sm" color="slate.500">
+        <Text fontSize="sm" color="text.muted">
           {t('stats.noSummaryData')}
         </Text>
       )}
@@ -248,7 +248,7 @@ function SummaryTable({
             <Thead>
               <Tr>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -259,7 +259,7 @@ function SummaryTable({
                   {t('stats.date')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -271,7 +271,7 @@ function SummaryTable({
                   hh.ru
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -283,7 +283,7 @@ function SummaryTable({
                   LinkedIn
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -295,7 +295,7 @@ function SummaryTable({
                   {t('stats.others')}
                 </Th>
                 <Th
-                  color="slate.800"
+                  color="text.primary"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={700}
@@ -307,7 +307,7 @@ function SummaryTable({
                   {t('stats.total')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -328,7 +328,7 @@ function SummaryTable({
                 >
                   <Td
                     fontSize="sm"
-                    color="slate.700"
+                    color="text.secondary"
                     fontFamily="mono"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -336,7 +336,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -344,7 +344,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -352,7 +352,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -361,7 +361,7 @@ function SummaryTable({
                   <Td
                     fontSize="sm"
                     fontWeight={700}
-                    color="slate.900"
+                    color="text.primary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -369,7 +369,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.500"
+                    color="text.muted"
                     fontFamily="mono"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -456,7 +456,7 @@ function ApplicationsList({
         fontFamily="heading"
         fontSize="lg"
         fontWeight={600}
-        color="slate.900"
+        color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
       >
@@ -476,7 +476,7 @@ function ApplicationsList({
       )}
 
       {data && data.items.length === 0 && (
-        <Text fontSize="sm" color="slate.500" py={4}>
+        <Text fontSize="sm" color="text.muted" py={4}>
           {t('stats.noApplications')}
         </Text>
       )}
@@ -487,7 +487,7 @@ function ApplicationsList({
             <Thead>
               <Tr>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -498,7 +498,7 @@ function ApplicationsList({
                   {t('stats.date')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -509,7 +509,7 @@ function ApplicationsList({
                   {t('stats.type')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -520,7 +520,7 @@ function ApplicationsList({
                   {t('stats.vacancy')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
                   fontWeight={600}
@@ -541,7 +541,7 @@ function ApplicationsList({
                 >
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     fontFamily="mono"
                     whiteSpace="nowrap"
                     borderColor="rgba(226,232,240,0.4)"
@@ -553,7 +553,7 @@ function ApplicationsList({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.700"
+                    color="text.secondary"
                     maxW="300px"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -601,7 +601,7 @@ function ApplicationsList({
                       <Text
                         fontSize="xs"
                         fontWeight={600}
-                        color={item.is_accepted ? 'green.600' : 'slate.400'}
+                        color={item.is_accepted ? 'green.600' : 'text.muted'}
                       >
                         {item.is_accepted ? t('stats.accepted') : t('stats.pending')}
                       </Text>
@@ -617,13 +617,13 @@ function ApplicationsList({
       {/* Pagination */}
       {data && data.total > PAGE_SIZE && (
         <Flex align="center" justify="space-between" mt={5} flexWrap="wrap" gap={3}>
-          <Text fontSize="sm" color="slate.500">
+          <Text fontSize="sm" color="text.muted">
             {t('stats.page')}{' '}
-            <Text as="span" fontWeight={600} color="slate.700">
+            <Text as="span" fontWeight={600} color="text.secondary">
               {page}
             </Text>{' '}
             {t('stats.of')}{' '}
-            <Text as="span" fontWeight={600} color="slate.700">
+            <Text as="span" fontWeight={600} color="text.secondary">
               {totalPages}
             </Text>
           </Text>
@@ -635,7 +635,7 @@ function ApplicationsList({
               leftIcon={<IconChevronLeft size={15} stroke={2} />}
               isDisabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
-              color="slate.600"
+              color="text.secondary"
               _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.prev')}
@@ -647,7 +647,7 @@ function ApplicationsList({
               rightIcon={<IconChevronRight size={15} stroke={2} />}
               isDisabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
-              color="slate.600"
+              color="text.secondary"
               _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.next')}
@@ -725,13 +725,13 @@ export default function StatsPage() {
             fontFamily="heading"
             fontSize="3xl"
             fontWeight={600}
-            color="slate.900"
+            color="text.primary"
             letterSpacing="-0.02em"
             mb={1}
           >
             {t('stats.title')}
           </Heading>
-          <Text color="slate.500" fontSize="sm">
+          <Text color="text.muted" fontSize="sm">
             {t('stats.subtitle')}
           </Text>
         </Box>

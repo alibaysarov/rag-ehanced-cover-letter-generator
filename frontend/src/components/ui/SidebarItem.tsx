@@ -31,7 +31,7 @@ export function SidebarItem({
           py={2.5}
           borderRadius="xl"
           bg={isActive ? 'surface.glassStrong' : 'transparent'}
-          color={isActive ? 'slate.900' : 'slate.700'}
+          color={isActive ? 'text.primary' : 'text.secondary'}
           transition="background-color 180ms ease, color 180ms ease"
           _hover={{ bg: 'surface.glassStrong' }}
           role="group"

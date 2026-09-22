@@ -213,7 +213,7 @@ const EditCVModal: React.FC<EditModalProps> = ({
               />
               <FormErrorMessage>{errors.file}</FormErrorMessage>
               {cv && (
-                <Text fontSize="sm" color="gray.500" mt={1}>
+                <Text fontSize="sm" color="text.muted" mt={1}>
                   {t('cvs.editModal.currentFile')} {cv.original_filename}
                 </Text>
               )}
@@ -316,7 +316,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
-            <Text color="gray.600">
+            <Text color="text.secondary">
               {t('cvs.uploadModal.desc')}
             </Text>
             <FormControl isInvalid={!!errors.file}>
@@ -327,7 +327,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
               />
               <FormErrorMessage>{errors.file}</FormErrorMessage>
-              <Text fontSize="sm" color="gray.500" mt={1}>
+              <Text fontSize="sm" color="text.muted" mt={1}>
                 {t('cvs.uploadModal.helperText')}
               </Text>
             </FormControl>
@@ -466,7 +466,7 @@ const UserCVPage: React.FC = () => {
         {t('cvs.title')}
       </Heading>
 
-      <Text mb={6} textAlign="center" color="gray.600">
+      <Text mb={6} textAlign="center" color="text.secondary">
         {t('cvs.subtitle')}
       </Text>
       <Flex my="4">
@@ -477,7 +477,7 @@ const UserCVPage: React.FC = () => {
       {cvs.length === 0 ? (
         <Card>
           <CardBody>
-            <Text textAlign="center" color="gray.500">
+            <Text textAlign="center" color="text.muted">
               {t('cvs.noResumes')}
             </Text>
           </CardBody>
@@ -509,7 +509,7 @@ const UserCVPage: React.FC = () => {
                         </Text>
                       </Td>
                       <Td>
-                        <Text fontSize="sm" color="gray.600">
+                        <Text fontSize="sm" color="text.secondary">
                           {cv.source_id}
                         </Text>
                       </Td>

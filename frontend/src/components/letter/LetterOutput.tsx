@@ -107,10 +107,10 @@ function IdleState() {
         />
       </Box>
       <Box textAlign="center" maxW="320px">
-        <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="slate.900" mb={1}>
+        <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="text.primary" mb={1}>
           {t('letterOutput.idleTitle')}
         </Text>
-        <Text fontSize="sm" color="slate.500">
+        <Text fontSize="sm" color="text.muted">
           {t('letterOutput.idleSubtitle')}
         </Text>
       </Box>
@@ -121,7 +121,7 @@ function IdleState() {
 function ParsingState() {
   return (
     <Box minH="640px" p={10}>
-      <Text fontSize="sm" color="slate.500" mb={6} fontFamily="mono">
+      <Text fontSize="sm" color="text.muted" mb={6} fontFamily="mono">
         analysing job post…
       </Text>
       {Array.from({ length: 8 }).map((_, i) => (
@@ -166,7 +166,7 @@ function ErrorState({ message }: { message: string }) {
       <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
         {t('letterOutput.errorTitle')}
       </Text>
-      <Text fontSize="sm" color="slate.500" maxW="360px">
+      <Text fontSize="sm" color="text.muted" maxW="360px">
         {message}
       </Text>
     </Flex>
@@ -188,7 +188,7 @@ function UrlParseErrorState({ onSwitchToText }: { onSwitchToText?: () => void })
       <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
         {t('letterOutput.urlParseErrorTitle')}
       </Text>
-      <Text fontSize="sm" color="slate.500" maxW="360px">
+      <Text fontSize="sm" color="text.muted" maxW="360px">
         {t('letterOutput.urlParseErrorHint')}
       </Text>
       {onSwitchToText && (
@@ -228,7 +228,7 @@ function FloatingToolbar({
       px={3}
       py={2}
       borderRadius="full"
-      bg="rgba(255,255,255,0.7)"
+      bg="surface.raised"
       border="1px solid rgba(255,255,255,0.7)"
       boxShadow="0 6px 24px rgba(15,23,42,0.08)"
       sx={{
@@ -245,13 +245,13 @@ function FloatingToolbar({
         bg="rgba(0, 123, 255,0.08)"
         fontFamily="mono"
         fontSize="xs"
-        color="slate.700"
+        color="text.secondary"
       >
         <Text fontWeight={600}>{wordCount}</Text>
-        <Text color="slate.500">{t('letterOutput.words')}</Text>
-        <Text color="slate.300">•</Text>
+        <Text color="text.muted">{t('letterOutput.words')}</Text>
+        <Text color="border.subtle">•</Text>
         <Text fontWeight={600}>{readMinutes}</Text>
-        <Text color="slate.500">{t('letterOutput.min')}</Text>
+        <Text color="text.muted">{t('letterOutput.min')}</Text>
       </Flex>
 
       <Box flex="1" />
@@ -264,7 +264,7 @@ function FloatingToolbar({
             icon={<IconLanguage size={18} stroke={1.75} />}
             size="sm"
             variant="ghost"
-            color="slate.600"
+            color="text.secondary"
             isDisabled={!isDone}
             _hover={{ color: 'aurora.indigo', bg: 'surface.glassStrong' }}
           />
@@ -294,7 +294,7 @@ function FloatingToolbar({
           }
           size="sm"
           variant="ghost"
-          color="slate.600"
+          color="text.secondary"
           onClick={onCopy}
           _hover={{ color: 'aurora.indigo', bg: 'surface.glassStrong' }}
         />
@@ -334,7 +334,7 @@ function TabSwitch({
   ];
   return (
     <Flex
-      bg="rgba(255,255,255,0.5)"
+      bg="surface.raised"
       borderRadius="full"
       p={1}
       border="1px solid"
@@ -356,7 +356,7 @@ function TabSwitch({
             borderRadius="full"
             fontSize="sm"
             fontWeight={600}
-            color={active ? 'white' : 'slate.700'}
+            color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             zIndex={1}
           >
@@ -390,7 +390,7 @@ function StreamingText({ text, isStreaming }: { text: string; isStreaming: boole
       fontFamily="body"
       fontSize="md"
       lineHeight={1.75}
-      color="slate.900"
+      color="text.primary"
       maxW="70ch"
     >
       <motion.span layout style={{ display: 'inline' }}>
@@ -644,14 +644,14 @@ export function LetterOutput({
         minH="640px"
         p={10}
         borderRadius="2xl"
-        bg="rgba(255,255,255,0.6)"
+        bg="surface.raised"
         border="1px solid"
         borderColor="rgba(255,255,255,0.7)"
       >
         {hasContent ? (
           <StreamingText text={displayText} isStreaming={showStreamingCaret} />
         ) : (
-          <Text color="slate.500" fontSize="sm">
+          <Text color="text.muted" fontSize="sm">
             {t('letterOutput.loading')}
           </Text>
         )}

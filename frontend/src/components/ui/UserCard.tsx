@@ -76,7 +76,8 @@ export function UserCard() {
       py={2.5}
       borderRadius="2xl"
       bg="surface.glass"
-      border="1px solid rgba(255,255,255,0.6)"
+      border="1px solid"
+      borderColor="border.default"
       cursor="pointer"
       role="button"
       tabIndex={0}
@@ -111,13 +112,13 @@ export function UserCard() {
         <Text
           fontSize="sm"
           fontWeight={600}
-          color="slate.900"
+          color="text.primary"
           isTruncated
           fontFamily="body"
         >
           {displayName}
         </Text>
-        <Text fontSize="xs" color="slate.500" isTruncated fontFamily="body">
+        <Text fontSize="xs" color="text.muted" isTruncated fontFamily="body">
           {user.email}
         </Text>
       </Box>
@@ -133,7 +134,7 @@ export function UserCard() {
             handleLogout();
           }}
           onKeyDown={(e) => e.stopPropagation()}
-          color="slate.500"
+          color="text.muted"
           _hover={{ color: 'danger.500', bg: 'surface.glassStrong' }}
         />
       </Tooltip>

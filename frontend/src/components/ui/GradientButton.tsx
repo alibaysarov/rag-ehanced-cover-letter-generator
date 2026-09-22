@@ -65,7 +65,7 @@ const outlineSx = {
 
 const ghostSx = {
   background: 'transparent',
-  color: 'slate.700',
+  color: 'text.secondary',
   transition: 'color 200ms ease',
   _hover: {
     backgroundImage: ACCENT_GRADIENT,

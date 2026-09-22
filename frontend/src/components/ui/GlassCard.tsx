@@ -35,7 +35,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
           backdropFilter: 'blur(24px) saturate(160%)',
           WebkitBackdropFilter: 'blur(24px) saturate(160%)',
           '@supports not (backdrop-filter: blur(1px))': {
-            background: 'rgba(255, 255, 255, 0.85)',
+            background: 'surface.glass',
           },
           ...sx,
         }}

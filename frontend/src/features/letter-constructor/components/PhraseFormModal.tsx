@@ -149,7 +149,7 @@ export function PhraseFormModal({ isOpen, phrase, onClose, onSaved }: Props) {
             />
             <HStack justify="space-between" mt={2} align="start">
               <FormErrorMessage mt={0}>{textError}</FormErrorMessage>
-              <Text ml="auto" fontSize="xs" color={text.length > 2000 ? 'red.500' : 'gray.500'}>
+              <Text ml="auto" fontSize="xs" color={text.length > 2000 ? 'red.500' : 'text.muted'}>
                 {text.length}/2000
               </Text>
             </HStack>
@@ -175,7 +175,7 @@ export function PhraseFormModal({ isOpen, phrase, onClose, onSaved }: Props) {
               </WrapItem>
             ))}
           </Wrap>
-          <Text fontSize="xs" color="gray.500" mt={2}>
+          <Text fontSize="xs" color="text.muted" mt={2}>
             {t('letterConstructor.phraseForm.tokensHint')}
           </Text>
           <FormControl mt={6} display="flex" alignItems="center">

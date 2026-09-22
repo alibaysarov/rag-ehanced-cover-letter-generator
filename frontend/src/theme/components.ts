@@ -28,16 +28,17 @@ const Button: ComponentStyleConfig = {
     },
     glass: {
       bg: 'surface.glass',
-      color: 'slate.900',
+      color: 'text.primary',
       backdropFilter: 'blur(16px) saturate(160%)',
-      border: '1px solid rgba(32, 55, 72, 0.12)',
+      border: '1px solid',
+      borderColor: 'border.default',
       _hover: {
         bg: 'surface.glassStrong',
       },
     },
     ghost: {
       bg: 'transparent',
-      color: 'slate.700',
+      color: 'text.secondary',
       _hover: {
         bg: 'surface.glassStrong',
       },
@@ -57,9 +58,11 @@ const Button: ComponentStyleConfig = {
 };
 
 const inputFieldStyles = {
-  bg: 'rgba(255, 255, 255, 0.6)',
+  bg: 'surface.raised',
   border: '1px solid',
-  borderColor: 'rgba(226, 232, 240, 0.6)',
+  borderColor: 'border.default',
+  color: 'text.primary',
+  _placeholder: { color: 'text.muted' },
   _hover: {
     borderColor: 'rgba(0, 123, 255, 0.45)',
   },
@@ -109,7 +112,8 @@ const Card: ComponentStyleConfig = {
     container: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(32, 55, 72, 0.12)',
+      border: '1px solid',
+      borderColor: 'border.default',
       borderRadius: '3xl',
       boxShadow:
         '0 8px 28px rgba(32,55,72,0.08), 0 2px 8px rgba(32,55,72,0.04)',
@@ -126,7 +130,8 @@ const Modal: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(32, 55, 72, 0.12)',
+      border: '1px solid',
+      borderColor: 'border.default',
       borderRadius: '3xl',
       boxShadow:
         '0 8px 28px rgba(32,55,72,0.12), 0 2px 8px rgba(32,55,72,0.05)',
@@ -143,7 +148,8 @@ const Drawer: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(32, 55, 72, 0.12)',
+      border: '1px solid',
+      borderColor: 'border.default',
     },
   },
 };

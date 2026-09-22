@@ -61,13 +61,13 @@ export default function LetterGenerator() {
           fontFamily="heading"
           fontSize="3xl"
           fontWeight={600}
-          color="slate.900"
+          color="text.primary"
           letterSpacing="-0.02em"
           mb={1}
         >
           {t('letterGenerator.title')}
         </Heading>
-        <Text color="slate.500" fontSize="sm">
+        <Text color="text.muted" fontSize="sm">
           {t('letterGenerator.subtitle')}
         </Text>
       </Box>

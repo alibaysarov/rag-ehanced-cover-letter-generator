@@ -80,13 +80,13 @@ const LoginPage: React.FC = () => {
                 fontFamily="heading"
                 fontSize="3xl"
                 fontWeight={600}
-                color="slate.900"
+                color="text.primary"
                 letterSpacing="-0.02em"
                 mb={2}
               >
                 {t('auth.login.title')}
               </Heading>
-              <Text color="slate.500" fontSize="sm">
+              <Text color="text.muted" fontSize="sm">
                 {t('auth.login.subtitle')}
               </Text>
             </Box>
@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={5}>
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                     {t('auth.login.email')}
                   </FormLabel>
                   <Input
@@ -107,7 +107,7 @@ const LoginPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                     {t('auth.login.password')}
                   </FormLabel>
                   <Input
@@ -133,7 +133,7 @@ const LoginPage: React.FC = () => {
             </form>
 
             <Box textAlign="center">
-              <Text fontSize="sm" color="slate.500">
+              <Text fontSize="sm" color="text.muted">
                 {t('auth.login.noAccount')}{' '}
                 <Link
                   as={RouterLink}

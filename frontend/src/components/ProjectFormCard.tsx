@@ -23,12 +23,12 @@ const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: currentYear - 1950 + 3 }, (_, i) => currentYear + 2 - i);
 
 const yearSelectSx = {
-  bg: 'rgba(255,255,255,0.6)',
+  bg: 'surface.raised',
   border: '1px solid',
   borderColor: 'rgba(226,232,240,0.8)',
   borderRadius: 'xl',
   fontSize: 'sm',
-  color: 'slate.700',
+  color: 'text.secondary',
   cursor: 'pointer',
   _focus: {
     borderColor: 'rgba(0, 123, 255,0.5)',
@@ -141,7 +141,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
             <FormLabel mb={2}>{t('projectForm.startDate')}</FormLabel>
             <SimpleGrid columns={2} spacing={3} mb={2}>
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                <FormLabel fontSize="xs" color="text.muted" mb={1}>
                   {t('projectForm.startDate')}
                 </FormLabel>
                 <HStack spacing={2}>
@@ -172,7 +172,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                <FormLabel fontSize="xs" color="text.muted" mb={1}>
                   {t('projectForm.endDate')}
                 </FormLabel>
                 <HStack spacing={2}>

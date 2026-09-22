@@ -56,7 +56,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
           fontFamily="heading"
           fontSize="lg"
           fontWeight={600}
-          color="slate.900"
+          color="text.primary"
           letterSpacing="-0.01em"
         >
           {t('autoParse.history')}
@@ -94,23 +94,23 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                 <Text
                   fontSize="sm"
                   fontWeight={500}
-                  color="slate.800"
+                  color="text.primary"
                   flex="1"
                   textAlign="left"
                   noOfLines={1}
                 >
                   {histJob.query}
                 </Text>
-                <Text fontSize="xs" color="slate.500" whiteSpace="nowrap">
+                <Text fontSize="xs" color="text.muted" whiteSpace="nowrap">
                   {histJob.saved_count}/{histJob.total_found}{' '}
                   {t('autoParse.saved')}
                 </Text>
               </Flex>
-              <AccordionIcon color="slate.400" ml={2} />
+              <AccordionIcon color="text.muted" ml={2} />
             </AccordionButton>
 
             <AccordionPanel px={6} pb={4}>
-              <Text fontSize="xs" color="slate.500" fontFamily="mono">
+              <Text fontSize="xs" color="text.muted" fontFamily="mono">
                 ID: {histJob.id} &nbsp;·&nbsp;{' '}
                 {new Date(histJob.created_at).toLocaleString()}
                 {histJob.finished_at && (

@@ -52,7 +52,7 @@ function ModeToggle({
   return (
     <Flex
       position="relative"
-      bg="rgba(255,255,255,0.5)"
+      bg="surface.raised"
       borderRadius="full"
       p={1}
       border="1px solid"
@@ -74,9 +74,9 @@ function ModeToggle({
             borderRadius="full"
             fontSize="sm"
             fontWeight={600}
-            color={active ? 'white' : 'slate.700'}
+            color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
-            _hover={!active ? { color: 'slate.900' } : undefined}
+            _hover={!active ? { color: 'text.primary' } : undefined}
             zIndex={1}
           >
             {active && (
@@ -146,7 +146,7 @@ export function LetterForm({
             fontFamily="heading"
             fontSize="lg"
             fontWeight={600}
-            color="slate.900"
+            color="text.primary"
             letterSpacing="-0.01em"
             mb={3}
           >
@@ -159,7 +159,7 @@ export function LetterForm({
           <Stack spacing={5}>
             {mode === 'url' ? (
               <FormControl isRequired>
-                <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                   {t('letterForm.jobUrl')}
                 </FormLabel>
                 <Input
@@ -174,7 +174,7 @@ export function LetterForm({
             ) : (
               <>
                 <FormControl isRequired>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                     {t('letterForm.positionName')}
                   </FormLabel>
                   <Input
@@ -184,7 +184,7 @@ export function LetterForm({
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                     {t('letterForm.jobDescription')}
                   </FormLabel>
                   <Textarea
@@ -199,7 +199,7 @@ export function LetterForm({
             )}
 
             <FormControl>
-              <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
                 {t('letterForm.language')}
               </FormLabel>
               <Select

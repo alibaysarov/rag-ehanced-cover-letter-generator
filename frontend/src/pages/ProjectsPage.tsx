@@ -525,7 +525,7 @@ const ProjectsPage: React.FC = () => {
         <Heading mb={2} textAlign="center">
           {t('projects.title')}
         </Heading>
-        <Text textAlign="center" color="gray.600" mb={6}>
+        <Text textAlign="center" color="text.secondary" mb={6}>
           {t('projects.subtitle')}
         </Text>
 
@@ -548,7 +548,7 @@ const ProjectsPage: React.FC = () => {
         {!isLoading && !isError && projects.length === 0 && (
           <Card>
             <CardBody>
-              <Text textAlign="center" color="gray.500">
+              <Text textAlign="center" color="text.muted">
                 {t('projects.noProjects')}
               </Text>
             </CardBody>
@@ -597,7 +597,7 @@ const ProjectsPage: React.FC = () => {
                         {(p.website || formatDateRange(p, dateStrings)) && (
                           <Box>
                             {formatDateRange(p, dateStrings) && (
-                              <Text fontSize="sm" color="gray.500">
+                              <Text fontSize="sm" color="text.muted">
                                 {formatDateRange(p, dateStrings)}
                               </Text>
                             )}
@@ -679,7 +679,7 @@ const ProjectsPage: React.FC = () => {
                             </Text>
                             <VStack align="stretch" spacing={1}>
                               {p.achievements.map((a, i) => (
-                                <Text key={i} fontSize="sm" color="gray.700">
+                                <Text key={i} fontSize="sm" color="text.primary">
                                   • {a}
                                 </Text>
                               ))}

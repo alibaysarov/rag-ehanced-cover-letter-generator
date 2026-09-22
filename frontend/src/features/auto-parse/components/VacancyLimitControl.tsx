@@ -62,8 +62,8 @@ export function VacancyLimitControl({ value, onChange, isDisabled }: VacancyLimi
           fontSize="sm"
           fontWeight={600}
           textAlign="center"
-          color="slate.900"
-          bg="rgba(255,255,255,0.6)"
+          color="text.primary"
+          bg="surface.raised"
           borderColor="rgba(226,232,240,0.8)"
           borderRadius="xl"
           focusBorderColor="aurora.indigo"
@@ -87,11 +87,11 @@ export function VacancyLimitControl({ value, onChange, isDisabled }: VacancyLimi
           <SliderThumb boxSize={4} border="2px solid" borderColor="aurora.indigo" />
         </Slider>
       </Box>
-      <Flex justify="space-between" fontSize="xs" color="slate.400" mt={1}>
+      <Flex justify="space-between" fontSize="xs" color="text.muted" mt={1}>
         <Text>{MIN_VACANCIES}</Text>
         <Text>{MAX_VACANCIES}</Text>
       </Flex>
-      <Text id={hintId} mt={1} fontSize="xs" color="slate.500">
+      <Text id={hintId} mt={1} fontSize="xs" color="text.muted">
         {t('autoParse.vacancyLimitHint')}
       </Text>
     </FormControl>

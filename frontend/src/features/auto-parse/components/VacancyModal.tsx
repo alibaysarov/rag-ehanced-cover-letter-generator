@@ -67,10 +67,10 @@ function IdleOrb() {
         />
       </Box>
       <Box textAlign="center">
-        <Text fontFamily="heading" fontSize="md" fontWeight={600} color="slate.900" mb={1}>
+        <Text fontFamily="heading" fontSize="md" fontWeight={600} color="text.primary" mb={1}>
           Готовы создать письмо
         </Text>
-        <Text fontSize="sm" color="slate.500">
+        <Text fontSize="sm" color="text.muted">
           Нажмите «Сгенерировать», чтобы начать
         </Text>
       </Box>
@@ -83,7 +83,7 @@ function IdleOrb() {
 function ShimmerSkeleton() {
   return (
     <Box p={6}>
-      <Text fontSize="xs" color="slate.400" mb={5} fontFamily="mono">
+      <Text fontSize="xs" color="text.muted" mb={5} fontFamily="mono">
         analysing job post…
       </Text>
       {Array.from({ length: 7 }).map((_, i) => (
@@ -203,7 +203,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
           fontFamily="heading"
           fontWeight={600}
           fontSize="lg"
-          color="slate.900"
+          color="text.primary"
           letterSpacing="-0.01em"
           pb={2}
           pr={12}
@@ -230,7 +230,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
           </Flex>
           <TodayStatsCard disableSticky />
         </ModalHeader>
-        <ModalCloseButton color="slate.500" top={4} right={4} />
+        <ModalCloseButton color="text.muted" top={4} right={4} />
 
         {/* ── Body ── */}
         <ModalBody pb={2}>
@@ -258,7 +258,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
           <Text
             fontSize="xs"
             fontWeight={700}
-            color="slate.400"
+            color="text.muted"
             textTransform="uppercase"
             letterSpacing="0.08em"
             mb={2}
@@ -279,7 +279,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               '&::-webkit-scrollbar-thumb': { background: 'rgba(148,163,184,0.4)', borderRadius: '2px' },
             }}
           >
-            <Text fontSize="sm" color="slate.700" whiteSpace="pre-wrap" lineHeight={1.7}>
+            <Text fontSize="sm" color="text.secondary" whiteSpace="pre-wrap" lineHeight={1.7}>
               {vacancy.job_text}
             </Text>
           </Box>
@@ -291,7 +291,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             <Text
               fontSize="xs"
               fontWeight={700}
-              color="slate.400"
+              color="text.muted"
               textTransform="uppercase"
               letterSpacing="0.08em"
               flexShrink={0}
@@ -306,12 +306,12 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 value={selectedLang}
                 onChange={(e) => setSelectedLang(e.target.value)}
                 isDisabled={isGenerating || generationMode === 'template'}
-                bg="rgba(255,255,255,0.7)"
+                bg="surface.raised"
                 border="1px solid rgba(226,232,240,0.8)"
                 borderRadius="lg"
                 fontSize="xs"
                 fontWeight={500}
-                color="slate.700"
+                color="text.secondary"
                 width="auto"
                 minW="110px"
                 _focus={{ borderColor: 'aurora.indigo', boxShadow: '0 0 0 2px rgba(0, 123, 255,0.15)' }}
@@ -332,8 +332,8 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                   borderRadius="lg"
                   variant="outline"
                   borderColor={hasCopied ? 'green.300' : 'rgba(226,232,240,0.8)'}
-                  color={hasCopied ? 'green.600' : 'slate.600'}
-                  bg="rgba(255,255,255,0.7)"
+                  color={hasCopied ? 'green.600' : 'text.secondary'}
+                  bg="surface.raised"
                   fontWeight={500}
                   fontSize="xs"
                   leftIcon={hasCopied ? <IconCheck size={13} stroke={2.5} /> : <IconCopy size={13} stroke={1.8} />}
@@ -368,7 +368,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             overflow="hidden"
           >
             {/* Idle */}
-            {status === 'idle' && (isTemplateGenerationPending ? <Flex direction="column" align="center" py={10} gap={2}><Text fontWeight={600}>Шаблонное письмо готовится автоматически</Text><Text fontSize="sm" color="slate.500">Оно появится после завершения парсинга всех источников.</Text></Flex> : <IdleOrb />)}
+            {status === 'idle' && (isTemplateGenerationPending ? <Flex direction="column" align="center" py={10} gap={2}><Text fontWeight={600}>Шаблонное письмо готовится автоматически</Text><Text fontSize="sm" color="text.muted">Оно появится после завершения парсинга всех источников.</Text></Flex> : <IdleOrb />)}
 
             {/* Parsing skeleton */}
             {isGenerating && !hasContent && <ShimmerSkeleton />}
@@ -376,7 +376,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             {/* Streaming / done */}
             {hasContent && (
               <Box p={4}>
-                <Text fontSize="sm" color="slate.800" whiteSpace="pre-wrap" lineHeight={1.8}>
+                <Text fontSize="sm" color="text.primary" whiteSpace="pre-wrap" lineHeight={1.8}>
                   {content}
                   {isGenerating && (
                     <Box
@@ -434,7 +434,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             size="sm"
             borderRadius="xl"
             variant="ghost"
-            color="slate.600"
+            color="text.secondary"
             onClick={onClose}
             _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
           >

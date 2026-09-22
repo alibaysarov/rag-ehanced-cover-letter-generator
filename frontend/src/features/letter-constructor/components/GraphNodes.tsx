@@ -95,7 +95,7 @@ export function PhraseNode({ id, data }: NodeProps<PhraseFlowNode>) {
       position="relative"
       minW="220px"
       maxW="300px"
-      bg="white"
+      bg="surface.raised"
       border="2px solid"
       borderColor={data.invalid ? 'red.400' : data.isRoot ? 'purple.500' : 'gray.200'}
       borderRadius="xl"

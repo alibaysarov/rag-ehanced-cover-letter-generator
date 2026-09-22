@@ -87,16 +87,16 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Frontend Developer, Москва"
               isDisabled={isDisabled || isLoading}
-              bg="rgba(255,255,255,0.6)"
+              bg="surface.raised"
               border="1px solid rgba(226,232,240,0.8)"
               borderRadius="xl"
               fontSize="sm"
-              color="slate.900"
-              _placeholder={{ color: 'slate.400' }}
+              color="text.primary"
+              _placeholder={{ color: 'text.muted' }}
               _focus={{
                 borderColor: 'aurora.indigo',
                 boxShadow: '0 0 0 3px rgba(0, 123, 255,0.15)',
-                bg: 'rgba(255,255,255,0.8)',
+                bg: 'surface.raised',
               }}
               _disabled={{ opacity: 0.6, cursor: 'not-allowed' }}
               height={10}
@@ -122,7 +122,7 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
           <Switch isChecked={mode === 'ai'} onChange={(e) => setMode(e.target.checked ? 'ai' : 'template')}
             isDisabled={isDisabled || isLoading} aria-label={t('autoParse.useAi')} />
           <Text fontWeight={mode === 'ai' ? 700 : 400}>{t('autoParse.useAi')}</Text>
-          <Text color="slate.500" title={t('autoParse.modeHint')}>ⓘ</Text>
+          <Text color="text.muted" title={t('autoParse.modeHint')}>ⓘ</Text>
         </Flex>
       </form>
     </GlassCard>
@@ -146,7 +146,7 @@ function ParseProgressBar({ savedCount, totalFound, status }: ParseProgressBarPr
           {status === 'running' && <Spinner size="xs" color="aurora.indigo" />}
           <StatusBadge status={status} />
         </Flex>
-        <Text fontSize="sm" fontWeight={600} color="slate.700">
+        <Text fontSize="sm" fontWeight={600} color="text.secondary">
           {savedCount} / {totalFound} {t('autoParse.saved')}
         </Text>
       </Flex>
@@ -194,7 +194,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate, mode }: Generati
         flexWrap="wrap"
         gap={3}
       >
-        <Text fontSize="sm" color="slate.600">{mode === 'ai' ? 'Режим: ИИ' : 'Режим: Шаблоны'}</Text>
+        <Text fontSize="sm" color="text.secondary">{mode === 'ai' ? 'Режим: ИИ' : 'Режим: Шаблоны'}</Text>
         <Flex align="center" gap={2}>
           {genState.status === 'running' && <Spinner size="xs" color="purple.500" />}
           {genState.status === 'done' && (
@@ -211,7 +211,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate, mode }: Generati
             </Badge>
           )}
           {genState.status === 'running' && (
-            <Text fontSize="sm" color="slate.600">
+            <Text fontSize="sm" color="text.secondary">
               Генерация: {genState.generated} / {genState.total}
             </Text>
           )}
@@ -306,7 +306,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
   if (vacancies.length === 0) {
     return (
       <Flex justify="center" py={10}>
-        <Text fontSize="sm" color="slate.400">
+        <Text fontSize="sm" color="text.muted">
           {t('autoParse.noVacancies')}
         </Text>
       </Flex>
@@ -335,7 +335,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
             minW={8}
             h={8}
             p={0}
-            color="slate.500"
+            color="text.muted"
             onClick={() => setPage((current) => current - 1)}
             isDisabled={page === 1}
             aria-label="Предыдущая страница"
@@ -353,7 +353,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
                 p={0}
                 borderRadius="lg"
                 fontSize="sm"
-                color={item === page ? 'white' : 'slate.600'}
+                color={item === page ? 'white' : 'text.secondary'}
                 bg={item === page ? 'aurora.indigo' : 'transparent'}
                 boxShadow={item === page ? '0 4px 12px rgba(0, 123, 255, 0.28)' : 'none'}
                 _hover={{
@@ -371,7 +371,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
                 w={6}
                 textAlign="center"
                 fontSize="sm"
-                color="slate.500"
+                color="text.muted"
                 aria-hidden="true"
               >
                 …
@@ -384,7 +384,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
             minW={8}
             h={8}
             p={0}
-            color="slate.500"
+            color="text.muted"
             onClick={() => setPage((current) => current + 1)}
             isDisabled={page === pageCount}
             aria-label="Следующая страница"
@@ -450,13 +450,13 @@ export default function AutoParsePage() {
             fontFamily="heading"
             fontSize="3xl"
             fontWeight={600}
-            color="slate.900"
+            color="text.primary"
             letterSpacing="-0.02em"
             mb={1}
           >
             {t('autoParse.title')}
           </Heading>
-          <Text color="slate.500" fontSize="sm">
+          <Text color="text.muted" fontSize="sm">
             {t('autoParse.subtitle')}
           </Text>
         </Box>

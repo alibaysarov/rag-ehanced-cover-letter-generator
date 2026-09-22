@@ -78,7 +78,7 @@ export function ParserForm({ initial, isSubmitting, isInUse, error, onSubmit, on
       <Stack spacing={7}>
         {isInUse && <Alert status="info" borderRadius="xl"><AlertIcon />{t('searchSites.editInUse')}</Alert>}
         {error && <Alert status="error" borderRadius="xl"><AlertIcon />{error}</Alert>}
-        <Box bg="white" p={6} borderRadius="2xl" boxShadow="sm">
+        <Box bg="surface.raised" p={6} borderRadius="2xl" boxShadow="sm">
           <Heading size="md" mb={5}>{t('searchSites.sections.main')}</Heading>
           <Stack spacing={4}>
             <FormControl isRequired><FormLabel>{t('searchSites.fields.name')}</FormLabel><Input value={value.name} onChange={(e) => set('name', e.target.value)} /></FormControl>
@@ -108,20 +108,20 @@ export function ParserForm({ initial, isSubmitting, isInUse, error, onSubmit, on
             </FormControl>
           </Stack>
         </Box>
-        <Box bg="white" p={6} borderRadius="2xl" boxShadow="sm">
+        <Box bg="surface.raised" p={6} borderRadius="2xl" boxShadow="sm">
           <Heading size="md" mb={5}>{t('searchSites.sections.search')}</Heading>
           <FormControl isRequired mb={4}><FormLabel>{t('searchSites.fields.urlTemplate')}</FormLabel><Input value={value.format_url.url_template} onChange={(e) => set('format_url', { ...value.format_url, url_template: e.target.value })} /><FormHelperText>{t('searchSites.hints.templates')}</FormHelperText></FormControl>
           <FormLabel>{t('searchSites.fields.queryParams')}</FormLabel>
           <Stack spacing={2}>{params.map((item, index) => <HStack key={index}><Input placeholder="key" value={item.key} onChange={(e) => setParams((old) => old.map((row, i) => i === index ? { ...row, key: e.target.value } : row))} /><Input placeholder="value" value={item.value} onChange={(e) => setParams((old) => old.map((row, i) => i === index ? { ...row, value: e.target.value } : row))} /><Button onClick={() => setParams((old) => old.filter((_, i) => i !== index))}>−</Button></HStack>)}</Stack>
           <Button mt={3} size="sm" onClick={() => setParams((old) => [...old, { key: '', value: '' }])}>{t('searchSites.addParam')}</Button>
         </Box>
-        <Box bg="white" p={6} borderRadius="2xl" boxShadow="sm">
+        <Box bg="surface.raised" p={6} borderRadius="2xl" boxShadow="sm">
           <Heading size="md" mb={5}>{t('searchSites.sections.pagination')}</Heading>
           <Checkbox isChecked={value.has_pagination} onChange={(e) => set('has_pagination', e.target.checked)}>{t('searchSites.fields.hasPagination')}</Checkbox>
           {value.has_pagination && <Stack mt={4} spacing={4}><HStack><FormControl><FormLabel>{t('searchSites.fields.paginationStart')}</FormLabel><NumberInput min={0} value={value.pagination_start} onChange={(_, n) => set('pagination_start', Number.isNaN(n) ? 0 : n)}><NumberInputField /></NumberInput></FormControl><FormControl><FormLabel>{t('searchSites.fields.maxPages')}</FormLabel><NumberInput min={1} max={50} value={value.max_pages} onChange={(_, n) => set('max_pages', Number.isNaN(n) ? 1 : n)}><NumberInputField /></NumberInput></FormControl></HStack><FormControl isRequired><FormLabel>evaluate_pagination</FormLabel><Textarea fontFamily="mono" minH="160px" value={value.evaluate_pagination ?? ''} onChange={(e) => set('evaluate_pagination', e.target.value)} /></FormControl></Stack>}
         </Box>
-        <Box bg="white" p={6} borderRadius="2xl" boxShadow="sm">
-          <Heading size="md" mb={2}>{t('searchSites.sections.extraction')}</Heading><Text color="gray.500" mb={5}>{t('searchSites.hints.js')}</Text>
+        <Box bg="surface.raised" p={6} borderRadius="2xl" boxShadow="sm">
+          <Heading size="md" mb={2}>{t('searchSites.sections.extraction')}</Heading><Text color="text.muted" mb={5}>{t('searchSites.hints.js')}</Text>
           <Stack spacing={4}><FormControl isRequired><FormLabel>evaluate_vacancy_list</FormLabel><Textarea fontFamily="mono" minH="220px" value={value.evaluate_vacancy_list} onChange={(e) => set('evaluate_vacancy_list', e.target.value)} /></FormControl><FormControl isRequired><FormLabel>evaluate_vacancy_page</FormLabel><Textarea fontFamily="mono" minH="220px" value={value.evaluate_vacancy_page} onChange={(e) => set('evaluate_vacancy_page', e.target.value)} /></FormControl></Stack>
         </Box>
         <HStack><Button type="submit" colorScheme="purple" isLoading={isSubmitting}>{t('searchSites.save')}</Button><Button onClick={onCancel} isDisabled={isSubmitting}>{t('searchSites.cancel')}</Button></HStack>
