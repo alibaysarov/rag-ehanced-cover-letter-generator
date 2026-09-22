@@ -8,6 +8,25 @@
     "searchSites": "Search sites",
     "letterConstructor": "Letter constructor"
   },
+  "pageTitle": {
+    "home": "Home",
+    "login": "Sign in",
+    "register": "Register",
+    "projects": "Projects",
+    "resumes": "Resumes",
+    "uploadResume": "Upload resume",
+    "profile": "Profile",
+    "statistics": "Statistics",
+    "autoParse": "Auto Parse",
+    "searchSites": "Search sites",
+    "newSearchSite": "New search site",
+    "editSearchSite": "Edit search site",
+    "letterTemplates": "Letter templates",
+    "letterPhrases": "Letter phrases",
+    "newLetterTemplate": "New letter template",
+    "editLetterTemplate": "Edit letter template",
+    "notFound": "Page not found"
+  },
   "letterConstructor": {
     "tabs": { "templates": "Templates", "phrases": "Phrases" },
     "common": { "search": "Search", "back": "Previous", "next": "Next", "delete": "Delete", "edit": "Edit", "activate": "Activate", "save": "Save", "close": "Close", "preview": "Preview" },

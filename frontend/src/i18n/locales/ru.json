@@ -8,6 +8,25 @@
     "searchSites": "Сайты для поиска",
     "letterConstructor": "Конструктор писем"
   },
+  "pageTitle": {
+    "home": "Главная",
+    "login": "Вход",
+    "register": "Регистрация",
+    "projects": "Проекты",
+    "resumes": "Резюме",
+    "uploadResume": "Загрузить резюме",
+    "profile": "Профиль",
+    "statistics": "Статистика",
+    "autoParse": "Авто Парсинг",
+    "searchSites": "Сайты для поиска",
+    "newSearchSite": "Новый сайт для поиска",
+    "editSearchSite": "Редактирование сайта для поиска",
+    "letterTemplates": "Шаблоны писем",
+    "letterPhrases": "Фразы для писем",
+    "newLetterTemplate": "Новый шаблон письма",
+    "editLetterTemplate": "Редактирование шаблона письма",
+    "notFound": "Страница не найдена"
+  },
   "letterConstructor": {
     "tabs": { "templates": "Шаблоны", "phrases": "Фразы" },
     "common": { "search": "Поиск", "back": "Назад", "next": "Далее", "delete": "Удалить", "edit": "Изменить", "activate": "Активировать", "save": "Сохранить", "close": "Закрыть", "preview": "Preview" },
