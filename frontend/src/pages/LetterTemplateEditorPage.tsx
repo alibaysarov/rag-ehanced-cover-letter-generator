@@ -94,7 +94,7 @@ function NewPhraseButton({ label, onClick }: { label: string; onClick: () => voi
       flexDirection="column"
       alignItems="center"
       gap={2}
-      color="gray.600"
+      color="text.secondary"
       cursor="pointer"
       onClick={onClick}
       _hover={{ color: 'purple.600' }}
@@ -114,12 +114,12 @@ function NewPhraseButton({ label, onClick }: { label: string; onClick: () => voi
         border="2px dashed"
         borderColor="gray.300"
         borderRadius="lg"
-        bg="white"
+        bg="surface.raised"
         transition="all 0.18s ease"
         sx={{
           'button:hover &': {
             borderColor: 'purple.400',
-            bg: 'purple.50',
+            bg: 'surface.glassStrong',
             transform: 'translateY(-2px)',
             boxShadow: 'md',
           },
@@ -470,11 +470,11 @@ export default function LetterTemplateEditorPage() {
         isDisabled={
           templateCase === 'no_portfolio' || nodes.some((node) => node.type === 'projects')
         }
-        bg="white"
-        color="gray.700"
+        bg="surface.raised"
+        color="text.primary"
         border="1px solid"
         borderColor="purple.200"
-        _hover={{ bg: 'purple.50', borderColor: 'purple.400' }}
+        _hover={{ bg: 'surface.glassStrong', borderColor: 'brand.blue' }}
       >
         {t('letterConstructor.editor.addProjects')}
       </Button>
@@ -489,12 +489,12 @@ export default function LetterTemplateEditorPage() {
             draggable
             onDragStart={(event) => onPhraseDragStart(event, phrase)}
             cursor="grab"
-            bg="white"
-            color="gray.700"
+            bg="surface.raised"
+            color="text.primary"
             border="1px solid"
             borderColor="purple.200"
             boxShadow="sm"
-            _hover={{ bg: 'purple.50', borderColor: 'purple.400', boxShadow: 'md' }}
+            _hover={{ bg: 'surface.glassStrong', borderColor: 'brand.blue', boxShadow: 'md' }}
             _active={{ cursor: 'grabbing' }}
           >
             {phrase.text.slice(0, 80)}
@@ -617,7 +617,13 @@ export default function LetterTemplateEditorPage() {
           </Box>
         </Alert>
       )}
-      <Flex bg="white" borderRadius="xl" overflow="hidden" h="70vh">
+      <Flex
+        bg="surface.raised"
+        borderRadius="xl"
+        overflow="hidden"
+        h={{ base: '70vh', lg: 'calc(100vh - 118px)' }}
+        minH="600px"
+      >
         {!mobile && library}
         <Box flex="1">
           <ReactFlow
@@ -760,7 +766,7 @@ export default function LetterTemplateEditorPage() {
           <ModalCloseButton />
           <ModalBody>
             {previewNodes.length === 0 ? (
-              <Text color="gray.500">Добавьте ноды, чтобы увидеть текст шаблона.</Text>
+              <Text color="text.muted">Добавьте ноды, чтобы увидеть текст шаблона.</Text>
             ) : (
               <Stack spacing={4}>
                 {previewNodes.map((node, index) => {
@@ -770,7 +776,7 @@ export default function LetterTemplateEditorPage() {
                       : (node.data.phrase as LetterPhrase).text
                   return (
                     <Box key={node.id} borderLeft="3px solid" borderColor="purple.400" pl={4}>
-                      <Text fontSize="xs" color="gray.500" mb={1}>
+                      <Text fontSize="xs" color="text.muted" mb={1}>
                         {index + 1}.{' '}
                         {node.type === 'projects'
                           ? 'Проекты'
@@ -806,7 +812,7 @@ export default function LetterTemplateEditorPage() {
                 })}
               </Stack>
             )}
-            <Text fontSize="sm" color="gray.500" mt={6}>
+            <Text fontSize="sm" color="text.muted" mt={6}>
               Текст в квадратных скобках будет подставлен автоматически при создании письма.
             </Text>
           </ModalBody>
@@ -821,7 +827,7 @@ export default function LetterTemplateEditorPage() {
           <ModalHeader>Название шаблона</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text color="gray.600" mb={3}>
+            <Text color="text.secondary" mb={3}>
               Укажите название, чтобы сохранить шаблон.
             </Text>
             <Input

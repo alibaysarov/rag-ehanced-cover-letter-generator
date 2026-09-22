@@ -76,7 +76,8 @@ export function UserCard() {
       py={2.5}
       borderRadius="2xl"
       bg="surface.glass"
-      border="1px solid rgba(255,255,255,0.6)"
+      border="1px solid"
+      borderColor="border.default"
       cursor="pointer"
       role="button"
       tabIndex={0}
@@ -100,24 +101,24 @@ export function UserCard() {
         borderRadius="full"
         backgroundImage="accent.gradient"
         color="white"
-        fontWeight={600}
+        fontWeight="semibold"
         fontSize="sm"
         fontFamily="heading"
-        boxShadow="0 4px 12px rgba(99,102,241,0.35)"
+        boxShadow="0 4px 12px rgba(0, 123, 255,0.35)"
       >
         {initials}
       </Flex>
       <Box flex="1" minW={0}>
         <Text
           fontSize="sm"
-          fontWeight={600}
-          color="slate.900"
+          fontWeight="semibold"
+          color="text.primary"
           isTruncated
           fontFamily="body"
         >
           {displayName}
         </Text>
-        <Text fontSize="xs" color="slate.500" isTruncated fontFamily="body">
+        <Text fontSize="xs" color="text.muted" isTruncated fontFamily="body">
           {user.email}
         </Text>
       </Box>
@@ -133,7 +134,7 @@ export function UserCard() {
             handleLogout();
           }}
           onKeyDown={(e) => e.stopPropagation()}
-          color="slate.500"
+          color="text.muted"
           _hover={{ color: 'danger.500', bg: 'surface.glassStrong' }}
         />
       </Tooltip>

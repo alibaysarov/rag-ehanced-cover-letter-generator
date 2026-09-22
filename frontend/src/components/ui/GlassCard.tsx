@@ -8,10 +8,10 @@ export interface GlassCardProps extends BoxProps {
 }
 
 const BASE_SHADOW =
-  'inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.08), 0 2px 8px rgba(15,23,42,0.04)';
+  '0 8px 28px rgba(32,55,72,0.08), 0 2px 8px rgba(32,55,72,0.04)';
 
 const HOVER_SHADOW =
-  'inset 0 1px 0 rgba(255,255,255,0.6), 0 14px 40px rgba(79,70,229,0.14), 0 4px 12px rgba(15,23,42,0.06)';
+  '0 14px 40px rgba(32,55,72,0.14), 0 4px 12px rgba(32,55,72,0.06)';
 
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   ({ hover = false, radius = '3xl', padding, children, sx, ...rest }, ref) => {
@@ -22,7 +22,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         padding={padding}
         bg="surface.glass"
-        border="1px solid rgba(255, 255, 255, 0.6)"
+        border="1px solid rgba(32, 55, 72, 0.12)"
         borderRadius={borderRadiusPx}
         boxShadow={BASE_SHADOW}
         transition="transform 200ms ease, box-shadow 200ms ease"
@@ -35,7 +35,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
           backdropFilter: 'blur(24px) saturate(160%)',
           WebkitBackdropFilter: 'blur(24px) saturate(160%)',
           '@supports not (backdrop-filter: blur(1px))': {
-            background: 'rgba(255, 255, 255, 0.85)',
+            background: 'surface.glass',
           },
           ...sx,
         }}

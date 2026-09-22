@@ -48,7 +48,7 @@ const CVUploadPage: React.FC<CVUploadPageProps> = ({ onUploadSuccess }) => {
         {t('cvs.uploadModal.title')}
       </Heading>
 
-      <Text mb={6} textAlign="center" color="gray.600">
+      <Text mb={6} textAlign="center" color="text.secondary">
         {t('cvs.uploadModal.desc')}
       </Text>
 

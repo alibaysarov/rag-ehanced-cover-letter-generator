@@ -115,7 +115,7 @@ function TypeBadge({ type }: { type: string }) {
       px={2}
       py={0.5}
       fontSize="xs"
-      fontWeight={600}
+      fontWeight="semibold"
       textTransform="none"
     >
       {TYPE_LABELS[type] ?? type}
@@ -140,7 +140,7 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
 
   return (
     <Flex
-      bg="rgba(255,255,255,0.5)"
+      bg="surface.raised"
       borderRadius="full"
       p={1}
       border="1px solid"
@@ -161,8 +161,8 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
             py={1.5}
             borderRadius="full"
             fontSize="sm"
-            fontWeight={600}
-            color={active ? 'white' : 'slate.700'}
+            fontWeight="semibold"
+            color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             zIndex={1}
           >
@@ -174,8 +174,8 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
                   inset: 0,
                   borderRadius: 9999,
                   background:
-                    'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
-                  boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
+                    'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
+                  boxShadow: '0 4px 12px rgba(0, 123, 255,0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}
@@ -216,8 +216,8 @@ function SummaryTable({
       <Text
         fontFamily="heading"
         fontSize="lg"
-        fontWeight={600}
-        color="slate.900"
+        fontWeight="semibold"
+        color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
       >
@@ -237,7 +237,7 @@ function SummaryTable({
       )}
 
       {data && data.length === 0 && (
-        <Text fontSize="sm" color="slate.500">
+        <Text fontSize="sm" color="text.muted">
           {t('stats.noSummaryData')}
         </Text>
       )}
@@ -248,10 +248,10 @@ function SummaryTable({
             <Thead>
               <Tr>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -259,10 +259,10 @@ function SummaryTable({
                   {t('stats.date')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -271,10 +271,10 @@ function SummaryTable({
                   hh.ru
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -283,10 +283,10 @@ function SummaryTable({
                   LinkedIn
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -295,10 +295,10 @@ function SummaryTable({
                   {t('stats.others')}
                 </Th>
                 <Th
-                  color="slate.800"
+                  color="text.primary"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={700}
+                  fontWeight="bold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -307,10 +307,10 @@ function SummaryTable({
                   {t('stats.total')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -323,12 +323,12 @@ function SummaryTable({
               {data.map((row) => (
                 <Tr
                   key={row.date}
-                  _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+                  _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
                   transition="background 150ms ease"
                 >
                   <Td
                     fontSize="sm"
-                    color="slate.700"
+                    color="text.secondary"
                     fontFamily="mono"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -336,7 +336,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -344,7 +344,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -352,7 +352,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -360,8 +360,8 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    fontWeight={700}
-                    color="slate.900"
+                    fontWeight="bold"
+                    color="text.primary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -369,7 +369,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.500"
+                    color="text.muted"
                     fontFamily="mono"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -455,8 +455,8 @@ function ApplicationsList({
       <Text
         fontFamily="heading"
         fontSize="lg"
-        fontWeight={600}
-        color="slate.900"
+        fontWeight="semibold"
+        color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
       >
@@ -476,7 +476,7 @@ function ApplicationsList({
       )}
 
       {data && data.items.length === 0 && (
-        <Text fontSize="sm" color="slate.500" py={4}>
+        <Text fontSize="sm" color="text.muted" py={4}>
           {t('stats.noApplications')}
         </Text>
       )}
@@ -487,10 +487,10 @@ function ApplicationsList({
             <Thead>
               <Tr>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -498,10 +498,10 @@ function ApplicationsList({
                   {t('stats.date')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -509,10 +509,10 @@ function ApplicationsList({
                   {t('stats.type')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -520,10 +520,10 @@ function ApplicationsList({
                   {t('stats.vacancy')}
                 </Th>
                 <Th
-                  color="slate.500"
+                  color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -536,12 +536,12 @@ function ApplicationsList({
               {data.items.map((item) => (
                 <Tr
                   key={item.id}
-                  _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+                  _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
                   transition="background 150ms ease"
                 >
                   <Td
                     fontSize="sm"
-                    color="slate.600"
+                    color="text.secondary"
                     fontFamily="mono"
                     whiteSpace="nowrap"
                     borderColor="rgba(226,232,240,0.4)"
@@ -553,7 +553,7 @@ function ApplicationsList({
                   </Td>
                   <Td
                     fontSize="sm"
-                    color="slate.700"
+                    color="text.secondary"
                     maxW="300px"
                     borderColor="rgba(226,232,240,0.4)"
                   >
@@ -600,8 +600,8 @@ function ApplicationsList({
                       />
                       <Text
                         fontSize="xs"
-                        fontWeight={600}
-                        color={item.is_accepted ? 'green.600' : 'slate.400'}
+                        fontWeight="semibold"
+                        color={item.is_accepted ? 'green.600' : 'text.muted'}
                       >
                         {item.is_accepted ? t('stats.accepted') : t('stats.pending')}
                       </Text>
@@ -617,13 +617,13 @@ function ApplicationsList({
       {/* Pagination */}
       {data && data.total > PAGE_SIZE && (
         <Flex align="center" justify="space-between" mt={5} flexWrap="wrap" gap={3}>
-          <Text fontSize="sm" color="slate.500">
+          <Text fontSize="sm" color="text.muted">
             {t('stats.page')}{' '}
-            <Text as="span" fontWeight={600} color="slate.700">
+            <Text as="span" fontWeight="semibold" color="text.secondary">
               {page}
             </Text>{' '}
             {t('stats.of')}{' '}
-            <Text as="span" fontWeight={600} color="slate.700">
+            <Text as="span" fontWeight="semibold" color="text.secondary">
               {totalPages}
             </Text>
           </Text>
@@ -635,8 +635,8 @@ function ApplicationsList({
               leftIcon={<IconChevronLeft size={15} stroke={2} />}
               isDisabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
-              color="slate.600"
-              _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
+              color="text.secondary"
+              _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.prev')}
             </Button>
@@ -647,8 +647,8 @@ function ApplicationsList({
               rightIcon={<IconChevronRight size={15} stroke={2} />}
               isDisabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
-              color="slate.600"
-              _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
+              color="text.secondary"
+              _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.next')}
             </Button>
@@ -724,14 +724,14 @@ export default function StatsPage() {
           <Heading
             fontFamily="heading"
             fontSize="3xl"
-            fontWeight={600}
-            color="slate.900"
+            fontWeight="semibold"
+            color="text.primary"
             letterSpacing="-0.02em"
             mb={1}
           >
             {t('stats.title')}
           </Heading>
-          <Text color="slate.500" fontSize="sm">
+          <Text color="text.muted" fontSize="sm">
             {t('stats.subtitle')}
           </Text>
         </Box>
@@ -753,7 +753,7 @@ export default function StatsPage() {
               size="sm"
               borderRadius="xl"
               px={4}
-              fontWeight={600}
+              fontWeight="semibold"
               leftIcon={<IconDownload size={15} stroke={2} />}
               isLoading={isExporting}
               loadingText={t('stats.exporting')}
@@ -761,14 +761,14 @@ export default function StatsPage() {
               sx={{
                 color: 'white',
                 backgroundImage:
-                  'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                  'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                 backgroundSize: '200% 200%',
                 backgroundPosition: '0% 0%',
-                boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
+                boxShadow: '0 4px 14px rgba(0, 123, 255,0.3)',
                 transition: 'background-position 400ms ease, box-shadow 200ms ease',
                 _hover: {
                   backgroundPosition: '100% 100%',
-                  boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                  boxShadow: '0 6px 20px rgba(0, 123, 255,0.4)',
                 },
               }}
             >

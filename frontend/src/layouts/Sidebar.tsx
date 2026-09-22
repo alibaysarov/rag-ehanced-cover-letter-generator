@@ -6,10 +6,11 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
+  Image,
   IconButton,
-  Text,
   VStack,
   useBreakpointValue,
+  useColorMode,
   useDisclosure,
 } from '@chakra-ui/react';
 import {
@@ -24,28 +25,37 @@ import {
 } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { SidebarItem } from '@/components/ui/SidebarItem';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { UserCard } from '@/components/ui/UserCard';
 
 function BrandMark() {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+
   return (
-    <Flex align="center" gap={3}>
-      <Box
-        w="28px"
-        h="28px"
-        borderRadius="10px"
-        backgroundImage="accent.gradient"
-        boxShadow="0 4px 12px rgba(99,102,241,0.35)"
+    <Box position="relative" w="brandMark" h="brandMarkHeight">
+      <Image
+        src="/findjobforme-logo.svg"
+        alt="FindJobFor.me"
+        position="absolute"
+        inset={0}
+        w="brandMark"
+        h="auto"
+        opacity={isDark ? 0 : 1}
+        transition="opacity 240ms ease"
       />
-      <Text
-        fontSize="xl"
-        fontWeight={600}
-        fontFamily="heading"
-        color="slate.900"
-        letterSpacing="-0.02em"
-      >
-        Coverly
-      </Text>
-    </Flex>
+      <Image
+        src="/findjobforme-logo-dark.svg"
+        alt=""
+        aria-hidden
+        position="absolute"
+        inset={0}
+        w="brandMark"
+        h="auto"
+        opacity={isDark ? 1 : 0}
+        transition="opacity 240ms ease"
+      />
+    </Box>
   );
 }
 
@@ -84,8 +94,11 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
           ))}
         </VStack>
       </Box>
-      <Divider borderColor="rgba(226,232,240,0.4)" />
+      <Divider borderColor="border.default" />
       <Box px={3} py={5}>
+        <Flex justify="flex-end" mb={3}>
+          <ThemeToggle />
+        </Flex>
         <UserCard />
       </Box>
     </Flex>
@@ -103,19 +116,18 @@ export function Sidebar() {
         position="sticky"
         top={0}
         h="100vh"
-        w="260px"
-        minW="260px"
+        w="sidebar"
+        minW="sidebar"
         flexShrink={0}
         bg="surface.glass"
-        borderRight="1px solid rgba(255,255,255,0.6)"
+        borderRight="1px solid"
+        borderColor="border.default"
         sx={{
           backdropFilter: 'blur(24px) saturate(160%)',
           WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-          '@supports not (backdrop-filter: blur(1px))': {
-            background: 'rgba(255,255,255,0.85)',
-          },
+          '@supports not (backdrop-filter: blur(1px))': { background: 'surface.glass' },
         }}
-        boxShadow="inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.06)"
+        boxShadow="0 8px 32px rgba(32,55,72,0.06)"
       >
         <SidebarContent />
       </Box>
@@ -135,8 +147,9 @@ export function Sidebar() {
         size="md"
         borderRadius="xl"
         bg="surface.glass"
-        border="1px solid rgba(255,255,255,0.6)"
-        color="slate.700"
+        border="1px solid"
+        borderColor="border.default"
+        color="text.secondary"
         sx={{
           backdropFilter: 'blur(16px) saturate(160%)',
           WebkitBackdropFilter: 'blur(16px) saturate(160%)',
@@ -160,7 +173,7 @@ export function Sidebar() {
               onClick={onClose}
               size="sm"
               variant="ghost"
-              color="slate.500"
+              color="text.muted"
             />
           </Flex>
           <DrawerBody p={0}>

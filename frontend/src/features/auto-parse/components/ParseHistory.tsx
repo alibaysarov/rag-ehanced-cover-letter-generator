@@ -55,8 +55,8 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
         <Text
           fontFamily="heading"
           fontSize="lg"
-          fontWeight={600}
-          color="slate.900"
+          fontWeight="semibold"
+          color="text.primary"
           letterSpacing="-0.01em"
         >
           {t('autoParse.history')}
@@ -73,7 +73,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
             <AccordionButton
               px={6}
               py={4}
-              _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+              _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
               onClick={() => onSelectJob(histJob.id)}
             >
               <Flex flex="1" align="center" gap={3} flexWrap="wrap">
@@ -83,7 +83,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                   px={2}
                   py={0.5}
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                 >
                   {histJob.status}
@@ -93,24 +93,24 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                 </Badge>
                 <Text
                   fontSize="sm"
-                  fontWeight={500}
-                  color="slate.800"
+                  fontWeight="medium"
+                  color="text.primary"
                   flex="1"
                   textAlign="left"
                   noOfLines={1}
                 >
                   {histJob.query}
                 </Text>
-                <Text fontSize="xs" color="slate.500" whiteSpace="nowrap">
+                <Text fontSize="xs" color="text.muted" whiteSpace="nowrap">
                   {histJob.saved_count}/{histJob.total_found}{' '}
                   {t('autoParse.saved')}
                 </Text>
               </Flex>
-              <AccordionIcon color="slate.400" ml={2} />
+              <AccordionIcon color="text.muted" ml={2} />
             </AccordionButton>
 
             <AccordionPanel px={6} pb={4}>
-              <Text fontSize="xs" color="slate.500" fontFamily="mono">
+              <Text fontSize="xs" color="text.muted" fontFamily="mono">
                 ID: {histJob.id} &nbsp;·&nbsp;{' '}
                 {new Date(histJob.created_at).toLocaleString()}
                 {histJob.finished_at && (

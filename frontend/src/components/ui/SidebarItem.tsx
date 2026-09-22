@@ -31,7 +31,7 @@ export function SidebarItem({
           py={2.5}
           borderRadius="xl"
           bg={isActive ? 'surface.glassStrong' : 'transparent'}
-          color={isActive ? 'slate.900' : 'slate.700'}
+          color={isActive ? 'text.primary' : 'text.secondary'}
           transition="background-color 180ms ease, color 180ms ease"
           _hover={{ bg: 'surface.glassStrong' }}
           role="group"
@@ -49,7 +49,7 @@ export function SidebarItem({
               width: 3,
               borderRadius: 999,
               background:
-                'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
               transformOrigin: 'center',
               pointerEvents: 'none',
             }}

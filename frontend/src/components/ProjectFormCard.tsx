@@ -23,19 +23,19 @@ const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: currentYear - 1950 + 3 }, (_, i) => currentYear + 2 - i);
 
 const yearSelectSx = {
-  bg: 'rgba(255,255,255,0.6)',
+  bg: 'surface.raised',
   border: '1px solid',
   borderColor: 'rgba(226,232,240,0.8)',
   borderRadius: 'xl',
   fontSize: 'sm',
-  color: 'slate.700',
+  color: 'text.secondary',
   cursor: 'pointer',
   _focus: {
-    borderColor: 'rgba(99,102,241,0.5)',
-    boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+    borderColor: 'rgba(0, 123, 255,0.5)',
+    boxShadow: '0 0 0 3px rgba(0, 123, 255,0.12)',
   },
   _hover: {
-    borderColor: 'rgba(99,102,241,0.35)',
+    borderColor: 'rgba(0, 123, 255,0.35)',
   },
   _disabled: {
     opacity: 0.45,
@@ -110,8 +110,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               aria-label={t('projectForm.deleteAriaLabel')}
               icon={<CloseIcon boxSize={3} />}
               size="sm"
-              variant="ghost"
-              colorScheme="red"
+              variant="danger"
               onClick={onRemove}
             />
           )}
@@ -141,7 +140,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
             <FormLabel mb={2}>{t('projectForm.startDate')}</FormLabel>
             <SimpleGrid columns={2} spacing={3} mb={2}>
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                <FormLabel fontSize="xs" color="text.muted" mb={1}>
                   {t('projectForm.startDate')}
                 </FormLabel>
                 <HStack spacing={2}>
@@ -172,7 +171,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="xs" color="gray.500" mb={1}>
+                <FormLabel fontSize="xs" color="text.muted" mb={1}>
                   {t('projectForm.endDate')}
                 </FormLabel>
                 <HStack spacing={2}>

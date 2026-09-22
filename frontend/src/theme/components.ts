@@ -9,15 +9,16 @@ const Button: ComponentStyleConfig = {
   variants: {
     solid: {
       color: 'white',
+      bg: 'brand.blue',
       backgroundImage: 'accent.gradient',
       backgroundSize: '200% 200%',
       backgroundPosition: '0% 0%',
-      boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+      boxShadow: 'primary',
       transition:
         'background-position 400ms ease, box-shadow 200ms ease, transform 200ms ease',
       _hover: {
         backgroundPosition: '100% 100%',
-        boxShadow: '0 6px 24px rgba(99, 102, 241, 0.45)',
+        boxShadow: 'primaryHover',
         _disabled: {
           backgroundPosition: '0% 0%',
         },
@@ -25,19 +26,47 @@ const Button: ComponentStyleConfig = {
       _active: {
         backgroundPosition: '100% 100%',
       },
+      _disabled: {
+        bg: 'blue.700',
+        backgroundImage: 'none',
+        color: 'white',
+        opacity: 0.58,
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+      },
+    },
+    danger: {
+      color: 'white',
+      bg: 'danger.500',
+      boxShadow: 'danger',
+      transition: 'background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease',
+      _hover: {
+        bg: 'danger.600',
+        boxShadow: 'dangerHover',
+        _disabled: { bg: 'danger.700', boxShadow: 'none' },
+      },
+      _active: { bg: 'danger.700', transform: 'translateY(1px)' },
+      _disabled: {
+        bg: 'danger.700',
+        color: 'white',
+        opacity: 0.58,
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+      },
     },
     glass: {
       bg: 'surface.glass',
-      color: 'slate.900',
+      color: 'text.primary',
       backdropFilter: 'blur(16px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid',
+      borderColor: 'border.default',
       _hover: {
         bg: 'surface.glassStrong',
       },
     },
     ghost: {
       bg: 'transparent',
-      color: 'slate.700',
+      color: 'text.secondary',
       _hover: {
         bg: 'surface.glassStrong',
       },
@@ -57,19 +86,21 @@ const Button: ComponentStyleConfig = {
 };
 
 const inputFieldStyles = {
-  bg: 'rgba(255, 255, 255, 0.6)',
+  bg: 'surface.raised',
   border: '1px solid',
-  borderColor: 'rgba(226, 232, 240, 0.6)',
+  borderColor: 'border.default',
+  color: 'text.primary',
+  _placeholder: { color: 'text.muted' },
   _hover: {
-    borderColor: 'rgba(99, 102, 241, 0.4)',
+    borderColor: 'blue.400',
   },
   _focus: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.18)',
+    boxShadow: 'focusSubtle',
   },
   _focusVisible: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.18)',
+    boxShadow: 'focusSubtle',
   },
 };
 
@@ -109,10 +140,10 @@ const Card: ComponentStyleConfig = {
     container: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid',
+      borderColor: 'border.default',
       borderRadius: '3xl',
-      boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.08), 0 2px 8px rgba(15,23,42,0.04)',
+      boxShadow: 'card',
     },
   },
 };
@@ -126,10 +157,10 @@ const Modal: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid',
+      borderColor: 'border.default',
       borderRadius: '3xl',
-      boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.08), 0 2px 8px rgba(15,23,42,0.04)',
+      boxShadow: 'dialog',
     },
   },
 };
@@ -143,7 +174,8 @@ const Drawer: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid',
+      borderColor: 'border.default',
     },
   },
 };

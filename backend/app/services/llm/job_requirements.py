@@ -3,16 +3,14 @@ from langchain_core.prompts import ChatPromptTemplate
 from app.schemas.llm_outputs.job_requirements import JobRequirement
 
 from ...schemas.llm_outputs.cv_parse import CVImportModel
+from .factory import create_chat_model
 from .general import GeneralLLMClient
-from .models.json_parse_model import JsonParseModel
-from .qwen import QwenClient
 
 
 class JobParsePrompt(GeneralLLMClient[JobRequirement]):
     def __init__(self):
 
-        model = JsonParseModel()
-        super().__init__(model=model.model)
+        super().__init__(model=create_chat_model(temperature=0.1))
 
     def get_schema(self):
         return JobRequirement
@@ -38,7 +36,10 @@ class JobParsePrompt(GeneralLLMClient[JobRequirement]):
         )
 
 
-class CVImportPrompt(QwenClient):
+class CVImportPrompt(GeneralLLMClient[CVImportModel]):
+    def __init__(self):
+        super().__init__(model=create_chat_model(temperature=0.1))
+
     def get_schema(self):
         return CVImportModel
 

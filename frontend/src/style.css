@@ -1,11 +1,11 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: var(--chakra-fonts-body);
+  line-height: var(--chakra-lineHeights-base);
+  font-weight: var(--chakra-fontWeights-normal);
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: var(--chakra-colors-text-primary);
+  background-color: var(--chakra-colors-surface-canvas);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,72 +21,20 @@ html {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--chakra-colors-brand-blue);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--chakra-colors-blue-700);
 }
 
 body {
   margin: 0;
-  background: transparent;
-  place-items: center;
+  background: var(--chakra-colors-surface-canvas);
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: none;
-}
 
 *:focus {
   outline: none;
@@ -97,15 +45,19 @@ button:focus-visible {
   box-shadow: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* React Flow uses light controls by default; bind them to the app surfaces. */
+.react-flow__controls {
+  background: var(--chakra-colors-surface-raised) !important;
+  border: 1px solid var(--chakra-colors-border-default) !important;
+  box-shadow: var(--chakra-shadows-dialog) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom-color: var(--chakra-colors-border-default) !important;
+  fill: var(--chakra-colors-text-primary) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--chakra-colors-surface-glass-strong) !important;
 }

@@ -79,14 +79,14 @@ const LoginPage: React.FC = () => {
               <Heading
                 fontFamily="heading"
                 fontSize="3xl"
-                fontWeight={600}
-                color="slate.900"
+                fontWeight="semibold"
+                color="text.primary"
                 letterSpacing="-0.02em"
                 mb={2}
               >
                 {t('auth.login.title')}
               </Heading>
-              <Text color="slate.500" fontSize="sm">
+              <Text color="text.muted" fontSize="sm">
                 {t('auth.login.subtitle')}
               </Text>
             </Box>
@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={5}>
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.login.email')}
                   </FormLabel>
                   <Input
@@ -107,7 +107,7 @@ const LoginPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel fontSize="sm" color="slate.700" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.login.password')}
                   </FormLabel>
                   <Input
@@ -133,15 +133,15 @@ const LoginPage: React.FC = () => {
             </form>
 
             <Box textAlign="center">
-              <Text fontSize="sm" color="slate.500">
+              <Text fontSize="sm" color="text.muted">
                 {t('auth.login.noAccount')}{' '}
                 <Link
                   as={RouterLink}
                   to="/register"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   sx={{
                     backgroundImage:
-                      'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                      'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',

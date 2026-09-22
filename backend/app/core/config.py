@@ -40,10 +40,11 @@ class Settings:
     # Database URL (constructed from individual vars or override)
     DATABASE_URL: str = os.getenv("DATABASE_URL")
 
+    # LLM. These three settings select the LangChain chat model used by the app.
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama").lower()
+    LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen3:1.7b")
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-
-    # OpenAI
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
     # Database settings
     DATABASE_ECHO: bool = os.getenv("DATABASE_ECHO", "false").lower() == "true"

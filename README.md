@@ -13,7 +13,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
 ## Tech Stack
 
 - **Backend**: FastAPI, SQLAlchemy, PostgreSQL/SQLite
-- **AI**: OpenAI GPT models
+- **AI**: LangChain with OpenAI, Anthropic, or Ollama
 - **Search**: PostgreSQL full-text search
 - **Frontend**: React, TypeScript, Chakra UI
 
@@ -23,7 +23,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
 
 - Python 3.10+
 - Docker & Docker Compose (for PostgreSQL)
-- OpenAI API Key
+- An LLM provider: OpenAI, Anthropic, or local Ollama
 
 ### Installation
 
@@ -42,7 +42,7 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) wit
    uv sync
 
    # Copy environment file
-   cp env.example .env
+   cp .env.example .env
 
    # Edit .env with your settings
    nano .env
@@ -127,8 +127,14 @@ This will start the React development server on http://localhost:5173
 ### Environment Variables
 
 ```bash
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key_here
+# LLM (only these three values select the chat model)
+LLM_PROVIDER=ollama
+LLM_API_KEY=
+LLM_MODEL=qwen3:1.7b
+
+# Only needed when LLM_PROVIDER=ollama.
+# With `make dev` use localhost; with Docker Compose use host.docker.internal.
+OLLAMA_HOST=http://localhost:11434
 
 # Database (PostgreSQL)
 POSTGRES_USER=cover_letter_user
@@ -140,6 +146,37 @@ DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/db
 APP_ENV=development
 DEBUG=True
 ```
+
+### Connecting an LLM
+
+Set the LLM variables in `backend/.env`. The application creates the corresponding
+LangChain chat model automatically, so application code does not need provider-specific
+configuration.
+
+| Provider | `LLM_PROVIDER` | `LLM_API_KEY` | Example `LLM_MODEL` |
+|----------|----------------|---------------|---------------------|
+| OpenAI | `openai` | Your OpenAI API key | `gpt-4.1-mini` |
+| Anthropic | `anthropic` | Your Anthropic API key | `claude-sonnet-4-20250514` |
+| Ollama | `ollama` | Leave empty | `qwen3:1.7b` |
+
+For example, to use Anthropic:
+
+```bash
+LLM_PROVIDER=anthropic
+LLM_API_KEY=your_anthropic_api_key
+LLM_MODEL=claude-sonnet-4-20250514
+```
+
+For local Ollama, install and start Ollama, then download the chosen model before
+starting the backend:
+
+```bash
+ollama pull qwen3:1.7b
+```
+
+When the backend is launched with `make dev`, use `OLLAMA_HOST=http://localhost:11434`.
+When it runs in Docker Compose, use `OLLAMA_HOST=http://host.docker.internal:11434`.
+OpenAI and Anthropic do not require `OLLAMA_HOST`.
 
 ## Database Schema
 
@@ -293,7 +330,7 @@ cd frontend && npm test
 ### Production Checklist
 - [ ] Set `USE_SQLITE=false`
 - [ ] Configure PostgreSQL in production
-- [ ] Set secure `OPENAI_API_KEY`
+- [ ] Set `LLM_PROVIDER`, `LLM_API_KEY` (if required), and `LLM_MODEL`
 - [ ] Set `APP_ENV=production`
 - [ ] Enable HTTPS
 - [ ] Configure proper CORS origins

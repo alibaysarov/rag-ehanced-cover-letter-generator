@@ -122,8 +122,7 @@ const AnimatedListInput: React.FC<AnimatedListInputProps> = ({
                   aria-label="Удалить"
                   icon={<DeleteIcon />}
                   size="sm"
-                  variant="ghost"
-                  colorScheme="red"
+                  variant="danger"
                   onClick={() => handleRemove(row.id)}
                 />
               </HStack>

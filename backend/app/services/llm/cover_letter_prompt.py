@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
+from .factory import create_chat_model
 from .general import GeneralLLMClient
-from .models.ollama import OllamaModel
 
 # "Добрый день меня заинтересовала ваша вакансия. Думаю мой релевантный опыт подойдет под ваши требования и нужды."
 
@@ -46,23 +46,12 @@ class CoverLetterResult(BaseModel):
     content: str = Field(..., description="Текст письма")
 
 
-_MODEL = "qwen3:1.7b"
-
-
 class CoverLetterPrompt(GeneralLLMClient[CoverLetterResult]):
     def __init__(self):
-        model = OllamaModel(
-            model=_MODEL,
-            # format="json",
-            num_ctx=8192,
-            num_predict=2048,
+        model = create_chat_model(
             temperature=0.1,
-            top_k=5,
-            stop=["—"],
-            top_p=0.9,
-            reasoning=False,
         )
-        super().__init__(model=model.model)
+        super().__init__(model=model)
 
     def get_schema(self):
         return CoverLetterResult

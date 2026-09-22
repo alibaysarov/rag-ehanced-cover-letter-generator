@@ -48,10 +48,10 @@ export function DeletableEdge({
             width: 24,
             height: 24,
             padding: 0,
-            border: '1px solid #d6bcfa',
+            border: '1px solid #E11D48',
             borderRadius: '999px',
-            background: 'white',
-            color: '#805ad5',
+            background: 'var(--chakra-colors-surface-raised)',
+            color: '#E11D48',
             cursor: 'pointer',
             boxShadow: '0 1px 4px rgba(0,0,0,.16)',
           }}

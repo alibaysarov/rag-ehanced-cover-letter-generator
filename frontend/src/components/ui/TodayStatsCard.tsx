@@ -60,8 +60,8 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
       <Text
         fontFamily="heading"
         fontSize="sm"
-        fontWeight={600}
-        color="slate.700"
+        fontWeight="semibold"
+        color="text.secondary"
         letterSpacing="-0.01em"
         flexShrink={0}
       >
@@ -74,10 +74,10 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
         <Flex align="center" gap={{ base: 4, md: 6 }} flexWrap="wrap">
           {statItems.map((item) => (
             <Flex key={item.label} align="center" gap={2}>
-              <Text fontSize="xs" color="slate.500" fontWeight={500}>
+              <Text fontSize="xs" color="text.muted" fontWeight="medium">
                 {item.label}
               </Text>
-              <Text fontSize="sm" fontWeight={700} color="slate.800">
+              <Text fontSize="sm" fontWeight="bold" color="text.primary">
                 {item.value}
               </Text>
             </Flex>
@@ -86,15 +86,15 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
           <Box w="1px" h="20px" bg="rgba(148,163,184,0.4)" flexShrink={0} />
 
           <Flex align="center" gap={2}>
-            <Text fontSize="xs" color="slate.500" fontWeight={500}>
+            <Text fontSize="xs" color="text.muted" fontWeight="medium">
               Итого
             </Text>
             <Text
               fontSize="md"
-              fontWeight={800}
+              fontWeight="extraBold"
               sx={{
                 background:
-                  'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                  'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -108,10 +108,10 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
             <>
               <Box w="1px" h="20px" bg="rgba(148,163,184,0.4)" flexShrink={0} />
               <Flex align="center" gap={2}>
-                <Text fontSize="xs" color="slate.500" fontWeight={500}>
+                <Text fontSize="xs" color="text.muted" fontWeight="medium">
                   Потрачено
                 </Text>
-                <Text fontSize="sm" fontWeight={700} color="slate.800" fontFamily="mono">
+                <Text fontSize="sm" fontWeight="bold" color="text.primary" fontFamily="mono">
                   {row.time_spent}
                 </Text>
               </Flex>
@@ -145,7 +145,7 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
         py="14px"
         bg="rgba(245,243,255,0.82)"
         borderBottom="1px solid rgba(255,255,255,0.65)"
-        boxShadow="0 4px 24px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.7)"
+        boxShadow="0 4px 24px rgba(0, 123, 255,0.10), inset 0 1px 0 rgba(255,255,255,0.7)"
         sx={{
           backdropFilter: 'blur(28px) saturate(180%)',
           WebkitBackdropFilter: 'blur(28px) saturate(180%)',

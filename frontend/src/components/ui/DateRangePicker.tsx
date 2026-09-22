@@ -99,11 +99,11 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
 
   return (
     <Box
-      bg="white"
+      bg="surface.raised"
       border="1px solid"
       borderColor="rgba(226,232,240,0.8)"
       borderRadius="2xl"
-      boxShadow="0 16px 48px rgba(15,23,42,0.12), 0 4px 16px rgba(99,102,241,0.08)"
+      boxShadow="0 16px 48px rgba(15,23,42,0.12), 0 4px 16px rgba(0, 123, 255,0.08)"
       p={4}
       minW="300px"
       sx={{
@@ -118,12 +118,12 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           icon={<IconChevronLeft size={16} stroke={2} />}
           size="xs"
           variant="ghost"
-          color="slate.500"
+          color="text.muted"
           onClick={prevMonth}
-          _hover={{ color: 'aurora.indigo', bg: 'rgba(99,102,241,0.08)' }}
+          _hover={{ color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.08)' }}
           borderRadius="lg"
         />
-        <Text fontSize="sm" fontWeight={600} color="slate.800">
+        <Text fontSize="sm" fontWeight="semibold" color="text.primary">
           {months[viewMonth]} {viewYear}
         </Text>
         <IconButton
@@ -131,9 +131,9 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           icon={<IconChevronRight size={16} stroke={2} />}
           size="xs"
           variant="ghost"
-          color="slate.500"
+          color="text.muted"
           onClick={nextMonth}
-          _hover={{ color: 'aurora.indigo', bg: 'rgba(99,102,241,0.08)' }}
+          _hover={{ color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.08)' }}
           borderRadius="lg"
         />
       </Flex>
@@ -142,7 +142,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
       <Grid templateColumns="repeat(7, 1fr)" mb={1}>
         {weekDays.map((d) => (
           <Flex key={d} justify="center" align="center" h="28px">
-            <Text fontSize="xs" fontWeight={600} color="slate.400">
+            <Text fontSize="xs" fontWeight="semibold" color="text.muted">
               {d}
             </Text>
           </Flex>
@@ -170,20 +170,20 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
               borderRadius={highlighted ? 'xl' : 'lg'}
               fontSize="sm"
               fontWeight={highlighted ? 700 : todayDay ? 600 : 400}
-              color={highlighted ? 'white' : inRange ? 'aurora.indigo' : todayDay ? 'aurora.indigo' : 'slate.700'}
+              color={highlighted ? 'white' : inRange ? 'aurora.indigo' : todayDay ? 'aurora.indigo' : 'text.secondary'}
               bg={
                 highlighted
-                  ? 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)'
+                  ? 'linear-gradient(135deg, #007BFF 0%, #0069D9 100%)'
                   : inRange
-                  ? 'rgba(99,102,241,0.1)'
+                  ? 'rgba(0, 123, 255,0.1)'
                   : 'transparent'
               }
-              boxShadow={highlighted ? '0 4px 12px rgba(99,102,241,0.3)' : undefined}
+              boxShadow={highlighted ? '0 4px 12px rgba(0, 123, 255,0.3)' : undefined}
               transition="all 150ms ease"
               _hover={{
                 bg: highlighted
-                  ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)'
-                  : 'rgba(99,102,241,0.12)',
+                  ? 'linear-gradient(135deg, #0069D9 0%, #0056B3 100%)'
+                  : 'rgba(0, 123, 255,0.12)',
                 color: highlighted ? 'white' : 'aurora.indigo',
               }}
               onClick={() => onSelect(new Date(viewYear, viewMonth, day))}
@@ -208,7 +208,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
       </Grid>
 
       {/* Hint */}
-      <Text mt={3} fontSize="xs" color="slate.400" textAlign="center">
+      <Text mt={3} fontSize="xs" color="text.muted" textAlign="center">
         {activeInput === 'from' ? t('datePicker.selectFrom') : t('datePicker.selectTo')}
       </Text>
     </Box>
@@ -292,27 +292,27 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const toDate = parseYMD(value.to);
 
   const inputSx = {
-    bg: 'rgba(255,255,255,0.6)',
+    bg: 'surface.raised',
     border: '1px solid rgba(226,232,240,0.8)',
     borderRadius: 'xl',
     fontSize: 'sm',
-    color: 'slate.700',
+    color: 'text.secondary',
     _focus: {
-      border: '1px solid rgba(99,102,241,0.5)',
-      boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+      border: '1px solid rgba(0, 123, 255,0.5)',
+      boxShadow: '0 0 0 3px rgba(0, 123, 255,0.12)',
     },
-    _placeholder: { color: 'slate.400' },
+    _placeholder: { color: 'text.muted' },
   };
 
   return (
     <Box ref={containerRef} position="relative">
       <Flex gap={3} align="center" flexWrap="wrap">
         <Box>
-          <Text fontSize="xs" fontWeight={500} color="slate.500" mb={1}>
+          <Text fontSize="xs" fontWeight="medium" color="text.muted" mb={1}>
             {t('datePicker.from')}
           </Text>
           <InputGroup size="sm" w="160px">
-            <InputLeftElement pointerEvents="none" color="slate.400" h="full">
+            <InputLeftElement pointerEvents="none" color="text.muted" h="full">
               <IconCalendar size={14} stroke={1.75} />
             </InputLeftElement>
             <Input
@@ -326,14 +326,14 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
           </InputGroup>
         </Box>
 
-        <Text color="slate.300" mt={5} fontSize="sm">—</Text>
+        <Text color="border.subtle" mt={5} fontSize="sm">—</Text>
 
         <Box>
-          <Text fontSize="xs" fontWeight={500} color="slate.500" mb={1}>
+          <Text fontSize="xs" fontWeight="medium" color="text.muted" mb={1}>
             {t('datePicker.to')}
           </Text>
           <InputGroup size="sm" w="160px">
-            <InputLeftElement pointerEvents="none" color="slate.400" h="full">
+            <InputLeftElement pointerEvents="none" color="text.muted" h="full">
               <IconCalendar size={14} stroke={1.75} />
             </InputLeftElement>
             <Input
