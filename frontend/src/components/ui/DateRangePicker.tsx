@@ -103,7 +103,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
       border="1px solid"
       borderColor="rgba(226,232,240,0.8)"
       borderRadius="2xl"
-      boxShadow="0 16px 48px rgba(15,23,42,0.12), 0 4px 16px rgba(99,102,241,0.08)"
+      boxShadow="0 16px 48px rgba(15,23,42,0.12), 0 4px 16px rgba(0, 123, 255,0.08)"
       p={4}
       minW="300px"
       sx={{
@@ -120,7 +120,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           variant="ghost"
           color="slate.500"
           onClick={prevMonth}
-          _hover={{ color: 'aurora.indigo', bg: 'rgba(99,102,241,0.08)' }}
+          _hover={{ color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.08)' }}
           borderRadius="lg"
         />
         <Text fontSize="sm" fontWeight={600} color="slate.800">
@@ -133,7 +133,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           variant="ghost"
           color="slate.500"
           onClick={nextMonth}
-          _hover={{ color: 'aurora.indigo', bg: 'rgba(99,102,241,0.08)' }}
+          _hover={{ color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.08)' }}
           borderRadius="lg"
         />
       </Flex>
@@ -173,17 +173,17 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
               color={highlighted ? 'white' : inRange ? 'aurora.indigo' : todayDay ? 'aurora.indigo' : 'slate.700'}
               bg={
                 highlighted
-                  ? 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)'
+                  ? 'linear-gradient(135deg, #007BFF 0%, #0069D9 100%)'
                   : inRange
-                  ? 'rgba(99,102,241,0.1)'
+                  ? 'rgba(0, 123, 255,0.1)'
                   : 'transparent'
               }
-              boxShadow={highlighted ? '0 4px 12px rgba(99,102,241,0.3)' : undefined}
+              boxShadow={highlighted ? '0 4px 12px rgba(0, 123, 255,0.3)' : undefined}
               transition="all 150ms ease"
               _hover={{
                 bg: highlighted
-                  ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)'
-                  : 'rgba(99,102,241,0.12)',
+                  ? 'linear-gradient(135deg, #0069D9 0%, #0056B3 100%)'
+                  : 'rgba(0, 123, 255,0.12)',
                 color: highlighted ? 'white' : 'aurora.indigo',
               }}
               onClick={() => onSelect(new Date(viewYear, viewMonth, day))}
@@ -298,8 +298,8 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
     fontSize: 'sm',
     color: 'slate.700',
     _focus: {
-      border: '1px solid rgba(99,102,241,0.5)',
-      boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+      border: '1px solid rgba(0, 123, 255,0.5)',
+      boxShadow: '0 0 0 3px rgba(0, 123, 255,0.12)',
     },
     _placeholder: { color: 'slate.400' },
   };

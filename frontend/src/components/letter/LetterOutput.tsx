@@ -91,7 +91,7 @@ function IdleState() {
           borderRadius="full"
           sx={{
             background:
-              'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.5) 0%, rgba(217,70,239,0.3) 45%, rgba(6,182,212,0.25) 75%, transparent 100%)',
+              'radial-gradient(circle at 30% 30%, rgba(0, 123, 255,0.5) 0%, rgba(0, 123, 255,0.3) 45%, rgba(32, 55, 72,0.25) 75%, transparent 100%)',
             filter: 'blur(36px)',
           }}
         />
@@ -132,7 +132,7 @@ function ParsingState() {
           h="14px"
           mb={4}
           borderRadius="full"
-          bg="rgba(99,102,241,0.08)"
+          bg="rgba(0, 123, 255,0.08)"
           w={`${75 + ((i * 7) % 22)}%`}
         >
           <Box
@@ -242,7 +242,7 @@ function FloatingToolbar({
         px={3}
         py={1}
         borderRadius="full"
-        bg="rgba(99,102,241,0.08)"
+        bg="rgba(0, 123, 255,0.08)"
         fontFamily="mono"
         fontSize="xs"
         color="slate.700"
@@ -368,8 +368,8 @@ function TabSwitch({
                   inset: 0,
                   borderRadius: 9999,
                   background:
-                    'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
-                  boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
+                    'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
+                  boxShadow: '0 4px 12px rgba(0, 123, 255,0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}

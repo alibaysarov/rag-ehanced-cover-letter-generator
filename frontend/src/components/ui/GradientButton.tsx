@@ -3,7 +3,7 @@ import type { ButtonProps } from '@chakra-ui/react';
 import { forwardRef } from 'react';
 
 const ACCENT_GRADIENT =
-  'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)';
+  'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)';
 
 export interface GradientButtonProps extends Omit<ButtonProps, 'variant'> {
   variant?: 'solid' | 'outline' | 'ghost';
@@ -27,12 +27,12 @@ const solidSx = {
   backgroundImage: ACCENT_GRADIENT,
   backgroundSize: '200% 200%',
   backgroundPosition: '0% 0%',
-  boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+  boxShadow: '0 4px 16px rgba(0, 123, 255, 0.28)',
   transition:
     'background-position 400ms ease, box-shadow 200ms ease, transform 200ms ease',
   _hover: {
     backgroundPosition: '100% 100%',
-    boxShadow: '0 6px 24px rgba(99, 102, 241, 0.45)',
+    boxShadow: '0 6px 24px rgba(0, 123, 255, 0.36)',
     _disabled: { backgroundPosition: '0% 0%' },
   },
   _active: { backgroundPosition: '100% 100%' },

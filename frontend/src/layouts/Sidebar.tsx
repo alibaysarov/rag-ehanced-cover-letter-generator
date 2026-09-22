@@ -6,8 +6,8 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
+  Image,
   IconButton,
-  Text,
   VStack,
   useBreakpointValue,
   useDisclosure,
@@ -28,23 +28,13 @@ import { UserCard } from '@/components/ui/UserCard';
 
 function BrandMark() {
   return (
-    <Flex align="center" gap={3}>
-      <Box
-        w="28px"
-        h="28px"
-        borderRadius="10px"
-        backgroundImage="accent.gradient"
-        boxShadow="0 4px 12px rgba(99,102,241,0.35)"
+    <Flex align="center">
+      <Image
+        src="/findjobforme-logo.svg"
+        alt="FindJobFor.me"
+        w="188px"
+        h="auto"
       />
-      <Text
-        fontSize="xl"
-        fontWeight={600}
-        fontFamily="heading"
-        color="slate.900"
-        letterSpacing="-0.02em"
-      >
-        Coverly
-      </Text>
     </Flex>
   );
 }
@@ -107,7 +97,7 @@ export function Sidebar() {
         minW="260px"
         flexShrink={0}
         bg="surface.glass"
-        borderRight="1px solid rgba(255,255,255,0.6)"
+        borderRight="1px solid rgba(32,55,72,0.12)"
         sx={{
           backdropFilter: 'blur(24px) saturate(160%)',
           WebkitBackdropFilter: 'blur(24px) saturate(160%)',
@@ -115,7 +105,7 @@ export function Sidebar() {
             background: 'rgba(255,255,255,0.85)',
           },
         }}
-        boxShadow="inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.06)"
+        boxShadow="0 8px 32px rgba(32,55,72,0.06)"
       >
         <SidebarContent />
       </Box>

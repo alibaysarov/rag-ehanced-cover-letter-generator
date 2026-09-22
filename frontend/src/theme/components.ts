@@ -12,12 +12,12 @@ const Button: ComponentStyleConfig = {
       backgroundImage: 'accent.gradient',
       backgroundSize: '200% 200%',
       backgroundPosition: '0% 0%',
-      boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+      boxShadow: '0 4px 16px rgba(0, 123, 255, 0.28)',
       transition:
         'background-position 400ms ease, box-shadow 200ms ease, transform 200ms ease',
       _hover: {
         backgroundPosition: '100% 100%',
-        boxShadow: '0 6px 24px rgba(99, 102, 241, 0.45)',
+        boxShadow: '0 6px 24px rgba(0, 123, 255, 0.36)',
         _disabled: {
           backgroundPosition: '0% 0%',
         },
@@ -30,7 +30,7 @@ const Button: ComponentStyleConfig = {
       bg: 'surface.glass',
       color: 'slate.900',
       backdropFilter: 'blur(16px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid rgba(32, 55, 72, 0.12)',
       _hover: {
         bg: 'surface.glassStrong',
       },
@@ -61,15 +61,15 @@ const inputFieldStyles = {
   border: '1px solid',
   borderColor: 'rgba(226, 232, 240, 0.6)',
   _hover: {
-    borderColor: 'rgba(99, 102, 241, 0.4)',
+    borderColor: 'rgba(0, 123, 255, 0.45)',
   },
   _focus: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.18)',
+    boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.18)',
   },
   _focusVisible: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.18)',
+    boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.18)',
   },
 };
 
@@ -109,10 +109,10 @@ const Card: ComponentStyleConfig = {
     container: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid rgba(32, 55, 72, 0.12)',
       borderRadius: '3xl',
       boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.08), 0 2px 8px rgba(15,23,42,0.04)',
+        '0 8px 28px rgba(32,55,72,0.08), 0 2px 8px rgba(32,55,72,0.04)',
     },
   },
 };
@@ -126,10 +126,10 @@ const Modal: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid rgba(32, 55, 72, 0.12)',
       borderRadius: '3xl',
       boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 32px rgba(79,70,229,0.08), 0 2px 8px rgba(15,23,42,0.04)',
+        '0 8px 28px rgba(32,55,72,0.12), 0 2px 8px rgba(32,55,72,0.05)',
     },
   },
 };
@@ -143,7 +143,7 @@ const Drawer: ComponentStyleConfig = {
     dialog: {
       bg: 'surface.glass',
       backdropFilter: 'blur(24px) saturate(160%)',
-      border: '1px solid rgba(255, 255, 255, 0.6)',
+      border: '1px solid rgba(32, 55, 72, 0.12)',
     },
   },
 };

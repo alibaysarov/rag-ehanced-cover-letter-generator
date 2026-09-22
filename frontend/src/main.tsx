@@ -1,5 +1,3 @@
-import '@fontsource-variable/bricolage-grotesque/index.css'
-import '@fontsource-variable/dm-sans/index.css'
 import '@fontsource/jetbrains-mono/index.css'
 import './i18n'
 import React from 'react'

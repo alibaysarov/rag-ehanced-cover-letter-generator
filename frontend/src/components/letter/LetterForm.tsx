@@ -87,8 +87,8 @@ function ModeToggle({
                   inset: 0,
                   borderRadius: 9999,
                   background:
-                    'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
-                  boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
+                    'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
+                  boxShadow: '0 4px 12px rgba(0, 123, 255,0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}

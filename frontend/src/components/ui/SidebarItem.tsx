@@ -49,7 +49,7 @@ export function SidebarItem({
               width: 3,
               borderRadius: 999,
               background:
-                'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
               transformOrigin: 'center',
               pointerEvents: 'none',
             }}

@@ -103,7 +103,7 @@ export function UserCard() {
         fontWeight={600}
         fontSize="sm"
         fontFamily="heading"
-        boxShadow="0 4px 12px rgba(99,102,241,0.35)"
+        boxShadow="0 4px 12px rgba(0, 123, 255,0.35)"
       >
         {initials}
       </Flex>

@@ -73,7 +73,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
             <AccordionButton
               px={6}
               py={4}
-              _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+              _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
               onClick={() => onSelectJob(histJob.id)}
             >
               <Flex flex="1" align="center" gap={3} flexWrap="wrap">

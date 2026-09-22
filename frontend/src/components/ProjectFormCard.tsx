@@ -31,11 +31,11 @@ const yearSelectSx = {
   color: 'slate.700',
   cursor: 'pointer',
   _focus: {
-    borderColor: 'rgba(99,102,241,0.5)',
-    boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+    borderColor: 'rgba(0, 123, 255,0.5)',
+    boxShadow: '0 0 0 3px rgba(0, 123, 255,0.12)',
   },
   _hover: {
-    borderColor: 'rgba(99,102,241,0.35)',
+    borderColor: 'rgba(0, 123, 255,0.35)',
   },
   _disabled: {
     opacity: 0.45,

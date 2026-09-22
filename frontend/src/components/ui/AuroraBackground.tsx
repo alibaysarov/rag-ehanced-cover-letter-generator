@@ -1,10 +1,9 @@
 import { Box } from '@chakra-ui/react';
 
 const MESH_BACKGROUND = [
-  'radial-gradient(at 18% 12%, rgba(99,102,241,0.22) 0px, transparent 50%)',
-  'radial-gradient(at 82% 28%, rgba(217,70,239,0.18) 0px, transparent 55%)',
-  'radial-gradient(at 50% 92%, rgba(6,182,212,0.20) 0px, transparent 55%)',
-  '#FAFAFB',
+  'radial-gradient(at 12% 8%, rgba(0,123,255,0.13) 0px, transparent 44%)',
+  'radial-gradient(at 92% 18%, rgba(32,55,72,0.10) 0px, transparent 42%)',
+  '#F8FAFC',
 ].join(', ');
 
 const NOISE_DATA_URI =

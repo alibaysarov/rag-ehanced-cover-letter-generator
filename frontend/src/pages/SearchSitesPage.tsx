@@ -23,16 +23,16 @@ import { useDeleteParser, useParserList } from '@/features/search-sites/hooks';
 
 const purpleOutline = {
   color: 'aurora.indigo',
-  borderColor: 'rgba(99, 102, 241, 0.5)',
-  bg: 'rgba(99, 102, 241, 0.05)',
+  borderColor: 'rgba(0, 123, 255, 0.5)',
+  bg: 'rgba(0, 123, 255, 0.05)',
   _hover: {
     color: 'white',
     borderColor: 'transparent',
     bg: 'aurora.indigo',
-    boxShadow: '0 5px 16px rgba(99, 102, 241, 0.3)',
-    _disabled: { color: 'aurora.indigo', bg: 'rgba(99, 102, 241, 0.05)' },
+    boxShadow: '0 5px 16px rgba(0, 123, 255, 0.3)',
+    _disabled: { color: 'aurora.indigo', bg: 'rgba(0, 123, 255, 0.05)' },
   },
-  _active: { bg: '#5558e8' },
+  _active: { bg: '#0069D9' },
   _disabled: { opacity: 0.35, cursor: 'not-allowed' },
 };
 

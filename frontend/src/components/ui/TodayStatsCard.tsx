@@ -94,7 +94,7 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
               fontWeight={800}
               sx={{
                 background:
-                  'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                  'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -145,7 +145,7 @@ export function TodayStatsCard({ disableSticky = false }: { disableSticky?: bool
         py="14px"
         bg="rgba(245,243,255,0.82)"
         borderBottom="1px solid rgba(255,255,255,0.65)"
-        boxShadow="0 4px 24px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.7)"
+        boxShadow="0 4px 24px rgba(0, 123, 255,0.10), inset 0 1px 0 rgba(255,255,255,0.7)"
         sx={{
           backdropFilter: 'blur(28px) saturate(180%)',
           WebkitBackdropFilter: 'blur(28px) saturate(180%)',

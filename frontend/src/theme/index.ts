@@ -22,7 +22,7 @@ export const theme = extendTheme({
       },
       '*:focus-visible': {
         outline: 'none',
-        boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.35)',
+        boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.30)',
         borderRadius: '8px',
       },
     },

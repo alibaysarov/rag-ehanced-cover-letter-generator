@@ -95,7 +95,7 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
               _placeholder={{ color: 'slate.400' }}
               _focus={{
                 borderColor: 'aurora.indigo',
-                boxShadow: '0 0 0 3px rgba(99,102,241,0.15)',
+                boxShadow: '0 0 0 3px rgba(0, 123, 255,0.15)',
                 bg: 'rgba(255,255,255,0.8)',
               }}
               _disabled={{ opacity: 0.6, cursor: 'not-allowed' }}
@@ -157,7 +157,7 @@ function ParseProgressBar({ savedCount, totalFound, status }: ParseProgressBarPr
         sx={{
           '& > div': {
             backgroundImage:
-              'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+              'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
           },
         }}
         bg="rgba(226,232,240,0.5)"
@@ -236,7 +236,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate, mode }: Generati
           sx={{
             '& > div': {
               backgroundImage:
-                'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
+                'linear-gradient(135deg, #0069D9 0%, #0056B3 100%)',
             },
           }}
           bg="rgba(226,232,240,0.5)"
@@ -355,7 +355,7 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
                 fontSize="sm"
                 color={item === page ? 'white' : 'slate.600'}
                 bg={item === page ? 'aurora.indigo' : 'transparent'}
-                boxShadow={item === page ? '0 4px 12px rgba(99, 102, 241, 0.28)' : 'none'}
+                boxShadow={item === page ? '0 4px 12px rgba(0, 123, 255, 0.28)' : 'none'}
                 _hover={{
                   bg: item === page ? 'aurora.indigo' : 'rgba(255, 255, 255, 0.72)',
                 }}

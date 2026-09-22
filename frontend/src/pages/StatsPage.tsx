@@ -174,8 +174,8 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
                   inset: 0,
                   borderRadius: 9999,
                   background:
-                    'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
-                  boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
+                    'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
+                  boxShadow: '0 4px 12px rgba(0, 123, 255,0.3)',
                   zIndex: -1,
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}
@@ -323,7 +323,7 @@ function SummaryTable({
               {data.map((row) => (
                 <Tr
                   key={row.date}
-                  _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+                  _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
                   transition="background 150ms ease"
                 >
                   <Td
@@ -536,7 +536,7 @@ function ApplicationsList({
               {data.items.map((item) => (
                 <Tr
                   key={item.id}
-                  _hover={{ bg: 'rgba(99,102,241,0.04)' }}
+                  _hover={{ bg: 'rgba(0, 123, 255,0.04)' }}
                   transition="background 150ms ease"
                 >
                   <Td
@@ -636,7 +636,7 @@ function ApplicationsList({
               isDisabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
               color="slate.600"
-              _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
+              _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.prev')}
             </Button>
@@ -648,7 +648,7 @@ function ApplicationsList({
               isDisabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
               color="slate.600"
-              _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
+              _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
             >
               {t('stats.next')}
             </Button>
@@ -761,14 +761,14 @@ export default function StatsPage() {
               sx={{
                 color: 'white',
                 backgroundImage:
-                  'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                  'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                 backgroundSize: '200% 200%',
                 backgroundPosition: '0% 0%',
-                boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
+                boxShadow: '0 4px 14px rgba(0, 123, 255,0.3)',
                 transition: 'background-position 400ms ease, box-shadow 200ms ease',
                 _hover: {
                   backgroundPosition: '100% 100%',
-                  boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                  boxShadow: '0 6px 20px rgba(0, 123, 255,0.4)',
                 },
               }}
             >

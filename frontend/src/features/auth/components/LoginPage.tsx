@@ -141,7 +141,7 @@ const LoginPage: React.FC = () => {
                   fontWeight={600}
                   sx={{
                     backgroundImage:
-                      'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #D946EF 100%)',
+                      'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',

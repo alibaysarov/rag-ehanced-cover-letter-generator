@@ -51,7 +51,7 @@ function IdleOrb() {
           borderRadius="full"
           sx={{
             background:
-              'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.5) 0%, rgba(217,70,239,0.3) 45%, rgba(6,182,212,0.25) 75%, transparent 100%)',
+              'radial-gradient(circle at 30% 30%, rgba(0, 123, 255,0.5) 0%, rgba(0, 123, 255,0.3) 45%, rgba(32, 55, 72,0.25) 75%, transparent 100%)',
             filter: 'blur(32px)',
           }}
         />
@@ -94,7 +94,7 @@ function ShimmerSkeleton() {
           h="13px"
           mb={3.5}
           borderRadius="full"
-          bg="rgba(99,102,241,0.08)"
+          bg="rgba(0, 123, 255,0.08)"
           w={`${70 + ((i * 9) % 28)}%`}
         >
           <Box
@@ -191,7 +191,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
         bg="surface.glass"
         border="1px solid rgba(255,255,255,0.6)"
         borderRadius="3xl"
-        boxShadow="inset 0 1px 0 rgba(255,255,255,0.6), 0 24px 64px rgba(79,70,229,0.18)"
+        boxShadow="inset 0 1px 0 rgba(255,255,255,0.6), 0 24px 64px rgba(32, 55, 72,0.18)"
         sx={{
           backdropFilter: 'blur(24px) saturate(160%)',
           WebkitBackdropFilter: 'blur(24px) saturate(160%)',
@@ -314,7 +314,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 color="slate.700"
                 width="auto"
                 minW="110px"
-                _focus={{ borderColor: 'aurora.indigo', boxShadow: '0 0 0 2px rgba(99,102,241,0.15)' }}
+                _focus={{ borderColor: 'aurora.indigo', boxShadow: '0 0 0 2px rgba(0, 123, 255,0.15)' }}
               >
                 {(generationMode === 'template' ? LANGUAGES.filter((l) => l.code === 'ru') : LANGUAGES).map((l) => (
                   <option key={l.code} value={l.label}>
@@ -337,7 +337,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                   fontWeight={500}
                   fontSize="xs"
                   leftIcon={hasCopied ? <IconCheck size={13} stroke={2.5} /> : <IconCopy size={13} stroke={1.8} />}
-                  _hover={{ borderColor: 'aurora.indigo', color: 'aurora.indigo', bg: 'rgba(99,102,241,0.06)' }}
+                  _hover={{ borderColor: 'aurora.indigo', color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.06)' }}
                   onClick={onCopy}
                 >
                   {hasCopied ? 'Скопировано' : 'Скопировать'}
@@ -436,7 +436,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             variant="ghost"
             color="slate.600"
             onClick={onClose}
-            _hover={{ bg: 'rgba(99,102,241,0.08)', color: 'aurora.indigo' }}
+            _hover={{ bg: 'rgba(0, 123, 255,0.08)', color: 'aurora.indigo' }}
           >
             Закрыть
           </Button>
