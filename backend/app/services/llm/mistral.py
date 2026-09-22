@@ -1,19 +1,12 @@
-import os
-
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
 
+from app.services.llm.factory import create_chat_model
 from app.services.llm.general import GeneralLLMClient
 
 
 class MistralClient(GeneralLLMClient):
     def __init__(self):
-        base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-
-        model = ChatOllama(
-            model="mistral:7b", format="json", temperature=0.7, base_url=base_url
-        )
-        super().__init__(model=model)
+        super().__init__(model=create_chat_model(temperature=0.7))
 
     def get_schema(self):
         return None

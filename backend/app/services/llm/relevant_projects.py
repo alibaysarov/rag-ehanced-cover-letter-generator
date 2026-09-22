@@ -2,21 +2,13 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from app.schemas.llm_outputs.relevant_projects import RelevantProjects
 
+from .factory import create_chat_model
 from .general import GeneralLLMClient
-from .models.ollama import OllamaModel
 
 
 class RelevantProjectsPrompt(GeneralLLMClient[RelevantProjects]):
     def __init__(self):
-        _MODEL = "qwen2.5:0.5b"
-
-        model = OllamaModel(
-            model=_MODEL,
-            temperature=0.1,
-            reasoning=False,
-            num_ctx=4096,
-        )
-        super().__init__(model=model.model)
+        super().__init__(model=create_chat_model(temperature=0.1))
 
     def get_schema(self):
         return RelevantProjects

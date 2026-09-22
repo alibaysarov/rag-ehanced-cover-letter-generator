@@ -1,6 +1,6 @@
 from typing import AsyncGenerator
 
-from openai import AsyncOpenAI, OpenAI
+from langchain_core.messages import HumanMessage, SystemMessage
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repository import CVChunkRepository, ProjectRepository
@@ -15,10 +15,8 @@ from .pdf import PdfService
 
 class LetterService:
     def __init__(self, session: AsyncSession = None):
-        self.client = OpenAI()
         self.llm = MistralClient()
         self.job_requirement_agent = JobRequirementAgent()
-        self.async_client = AsyncOpenAI()
 
         self.session = session
         self.pdf_service = PdfService(session)
@@ -29,7 +27,7 @@ class LetterService:
 
     async def search_job_requirements(self, job_title: str, company: str = None) -> str:
         """
-        Ищет требования для вакансии используя OpenAI с web_search_preview tool
+        Ищет требования для вакансии с помощью настроенной LLM.
 
         Args:
             job_title: Название вакансии
@@ -42,19 +40,14 @@ class LetterService:
         if company:
             search_query += f" в компании {company}"
 
-        messages = [
-            {
-                "role": "user",
-                "content": f"Найди и суммируй основные требования и обязанности для вакансии '{job_title}'{' в компании ' + company if company else ''}. Используй поиск в интернете для получения актуальной информации.",
-            }
-        ]
+        prompt = (
+            f"Найди и суммируй основные требования и обязанности для вакансии "
+            f"'{job_title}'{' в компании ' + company if company else ''}."
+        )
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-5-mini", messages=messages, max_tokens=800, temperature=0.7
-            )
-
-            return response.choices[0].message.content
+            response = await self.llm.get_model.ainvoke(prompt)
+            return self._message_text(response.content)
 
         except Exception as e:
             return f"Ошибка при поиске требований: {str(e)}"
@@ -99,12 +92,8 @@ class LetterService:
     """
 
         try:
-            response = self.client.responses.create(
-                model="gpt-4o", max_output_tokens=2048, input=prompt, temperature=1.0
-            )
-
-            letter_content = response.output_text
-            return letter_content
+            response = await self.llm.get_model.ainvoke(prompt)
+            return self._message_text(response.content)
 
         except Exception as e:
             return f"Ошибка при генерации сопроводительного письма: {str(e)}"
@@ -159,19 +148,11 @@ class LetterService:
             "Output only the translated letter — no explanations or metadata."
         )
 
-        async with self.async_client.chat.completions.stream(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": text},
-            ],
-            max_tokens=2048,
-            temperature=0.3,
-        ) as stream:
-            async for chunk in stream:
-                delta = chunk.choices[0].delta.content if chunk.choices else None
-                if delta:
-                    yield delta
+        messages = [SystemMessage(content=system_prompt), HumanMessage(content=text)]
+        async for chunk in self.llm.get_model.astream(messages):
+            delta = self._message_text(chunk.content)
+            if delta:
+                yield delta
 
     async def stream_by_url(
         self, job_url: str, source_id: int, target_language: str | None = None
@@ -382,16 +363,8 @@ class LetterService:
         return "".join(parts)
 
     async def __fetch_job_requirements(self, prompt: str) -> str:
-        parts: list[str] = []
-        async with self.async_client.responses.stream(
-            model="gpt-4.1-mini",
-            tools=[{"type": "web_search_preview"}],
-            input=prompt,
-        ) as stream:
-            async for event in stream:
-                if event.type == "response.output_text.delta":
-                    parts.append(event.delta)
-        return "".join(parts)
+        response = await self.llm.get_model.ainvoke(prompt)
+        return self._message_text(response.content)
 
     async def _parse_job_requirements_from_url(self, job_url: str) -> str:
         """
@@ -418,13 +391,22 @@ class LetterService:
         """
 
         try:
-            response = self.client.responses.create(
-                model="gpt-4.1-mini",
-                tools=[{"type": "web_search_preview"}],
-                input=prompt,
-            )
-            return response.output_text
+            response = await self.llm.get_model.ainvoke(prompt)
+            return self._message_text(response.content)
 
         except Exception as e:
             print(e)
             return f"Ошибка при парсинге URL вакансии: {str(e)}"
+
+    @staticmethod
+    def _message_text(content) -> str:
+        """Normalize provider-specific LangChain message content to text."""
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            return "".join(
+                item if isinstance(item, str) else item.get("text", "")
+                for item in content
+                if isinstance(item, (str, dict))
+            )
+        return str(content or "")
