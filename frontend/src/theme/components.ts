@@ -9,21 +9,49 @@ const Button: ComponentStyleConfig = {
   variants: {
     solid: {
       color: 'white',
+      bg: 'brand.blue',
       backgroundImage: 'accent.gradient',
       backgroundSize: '200% 200%',
       backgroundPosition: '0% 0%',
-      boxShadow: '0 4px 16px rgba(0, 123, 255, 0.28)',
+      boxShadow: 'primary',
       transition:
         'background-position 400ms ease, box-shadow 200ms ease, transform 200ms ease',
       _hover: {
         backgroundPosition: '100% 100%',
-        boxShadow: '0 6px 24px rgba(0, 123, 255, 0.36)',
+        boxShadow: 'primaryHover',
         _disabled: {
           backgroundPosition: '0% 0%',
         },
       },
       _active: {
         backgroundPosition: '100% 100%',
+      },
+      _disabled: {
+        bg: 'blue.700',
+        backgroundImage: 'none',
+        color: 'white',
+        opacity: 0.58,
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+      },
+    },
+    danger: {
+      color: 'white',
+      bg: 'danger.500',
+      boxShadow: 'danger',
+      transition: 'background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease',
+      _hover: {
+        bg: 'danger.600',
+        boxShadow: 'dangerHover',
+        _disabled: { bg: 'danger.700', boxShadow: 'none' },
+      },
+      _active: { bg: 'danger.700', transform: 'translateY(1px)' },
+      _disabled: {
+        bg: 'danger.700',
+        color: 'white',
+        opacity: 0.58,
+        boxShadow: 'none',
+        cursor: 'not-allowed',
       },
     },
     glass: {
@@ -64,15 +92,15 @@ const inputFieldStyles = {
   color: 'text.primary',
   _placeholder: { color: 'text.muted' },
   _hover: {
-    borderColor: 'rgba(0, 123, 255, 0.45)',
+    borderColor: 'blue.400',
   },
   _focus: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.18)',
+    boxShadow: 'focusSubtle',
   },
   _focusVisible: {
     borderColor: 'aurora.indigo',
-    boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.18)',
+    boxShadow: 'focusSubtle',
   },
 };
 
@@ -115,8 +143,7 @@ const Card: ComponentStyleConfig = {
       border: '1px solid',
       borderColor: 'border.default',
       borderRadius: '3xl',
-      boxShadow:
-        '0 8px 28px rgba(32,55,72,0.08), 0 2px 8px rgba(32,55,72,0.04)',
+      boxShadow: 'card',
     },
   },
 };
@@ -133,8 +160,7 @@ const Modal: ComponentStyleConfig = {
       border: '1px solid',
       borderColor: 'border.default',
       borderRadius: '3xl',
-      boxShadow:
-        '0 8px 28px rgba(32,55,72,0.12), 0 2px 8px rgba(32,55,72,0.05)',
+      boxShadow: 'dialog',
     },
   },
 };

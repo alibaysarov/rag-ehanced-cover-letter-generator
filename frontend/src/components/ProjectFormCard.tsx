@@ -110,8 +110,7 @@ const ProjectFormCard: React.FC<ProjectFormCardProps> = ({
               aria-label={t('projectForm.deleteAriaLabel')}
               icon={<CloseIcon boxSize={3} />}
               size="sm"
-              variant="ghost"
-              colorScheme="red"
+              variant="danger"
               onClick={onRemove}
             />
           )}

@@ -1,11 +1,11 @@
 :root {
-  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: var(--chakra-fonts-body);
+  line-height: var(--chakra-lineHeights-base);
+  font-weight: var(--chakra-fontWeights-normal);
 
   color-scheme: light;
-  color: #1a202c;
-  background-color: #f8fafc;
+  color: var(--chakra-colors-text-primary);
+  background-color: var(--chakra-colors-surface-canvas);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,16 +21,16 @@ html {
 
 a {
   font-weight: 500;
-  color: #007bff;
+  color: var(--chakra-colors-brand-blue);
   text-decoration: inherit;
 }
 a:hover {
-  color: #0056b3;
+  color: var(--chakra-colors-blue-700);
 }
 
 body {
   margin: 0;
-  background: #f8fafc;
+  background: var(--chakra-colors-surface-canvas);
   min-width: 320px;
   min-height: 100vh;
 }
@@ -43,4 +43,21 @@ body {
 *:focus-visible {
   outline: none;
   box-shadow: none;
+}
+
+/* React Flow uses light controls by default; bind them to the app surfaces. */
+.react-flow__controls {
+  background: var(--chakra-colors-surface-raised) !important;
+  border: 1px solid var(--chakra-colors-border-default) !important;
+  box-shadow: var(--chakra-shadows-dialog) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom-color: var(--chakra-colors-border-default) !important;
+  fill: var(--chakra-colors-text-primary) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--chakra-colors-surface-glass-strong) !important;
 }

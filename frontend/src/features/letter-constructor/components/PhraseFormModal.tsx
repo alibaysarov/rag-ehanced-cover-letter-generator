@@ -191,7 +191,7 @@ export function PhraseFormModal({ isOpen, phrase, onClose, onSaved }: Props) {
           </FormControl>
         </ModalBody>
         <ModalFooter gap={3}>
-          <Button variant="ghost" onClick={onClose} isDisabled={saving}>
+          <Button variant="danger" onClick={onClose} isDisabled={saving}>
             {t('letterConstructor.phraseForm.cancel')}
           </Button>
           <Button colorScheme="purple" onClick={save} isLoading={saving}>

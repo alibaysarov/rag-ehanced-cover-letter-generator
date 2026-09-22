@@ -67,7 +67,7 @@ function IdleOrb() {
         />
       </Box>
       <Box textAlign="center">
-        <Text fontFamily="heading" fontSize="md" fontWeight={600} color="text.primary" mb={1}>
+        <Text fontFamily="heading" fontSize="md" fontWeight="semibold" color="text.primary" mb={1}>
           Готовы создать письмо
         </Text>
         <Text fontSize="sm" color="text.muted">
@@ -201,7 +201,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
         {/* ── Header ── */}
         <ModalHeader
           fontFamily="heading"
-          fontWeight={600}
+          fontWeight="semibold"
           fontSize="lg"
           color="text.primary"
           letterSpacing="-0.01em"
@@ -222,7 +222,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 py={0.5}
               >
                 <IconCheck size={12} stroke={2.5} color="var(--chakra-colors-green-600)" />
-                <Text fontSize="xs" fontWeight={600} color="green.600">
+                <Text fontSize="xs" fontWeight="semibold" color="green.600">
                   Откликнулись
                 </Text>
               </Flex>
@@ -245,7 +245,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 alignItems="center"
                 gap={1.5}
                 fontSize="sm"
-                fontWeight={600}
+                fontWeight="semibold"
                 color="aurora.indigo"
                 _hover={{ textDecoration: 'underline' }}
               >
@@ -257,7 +257,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
 
           <Text
             fontSize="xs"
-            fontWeight={700}
+            fontWeight="bold"
             color="text.muted"
             textTransform="uppercase"
             letterSpacing="0.08em"
@@ -290,7 +290,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
           <Flex align="center" justify="space-between" mb={3} gap={3} flexWrap="wrap">
             <Text
               fontSize="xs"
-              fontWeight={700}
+              fontWeight="bold"
               color="text.muted"
               textTransform="uppercase"
               letterSpacing="0.08em"
@@ -310,7 +310,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                 border="1px solid rgba(226,232,240,0.8)"
                 borderRadius="lg"
                 fontSize="xs"
-                fontWeight={500}
+                fontWeight="medium"
                 color="text.secondary"
                 width="auto"
                 minW="110px"
@@ -334,7 +334,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
                   borderColor={hasCopied ? 'green.300' : 'rgba(226,232,240,0.8)'}
                   color={hasCopied ? 'green.600' : 'text.secondary'}
                   bg="surface.raised"
-                  fontWeight={500}
+                  fontWeight="medium"
                   fontSize="xs"
                   leftIcon={hasCopied ? <IconCheck size={13} stroke={2.5} /> : <IconCopy size={13} stroke={1.8} />}
                   _hover={{ borderColor: 'aurora.indigo', color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.06)' }}
@@ -368,7 +368,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
             overflow="hidden"
           >
             {/* Idle */}
-            {status === 'idle' && (isTemplateGenerationPending ? <Flex direction="column" align="center" py={10} gap={2}><Text fontWeight={600}>Шаблонное письмо готовится автоматически</Text><Text fontSize="sm" color="text.muted">Оно появится после завершения парсинга всех источников.</Text></Flex> : <IdleOrb />)}
+            {status === 'idle' && (isTemplateGenerationPending ? <Flex direction="column" align="center" py={10} gap={2}><Text fontWeight="semibold">Шаблонное письмо готовится автоматически</Text><Text fontSize="sm" color="text.muted">Оно появится после завершения парсинга всех источников.</Text></Flex> : <IdleOrb />)}
 
             {/* Parsing skeleton */}
             {isGenerating && !hasContent && <ShimmerSkeleton />}
@@ -406,7 +406,7 @@ export function VacancyModal({ vacancy, isOpen, onClose, autoGenerate, onApplied
               alignItems="center"
               gap={1.5}
               fontSize="sm"
-              fontWeight={600}
+              fontWeight="semibold"
               color="aurora.indigo"
               _hover={{ textDecoration: 'underline' }}
               onClick={() => { if (content.trim()) void navigator.clipboard?.writeText(content); }}

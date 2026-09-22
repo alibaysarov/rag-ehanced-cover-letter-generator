@@ -55,7 +55,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
         <Text
           fontFamily="heading"
           fontSize="lg"
-          fontWeight={600}
+          fontWeight="semibold"
           color="text.primary"
           letterSpacing="-0.01em"
         >
@@ -83,7 +83,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                   px={2}
                   py={0.5}
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                 >
                   {histJob.status}
@@ -93,7 +93,7 @@ export function ParseHistory({ onSelectJob }: ParseHistoryProps) {
                 </Badge>
                 <Text
                   fontSize="sm"
-                  fontWeight={500}
+                  fontWeight="medium"
                   color="text.primary"
                   flex="1"
                   textAlign="left"

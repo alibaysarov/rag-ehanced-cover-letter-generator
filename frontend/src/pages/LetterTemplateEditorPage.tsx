@@ -119,7 +119,7 @@ function NewPhraseButton({ label, onClick }: { label: string; onClick: () => voi
         sx={{
           'button:hover &': {
             borderColor: 'purple.400',
-            bg: 'purple.50',
+            bg: 'surface.glassStrong',
             transform: 'translateY(-2px)',
             boxShadow: 'md',
           },
@@ -474,7 +474,7 @@ export default function LetterTemplateEditorPage() {
         color="text.primary"
         border="1px solid"
         borderColor="purple.200"
-        _hover={{ bg: 'purple.50', borderColor: 'purple.400' }}
+        _hover={{ bg: 'surface.glassStrong', borderColor: 'brand.blue' }}
       >
         {t('letterConstructor.editor.addProjects')}
       </Button>
@@ -494,7 +494,7 @@ export default function LetterTemplateEditorPage() {
             border="1px solid"
             borderColor="purple.200"
             boxShadow="sm"
-            _hover={{ bg: 'purple.50', borderColor: 'purple.400', boxShadow: 'md' }}
+            _hover={{ bg: 'surface.glassStrong', borderColor: 'brand.blue', boxShadow: 'md' }}
             _active={{ cursor: 'grabbing' }}
           >
             {phrase.text.slice(0, 80)}
@@ -617,7 +617,13 @@ export default function LetterTemplateEditorPage() {
           </Box>
         </Alert>
       )}
-      <Flex bg="surface.raised" borderRadius="xl" overflow="hidden" h="70vh">
+      <Flex
+        bg="surface.raised"
+        borderRadius="xl"
+        overflow="hidden"
+        h={{ base: '70vh', lg: 'calc(100vh - 118px)' }}
+        minH="600px"
+      >
         {!mobile && library}
         <Box flex="1">
           <ReactFlow

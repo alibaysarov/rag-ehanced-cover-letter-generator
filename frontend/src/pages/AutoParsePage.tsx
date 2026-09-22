@@ -50,7 +50,7 @@ function StatusBadge({ status }: { status: ParsingJobStatus }) {
       px={2.5}
       py={0.5}
       fontSize="xs"
-      fontWeight={600}
+      fontWeight="semibold"
       textTransform="none"
     >
       {t('autoParse.status')}: {status}
@@ -146,7 +146,7 @@ function ParseProgressBar({ savedCount, totalFound, status }: ParseProgressBarPr
           {status === 'running' && <Spinner size="xs" color="aurora.indigo" />}
           <StatusBadge status={status} />
         </Flex>
-        <Text fontSize="sm" fontWeight={600} color="text.secondary">
+        <Text fontSize="sm" fontWeight="semibold" color="text.secondary">
           {savedCount} / {totalFound} {t('autoParse.saved')}
         </Text>
       </Flex>
@@ -204,7 +204,7 @@ function GenerationPanel({ genState, isStartingGen, onGenerate, mode }: Generati
               px={2.5}
               py={0.5}
               fontSize="xs"
-              fontWeight={600}
+              fontWeight="semibold"
               textTransform="none"
             >
               Письма готовы
@@ -449,7 +449,7 @@ export default function AutoParsePage() {
           <Heading
             fontFamily="heading"
             fontSize="3xl"
-            fontWeight={600}
+            fontWeight="semibold"
             color="text.primary"
             letterSpacing="-0.02em"
             mb={1}

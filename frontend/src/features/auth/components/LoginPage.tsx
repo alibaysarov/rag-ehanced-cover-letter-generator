@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
               <Heading
                 fontFamily="heading"
                 fontSize="3xl"
-                fontWeight={600}
+                fontWeight="semibold"
                 color="text.primary"
                 letterSpacing="-0.02em"
                 mb={2}
@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={5}>
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.login.email')}
                   </FormLabel>
                   <Input
@@ -107,7 +107,7 @@ const LoginPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.login.password')}
                   </FormLabel>
                   <Input
@@ -138,7 +138,7 @@ const LoginPage: React.FC = () => {
                 <Link
                   as={RouterLink}
                   to="/register"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   sx={{
                     backgroundImage:
                       'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',

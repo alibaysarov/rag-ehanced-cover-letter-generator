@@ -60,7 +60,7 @@ export default function LetterGenerator() {
         <Heading
           fontFamily="heading"
           fontSize="3xl"
-          fontWeight={600}
+          fontWeight="semibold"
           color="text.primary"
           letterSpacing="-0.02em"
           mb={1}

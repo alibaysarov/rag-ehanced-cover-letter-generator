@@ -36,6 +36,13 @@ const solidSx = {
     _disabled: { backgroundPosition: '0% 0%' },
   },
   _active: { backgroundPosition: '100% 100%' },
+  _disabled: {
+    backgroundImage: 'none',
+    backgroundColor: '#0056B3',
+    color: 'white',
+    opacity: 0.58,
+    boxShadow: 'none',
+  },
 };
 
 // Outline: gradient border via ::before mask trick + gradient text directly.

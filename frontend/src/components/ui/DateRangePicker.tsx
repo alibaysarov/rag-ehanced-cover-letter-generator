@@ -123,7 +123,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
           _hover={{ color: 'aurora.indigo', bg: 'rgba(0, 123, 255,0.08)' }}
           borderRadius="lg"
         />
-        <Text fontSize="sm" fontWeight={600} color="text.primary">
+        <Text fontSize="sm" fontWeight="semibold" color="text.primary">
           {months[viewMonth]} {viewYear}
         </Text>
         <IconButton
@@ -142,7 +142,7 @@ function Calendar({ from, to, activeInput, onSelect }: CalendarProps) {
       <Grid templateColumns="repeat(7, 1fr)" mb={1}>
         {weekDays.map((d) => (
           <Flex key={d} justify="center" align="center" h="28px">
-            <Text fontSize="xs" fontWeight={600} color="text.muted">
+            <Text fontSize="xs" fontWeight="semibold" color="text.muted">
               {d}
             </Text>
           </Flex>
@@ -308,7 +308,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
     <Box ref={containerRef} position="relative">
       <Flex gap={3} align="center" flexWrap="wrap">
         <Box>
-          <Text fontSize="xs" fontWeight={500} color="text.muted" mb={1}>
+          <Text fontSize="xs" fontWeight="medium" color="text.muted" mb={1}>
             {t('datePicker.from')}
           </Text>
           <InputGroup size="sm" w="160px">
@@ -329,7 +329,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         <Text color="border.subtle" mt={5} fontSize="sm">—</Text>
 
         <Box>
-          <Text fontSize="xs" fontWeight={500} color="text.muted" mb={1}>
+          <Text fontSize="xs" fontWeight="medium" color="text.muted" mb={1}>
             {t('datePicker.to')}
           </Text>
           <InputGroup size="sm" w="160px">

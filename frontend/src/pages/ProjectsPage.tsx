@@ -318,7 +318,7 @@ const BatchAddProjectsModal: React.FC<BatchAddModalProps> = ({
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          <Button variant="danger" mr={3} onClick={onClose}>
             {t('projects.cancel')}
           </Button>
           <Button
@@ -415,7 +415,7 @@ const EditProjectModal: React.FC<EditModalProps> = ({
           />
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          <Button variant="danger" mr={3} onClick={onClose}>
             {t('projects.cancel')}
           </Button>
           <Button
@@ -585,8 +585,7 @@ const ProjectsPage: React.FC = () => {
                             aria-label={t('projects.deleteAriaLabel')}
                             icon={<DeleteIcon />}
                             size="sm"
-                            colorScheme="red"
-                            variant="ghost"
+                            variant="danger"
                             onClick={() => handleDelete(p)}
                           />
                         </HStack>
@@ -723,11 +722,11 @@ const ProjectsPage: React.FC = () => {
               {t('projects.deleteConfirmBody', { name: selected?.name ?? '' })}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
+              <Button ref={cancelRef} variant="danger" onClick={onDeleteClose}>
                 {t('projects.cancel')}
               </Button>
               <Button
-                colorScheme="red"
+                variant="danger"
                 onClick={confirmDelete}
                 ml={3}
                 isLoading={deleteProject.isPending}

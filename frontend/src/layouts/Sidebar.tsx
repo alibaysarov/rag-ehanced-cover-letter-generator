@@ -33,13 +33,13 @@ function BrandMark() {
   const isDark = colorMode === 'dark';
 
   return (
-    <Box position="relative" w="188px" h="30px">
+    <Box position="relative" w="brandMark" h="brandMarkHeight">
       <Image
         src="/findjobforme-logo.svg"
         alt="FindJobFor.me"
         position="absolute"
         inset={0}
-        w="188px"
+        w="brandMark"
         h="auto"
         opacity={isDark ? 0 : 1}
         transition="opacity 240ms ease"
@@ -50,7 +50,7 @@ function BrandMark() {
         aria-hidden
         position="absolute"
         inset={0}
-        w="188px"
+        w="brandMark"
         h="auto"
         opacity={isDark ? 1 : 0}
         transition="opacity 240ms ease"
@@ -116,8 +116,8 @@ export function Sidebar() {
         position="sticky"
         top={0}
         h="100vh"
-        w="260px"
-        minW="260px"
+        w="sidebar"
+        minW="sidebar"
         flexShrink={0}
         bg="surface.glass"
         borderRight="1px solid"

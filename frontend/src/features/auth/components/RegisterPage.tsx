@@ -96,7 +96,7 @@ const RegisterPage: React.FC = () => {
               <Heading
                 fontFamily="heading"
                 fontSize="3xl"
-                fontWeight={600}
+                fontWeight="semibold"
                 color="text.primary"
                 letterSpacing="-0.02em"
                 mb={2}
@@ -112,7 +112,7 @@ const RegisterPage: React.FC = () => {
               <Stack spacing={5}>
                 <SimpleGrid columns={2} spacing={4}>
                   <FormControl isInvalid={!!errors.first_name}>
-                    <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                    <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                       {t('auth.register.firstName')}
                     </FormLabel>
                     <Input
@@ -123,7 +123,7 @@ const RegisterPage: React.FC = () => {
                   </FormControl>
 
                   <FormControl isInvalid={!!errors.last_name}>
-                    <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                    <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                       {t('auth.register.lastName')}
                     </FormLabel>
                     <Input
@@ -135,7 +135,7 @@ const RegisterPage: React.FC = () => {
                 </SimpleGrid>
 
                 <FormControl isInvalid={!!errors.email}>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.register.email')}
                   </FormLabel>
                   <Input
@@ -148,7 +148,7 @@ const RegisterPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.register.password')}
                   </FormLabel>
                   <Input
@@ -161,7 +161,7 @@ const RegisterPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.confirmPassword}>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('auth.register.confirmPassword')}
                   </FormLabel>
                   <Input
@@ -192,7 +192,7 @@ const RegisterPage: React.FC = () => {
                 <Link
                   as={RouterLink}
                   to="/login"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   sx={{
                     backgroundImage:
                       'linear-gradient(135deg, #007BFF 0%, #0069D9 50%, #0056B3 100%)',

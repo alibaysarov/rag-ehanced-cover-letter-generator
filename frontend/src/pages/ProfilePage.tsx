@@ -33,7 +33,7 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
       <Heading
         fontFamily="heading"
         fontSize="xl"
-        fontWeight={600}
+        fontWeight="semibold"
         color="text.primary"
         letterSpacing="-0.01em"
         mb={1}
@@ -77,7 +77,7 @@ function UiLangToggle({ value, onChange }: { value: UiLang; onChange: (v: UiLang
             py={2}
             borderRadius="full"
             fontSize="sm"
-            fontWeight={600}
+            fontWeight="semibold"
             color={active ? 'white' : 'text.secondary'}
             transition="color 180ms ease"
             sx={
@@ -165,14 +165,14 @@ function PersonalInfoCard() {
         <Stack spacing={5}>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <FormControl isInvalid={!!errors.first_name}>
-              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                 {t('profile.firstName')}
               </FormLabel>
               <Input {...register('first_name')} />
               <FormErrorMessage>{errors.first_name?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.last_name}>
-              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                 {t('profile.lastName')}
               </FormLabel>
               <Input {...register('last_name')} />
@@ -180,7 +180,7 @@ function PersonalInfoCard() {
             </FormControl>
           </SimpleGrid>
           <FormControl isInvalid={!!errors.email}>
-            <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+            <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
               {t('profile.email')}
             </FormLabel>
             <Input type="email" autoComplete="email" {...register('email')} />
@@ -261,7 +261,7 @@ function PasswordCard() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={5}>
           <FormControl isInvalid={!!errors.current_password}>
-            <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+            <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
               {t('profile.currentPassword')}
             </FormLabel>
             <Input
@@ -273,7 +273,7 @@ function PasswordCard() {
           </FormControl>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <FormControl isInvalid={!!errors.new_password}>
-              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                 {t('profile.newPassword')}
               </FormLabel>
               <Input
@@ -284,7 +284,7 @@ function PasswordCard() {
               <FormErrorMessage>{errors.new_password?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.confirm_password}>
-              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                 {t('profile.confirmPassword')}
               </FormLabel>
               <Input
@@ -344,13 +344,13 @@ function PreferencesCard() {
       />
       <Stack spacing={6}>
         <Box>
-          <Text fontSize="sm" color="text.secondary" fontWeight={500} mb={3}>
+          <Text fontSize="sm" color="text.secondary" fontWeight="medium" mb={3}>
             {t('profile.uiLanguage')}
           </Text>
           <UiLangToggle value={uiLang} onChange={onUiLangChange} />
         </Box>
         <Box maxW="320px">
-          <Text fontSize="sm" color="text.secondary" fontWeight={500} mb={3}>
+          <Text fontSize="sm" color="text.secondary" fontWeight="medium" mb={3}>
             {t('profile.defaultGenLanguage')}
           </Text>
           <Select value={defaultGenLang} onChange={onGenLangChange}>
@@ -373,7 +373,7 @@ export default function ProfilePage() {
       <Heading
         fontFamily="heading"
         fontSize="3xl"
-        fontWeight={600}
+        fontWeight="semibold"
         color="text.primary"
         letterSpacing="-0.02em"
         mb={8}

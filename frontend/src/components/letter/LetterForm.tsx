@@ -73,7 +73,7 @@ function ModeToggle({
             py={2}
             borderRadius="full"
             fontSize="sm"
-            fontWeight={600}
+            fontWeight="semibold"
             color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             _hover={!active ? { color: 'text.primary' } : undefined}
@@ -145,7 +145,7 @@ export function LetterForm({
           <Text
             fontFamily="heading"
             fontSize="lg"
-            fontWeight={600}
+            fontWeight="semibold"
             color="text.primary"
             letterSpacing="-0.01em"
             mb={3}
@@ -159,7 +159,7 @@ export function LetterForm({
           <Stack spacing={5}>
             {mode === 'url' ? (
               <FormControl isRequired>
-                <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                   {t('letterForm.jobUrl')}
                 </FormLabel>
                 <Input
@@ -174,7 +174,7 @@ export function LetterForm({
             ) : (
               <>
                 <FormControl isRequired>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('letterForm.positionName')}
                   </FormLabel>
                   <Input
@@ -184,7 +184,7 @@ export function LetterForm({
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+                  <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                     {t('letterForm.jobDescription')}
                   </FormLabel>
                   <Textarea
@@ -199,7 +199,7 @@ export function LetterForm({
             )}
 
             <FormControl>
-              <FormLabel fontSize="sm" color="text.secondary" fontWeight={500}>
+              <FormLabel fontSize="sm" color="text.secondary" fontWeight="medium">
                 {t('letterForm.language')}
               </FormLabel>
               <Select

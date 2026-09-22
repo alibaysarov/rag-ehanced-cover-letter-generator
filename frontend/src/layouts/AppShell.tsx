@@ -22,10 +22,10 @@ export function AppShell({ children }: AppShellProps) {
         <Sidebar />
         <Box as="main" flex="1" minW={0} overflowX="hidden">
           <Container
-            maxW={isLetterConstructorEditor ? "none" : "1120px"}
+            maxW={isLetterConstructorEditor ? "none" : "content"}
             w="100%"
             px={isLetterConstructorEditor ? { base: 4, md: 6 } : { base: 6, md: 12 }}
-            py={10}
+            py="pageY"
           >
             <PageTransition>{children}</PageTransition>
           </Container>

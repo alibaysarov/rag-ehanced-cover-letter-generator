@@ -41,8 +41,7 @@ function NodeControls({ id, data }: { id: string; data: NodeActions }) {
           aria-label={data.deleteLabel ?? 'Delete node'}
           title={data.deleteLabel}
           size="xs"
-          colorScheme="red"
-          variant="ghost"
+          variant="danger"
           icon={<IconTrash size={16} />}
           onMouseDown={stop}
           onClick={(event) => {
@@ -97,7 +96,7 @@ export function PhraseNode({ id, data }: NodeProps<PhraseFlowNode>) {
       maxW="300px"
       bg="surface.raised"
       border="2px solid"
-      borderColor={data.invalid ? 'red.400' : data.isRoot ? 'purple.500' : 'gray.200'}
+      borderColor={data.invalid ? 'red.400' : data.isRoot ? 'brand.blue' : 'border.default'}
       borderRadius="xl"
       p={3}
       boxShadow="md"
@@ -133,9 +132,9 @@ export function ProjectsNode({ id, data }: NodeProps<ProjectsFlowNode>) {
       role="group"
       position="relative"
       minW="180px"
-      bg="purple.50"
+      bg="surface.glassStrong"
       border="2px solid"
-      borderColor={data.invalid ? 'red.400' : data.isRoot ? 'purple.600' : 'purple.300'}
+      borderColor={data.invalid ? 'red.400' : 'brand.blue'}
       borderRadius="xl"
       p={4}
     >
@@ -146,7 +145,7 @@ export function ProjectsNode({ id, data }: NodeProps<ProjectsFlowNode>) {
           START
         </Badge>
       )}
-      <Text mt={2} fontWeight="bold">
+      <Text mt={2} fontWeight="bold" color="text.primary">
         Проекты
       </Text>
       <Handle type="source" position={Position.Right} />

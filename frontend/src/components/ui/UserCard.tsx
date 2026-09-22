@@ -101,7 +101,7 @@ export function UserCard() {
         borderRadius="full"
         backgroundImage="accent.gradient"
         color="white"
-        fontWeight={600}
+        fontWeight="semibold"
         fontSize="sm"
         fontFamily="heading"
         boxShadow="0 4px 12px rgba(0, 123, 255,0.35)"
@@ -111,7 +111,7 @@ export function UserCard() {
       <Box flex="1" minW={0}>
         <Text
           fontSize="sm"
-          fontWeight={600}
+          fontWeight="semibold"
           color="text.primary"
           isTruncated
           fontFamily="body"

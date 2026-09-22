@@ -105,7 +105,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
               <Text
                 fontFamily="heading"
                 fontSize="md"
-                fontWeight={600}
+                fontWeight="semibold"
                 color="text.primary"
                 letterSpacing="-0.01em"
                 noOfLines={2}
@@ -123,7 +123,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                   alignItems="center"
                   gap={1.5}
                   fontSize="sm"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   color="aurora.indigo"
                   _hover={{ textDecoration: 'underline' }}
                 >
@@ -135,7 +135,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
               {isApplied && (
                 <Flex align="center" gap={1} w="fit-content" bg="green.100" border="1px solid" borderColor="green.300" borderRadius="lg" px={2} py={1}>
                   <IconCheck size={12} stroke={2.5} color="var(--chakra-colors-green-700)" />
-                  <Text fontSize="xs" fontWeight={700} color="green.700">Уже откликались</Text>
+                  <Text fontSize="xs" fontWeight="bold" color="green.700">Уже откликались</Text>
                 </Flex>
               )}
             </Flex>
@@ -155,7 +155,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                 alignItems="center"
                 gap={1}
                 fontSize="xs"
-                fontWeight={600}
+                fontWeight="semibold"
                 color="aurora.indigo"
                 _hover={{ textDecoration: 'underline' }}
                 onClick={openVacancy}
@@ -182,7 +182,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                     py={0.5}
                   >
                     <IconSparkles size={11} stroke={2.5} color="var(--chakra-colors-purple-600)" />
-                    <Text fontSize="xs" fontWeight={600} color="purple.600" whiteSpace="nowrap">
+                    <Text fontSize="xs" fontWeight="semibold" color="purple.600" whiteSpace="nowrap">
                       Письмо готово
                     </Text>
                   </Flex>
@@ -199,7 +199,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                     py={0.5}
                   >
                     <IconCheck size={11} stroke={2.5} color="var(--chakra-colors-green-600)" />
-                    <Text fontSize="xs" fontWeight={600} color="green.600" whiteSpace="nowrap">
+                    <Text fontSize="xs" fontWeight="semibold" color="green.600" whiteSpace="nowrap">
                       Откликнулись
                     </Text>
                   </Flex>
@@ -216,7 +216,7 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
                     py={0.5}
                   >
                     <IconEye size={11} stroke={2.5} color="var(--chakra-colors-gray-500)" />
-                    <Text fontSize="xs" fontWeight={600} color="text.muted" whiteSpace="nowrap">
+                    <Text fontSize="xs" fontWeight="semibold" color="text.muted" whiteSpace="nowrap">
                       Просмотрено
                     </Text>
                   </Flex>
@@ -298,16 +298,16 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
           <Flex direction="column" gap={3.5} px={{ base: 5, md: 6 }} py={5} pl={{ base: 6, md: 7 }}>
             <Flex justify="space-between" align="flex-start" gap={4}>
               <Box minW={0}>
-                <Text fontFamily="heading" fontSize={{ base: 'md', md: 'lg' }} fontWeight={700} color="text.primary" noOfLines={2}>{vacancy.job_title}</Text>
+                <Text fontFamily="heading" fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold" color="text.primary" noOfLines={2}>{vacancy.job_title}</Text>
                 <VacancyCreatedAt createdAt={vacancy.created_at} />
-                {isApplied && <Flex mt={2} align="center" gap={1} w="fit-content" bg="green.100" border="1px solid" borderColor="green.300" borderRadius="lg" px={2} py={1}><IconCheck size={12} stroke={2.5} color="var(--chakra-colors-green-700)" /><Text fontSize="xs" fontWeight={700} color="green.700">Уже откликались</Text></Flex>}
+                {isApplied && <Flex mt={2} align="center" gap={1} w="fit-content" bg="green.100" border="1px solid" borderColor="green.300" borderRadius="lg" px={2} py={1}><IconCheck size={12} stroke={2.5} color="var(--chakra-colors-green-700)" /><Text fontSize="xs" fontWeight="bold" color="green.700">Уже откликались</Text></Flex>}
                 <Text mt={1.5} color="text.secondary" fontSize="sm" lineHeight={1.55} noOfLines={2}>{vacancy.job_text}</Text>
               </Box>
               <Flex align="center" gap={3} flexShrink={0}>
                 {isViewed && (
                   <Flex align="center" gap={1} color="text.muted" aria-label="Просмотрено">
                     <IconEye size={18} stroke={1.9} />
-                    <Text fontSize="xs" fontWeight={600}>Просмотрено</Text>
+                    <Text fontSize="xs" fontWeight="semibold">Просмотрено</Text>
                   </Flex>
                 )}
                 <Button size="sm" colorScheme={isApplied ? 'green' : 'blue'} variant={isApplied ? 'solid' : 'outline'} leftIcon={<IconCheck size={14} />} isDisabled={isApplied} onClick={markApplied}>
@@ -316,12 +316,12 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
               </Flex>
             </Flex>
             <Box>
-              <Text fontSize="sm" fontWeight={650} color="text.primary">{vacancy.web_site || 'Вакансия от работодателя'}</Text>
+              <Text fontSize="sm" fontWeight="mediumBold" color="text.primary">{vacancy.web_site || 'Вакансия от работодателя'}</Text>
               <Flex mt={1.5} align="center" gap={1.5} color="text.secondary" fontSize="sm"><IconMapPin size={15} stroke={1.8} /><Text>Локация указана в вакансии</Text></Flex>
             </Box>
             <Flex justify="space-between" align={{ base: 'stretch', sm: 'center' }} direction={{ base: 'column', sm: 'row' }} gap={3}>
               <GradientButton size="md" px={6} onClick={generate} isDisabled={isGenerationPending} leftIcon={<IconSparkles size={16} stroke={2} />}>{vacancy.is_generated ? 'Посмотреть письмо' : isGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}</GradientButton>
-              <Link href={vacancy.url} isExternal onClick={openVacancy} color="blue.600" fontSize="sm" fontWeight={600}>Открыть вакансию <IconExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /></Link>
+              <Link href={vacancy.url} isExternal onClick={openVacancy} color="blue.600" fontSize="sm" fontWeight="semibold">Открыть вакансию <IconExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /></Link>
             </Flex>
           </Flex>
         </Box>

@@ -41,7 +41,7 @@ export function VacancyLimitControl({ value, onChange, isDisabled }: VacancyLimi
   return (
     <FormControl mt={5} isDisabled={isDisabled}>
       <Flex align="center" justify="space-between" gap={4} mb={2}>
-        <FormLabel id={labelId} htmlFor={id} m={0} fontSize="sm" fontWeight={600}>
+        <FormLabel id={labelId} htmlFor={id} m={0} fontSize="sm" fontWeight="semibold">
           {t('autoParse.vacancyLimit')}
         </FormLabel>
         <Input
@@ -60,7 +60,7 @@ export function VacancyLimitControl({ value, onChange, isDisabled }: VacancyLimi
           flexShrink={0}
           height={9}
           fontSize="sm"
-          fontWeight={600}
+          fontWeight="semibold"
           textAlign="center"
           color="text.primary"
           bg="surface.raised"

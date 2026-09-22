@@ -107,7 +107,7 @@ function IdleState() {
         />
       </Box>
       <Box textAlign="center" maxW="320px">
-        <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="text.primary" mb={1}>
+        <Text fontFamily="heading" fontSize="lg" fontWeight="semibold" color="text.primary" mb={1}>
           {t('letterOutput.idleTitle')}
         </Text>
         <Text fontSize="sm" color="text.muted">
@@ -163,7 +163,7 @@ function ErrorState({ message }: { message: string }) {
       textAlign="center"
       gap={3}
     >
-      <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
+      <Text fontFamily="heading" fontSize="lg" fontWeight="semibold" color="danger.500">
         {t('letterOutput.errorTitle')}
       </Text>
       <Text fontSize="sm" color="text.muted" maxW="360px">
@@ -185,7 +185,7 @@ function UrlParseErrorState({ onSwitchToText }: { onSwitchToText?: () => void })
       textAlign="center"
       gap={4}
     >
-      <Text fontFamily="heading" fontSize="lg" fontWeight={600} color="danger.500">
+      <Text fontFamily="heading" fontSize="lg" fontWeight="semibold" color="danger.500">
         {t('letterOutput.urlParseErrorTitle')}
       </Text>
       <Text fontSize="sm" color="text.muted" maxW="360px">
@@ -247,10 +247,10 @@ function FloatingToolbar({
         fontSize="xs"
         color="text.secondary"
       >
-        <Text fontWeight={600}>{wordCount}</Text>
+        <Text fontWeight="semibold">{wordCount}</Text>
         <Text color="text.muted">{t('letterOutput.words')}</Text>
         <Text color="border.subtle">•</Text>
-        <Text fontWeight={600}>{readMinutes}</Text>
+        <Text fontWeight="semibold">{readMinutes}</Text>
         <Text color="text.muted">{t('letterOutput.min')}</Text>
       </Flex>
 
@@ -355,7 +355,7 @@ function TabSwitch({
             py={1.5}
             borderRadius="full"
             fontSize="sm"
-            fontWeight={600}
+            fontWeight="semibold"
             color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             zIndex={1}
@@ -474,7 +474,7 @@ function AppliedButton({
         border="1px solid rgba(16,185,129,0.3)"
         color="green.600"
         fontSize="sm"
-        fontWeight={600}
+        fontWeight="semibold"
       >
         <IconCheck size={16} stroke={2.5} />
         {t('letterOutput.appliedSuccess')}
@@ -489,7 +489,7 @@ function AppliedButton({
       loadingText={t('letterOutput.applyLoading')}
       size="sm"
       borderRadius="xl"
-      fontWeight={600}
+      fontWeight="semibold"
       fontSize="sm"
       px={5}
       sx={{

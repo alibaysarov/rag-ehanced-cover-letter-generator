@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
+import { GradientButton } from '@/components/ui/GradientButton';
 import type { ParserInput } from './types';
 
 function FieldLabelWithTooltip({ label, tooltip }: { label: string; tooltip: string }) {
@@ -74,7 +75,7 @@ export function ParserForm({ initial, isSubmitting, isInUse, error, onSubmit, on
   };
 
   return (
-    <Box as="form" onSubmit={submit} maxW="900px">
+    <Box as="form" onSubmit={submit} maxW="form">
       <Stack spacing={7}>
         {isInUse && <Alert status="info" borderRadius="xl"><AlertIcon />{t('searchSites.editInUse')}</Alert>}
         {error && <Alert status="error" borderRadius="xl"><AlertIcon />{error}</Alert>}
@@ -124,7 +125,12 @@ export function ParserForm({ initial, isSubmitting, isInUse, error, onSubmit, on
           <Heading size="md" mb={2}>{t('searchSites.sections.extraction')}</Heading><Text color="text.muted" mb={5}>{t('searchSites.hints.js')}</Text>
           <Stack spacing={4}><FormControl isRequired><FormLabel>evaluate_vacancy_list</FormLabel><Textarea fontFamily="mono" minH="220px" value={value.evaluate_vacancy_list} onChange={(e) => set('evaluate_vacancy_list', e.target.value)} /></FormControl><FormControl isRequired><FormLabel>evaluate_vacancy_page</FormLabel><Textarea fontFamily="mono" minH="220px" value={value.evaluate_vacancy_page} onChange={(e) => set('evaluate_vacancy_page', e.target.value)} /></FormControl></Stack>
         </Box>
-        <HStack><Button type="submit" colorScheme="purple" isLoading={isSubmitting}>{t('searchSites.save')}</Button><Button onClick={onCancel} isDisabled={isSubmitting}>{t('searchSites.cancel')}</Button></HStack>
+        <HStack>
+          <GradientButton type="submit" isLoading={isSubmitting}>
+            {t('searchSites.save')}
+          </GradientButton>
+          <Button variant="danger" onClick={onCancel} isDisabled={isSubmitting}>{t('searchSites.cancel')}</Button>
+        </HStack>
       </Stack>
     </Box>
   );

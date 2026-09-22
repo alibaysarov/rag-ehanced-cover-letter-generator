@@ -222,7 +222,7 @@ const EditCVModal: React.FC<EditModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          <Button variant="danger" mr={3} onClick={onClose}>
             {t('cvs.editModal.cancel')}
           </Button>
           <Button
@@ -335,7 +335,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          <Button variant="danger" mr={3} onClick={onClose}>
             {t('cvs.uploadModal.cancel')}
           </Button>
           <Button
@@ -546,8 +546,7 @@ const UserCVPage: React.FC = () => {
                             aria-label={t('cvs.deleteAriaLabel')}
                             icon={<DeleteIcon />}
                             size="sm"
-                            colorScheme="red"
-                            variant="ghost"
+                            variant="danger"
                             onClick={() => handleDeleteClick(cv)}
                           />
                         </HStack>
@@ -587,11 +586,11 @@ const UserCVPage: React.FC = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
+              <Button ref={cancelRef} variant="danger" onClick={onDeleteClose}>
                 {t('cvs.deleteModal.cancel')}
               </Button>
               <Button
-                colorScheme="red"
+                variant="danger"
                 onClick={handleDelete}
                 ml={3}
                 isLoading={deleteCV.isPending}

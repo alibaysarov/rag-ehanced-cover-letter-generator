@@ -115,7 +115,7 @@ function TypeBadge({ type }: { type: string }) {
       px={2}
       py={0.5}
       fontSize="xs"
-      fontWeight={600}
+      fontWeight="semibold"
       textTransform="none"
     >
       {TYPE_LABELS[type] ?? type}
@@ -161,7 +161,7 @@ function TypeTabs({ value, onChange }: TypeTabsProps) {
             py={1.5}
             borderRadius="full"
             fontSize="sm"
-            fontWeight={600}
+            fontWeight="semibold"
             color={active ? 'white' : 'text.secondary'}
             transition="color 200ms ease"
             zIndex={1}
@@ -216,7 +216,7 @@ function SummaryTable({
       <Text
         fontFamily="heading"
         fontSize="lg"
-        fontWeight={600}
+        fontWeight="semibold"
         color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
@@ -251,7 +251,7 @@ function SummaryTable({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -262,7 +262,7 @@ function SummaryTable({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -274,7 +274,7 @@ function SummaryTable({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -286,7 +286,7 @@ function SummaryTable({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -298,7 +298,7 @@ function SummaryTable({
                   color="text.primary"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={700}
+                  fontWeight="bold"
                   textTransform="none"
                   letterSpacing="normal"
                   isNumeric
@@ -310,7 +310,7 @@ function SummaryTable({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -360,7 +360,7 @@ function SummaryTable({
                   </Td>
                   <Td
                     fontSize="sm"
-                    fontWeight={700}
+                    fontWeight="bold"
                     color="text.primary"
                     isNumeric
                     borderColor="rgba(226,232,240,0.4)"
@@ -455,7 +455,7 @@ function ApplicationsList({
       <Text
         fontFamily="heading"
         fontSize="lg"
-        fontWeight={600}
+        fontWeight="semibold"
         color="text.primary"
         letterSpacing="-0.01em"
         mb={4}
@@ -490,7 +490,7 @@ function ApplicationsList({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -501,7 +501,7 @@ function ApplicationsList({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -512,7 +512,7 @@ function ApplicationsList({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -523,7 +523,7 @@ function ApplicationsList({
                   color="text.muted"
                   fontFamily="body"
                   fontSize="xs"
-                  fontWeight={600}
+                  fontWeight="semibold"
                   textTransform="none"
                   letterSpacing="normal"
                   borderColor="rgba(226,232,240,0.5)"
@@ -600,7 +600,7 @@ function ApplicationsList({
                       />
                       <Text
                         fontSize="xs"
-                        fontWeight={600}
+                        fontWeight="semibold"
                         color={item.is_accepted ? 'green.600' : 'text.muted'}
                       >
                         {item.is_accepted ? t('stats.accepted') : t('stats.pending')}
@@ -619,11 +619,11 @@ function ApplicationsList({
         <Flex align="center" justify="space-between" mt={5} flexWrap="wrap" gap={3}>
           <Text fontSize="sm" color="text.muted">
             {t('stats.page')}{' '}
-            <Text as="span" fontWeight={600} color="text.secondary">
+            <Text as="span" fontWeight="semibold" color="text.secondary">
               {page}
             </Text>{' '}
             {t('stats.of')}{' '}
-            <Text as="span" fontWeight={600} color="text.secondary">
+            <Text as="span" fontWeight="semibold" color="text.secondary">
               {totalPages}
             </Text>
           </Text>
@@ -724,7 +724,7 @@ export default function StatsPage() {
           <Heading
             fontFamily="heading"
             fontSize="3xl"
-            fontWeight={600}
+            fontWeight="semibold"
             color="text.primary"
             letterSpacing="-0.02em"
             mb={1}
@@ -753,7 +753,7 @@ export default function StatsPage() {
               size="sm"
               borderRadius="xl"
               px={4}
-              fontWeight={600}
+              fontWeight="semibold"
               leftIcon={<IconDownload size={15} stroke={2} />}
               isLoading={isExporting}
               loadingText={t('stats.exporting')}
