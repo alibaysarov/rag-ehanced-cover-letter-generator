@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react'
 import {
   Box,
   Button,
@@ -8,8 +8,6 @@ import {
   Heading,
   Text,
   VStack,
-  HStack,
-  IconButton,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -39,43 +37,43 @@ import {
   Td,
   TableContainer,
   Flex,
-} from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { authApi } from '@/api/client';
-import { useNavigate } from 'react-router-dom';
-import { useUploadCV } from '@/hooks/useLetter';
+} from '@chakra-ui/react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { authApi } from '@/api/client'
+import { useNavigate } from 'react-router-dom'
+import { useUploadCV } from '@/hooks/useLetter'
+import { ListingActionButtons } from '@/components/ui/ListingActionButtons'
 
 // Types
 interface CV {
-  id: number;
-  source_id: string;
-  filename: string;
-  original_filename: string;
-  file_size: number;
-  content_type: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  id: number
+  source_id: string
+  filename: string
+  original_filename: string
+  file_size: number
+  content_type: string
+  status: string
+  created_at: string
+  updated_at: string
 }
 
 interface CVListResponse {
-  success: boolean;
+  success: boolean
   data: {
-    cvs: CV[];
-  };
+    cvs: CV[]
+  }
 }
 
 interface CVUpdateRequest {
-  cv_id: number;
-  source_id: string;
-  file: File;
+  cv_id: number
+  source_id: string
+  file: File
 }
 
 interface GeneralResponse {
-  success: boolean;
-  message: string;
+  success: boolean
+  message: string
 }
 
 // Hooks
@@ -83,54 +81,54 @@ const useUserCVs = () => {
   return useQuery<CVListResponse, Error>({
     queryKey: ['userCVs'],
     queryFn: async () => {
-      const response = await authApi.get('/user/cvs');
-      return response.data;
+      const response = await authApi.get('/user/cvs')
+      return response.data
     },
-  });
-};
+  })
+}
 
 const useUpdateCV = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation<GeneralResponse, Error, CVUpdateRequest>({
     mutationFn: async (data: CVUpdateRequest) => {
-      const formData = new FormData();
-      formData.append('source_id', data.source_id);
-      formData.append('file', data.file);
+      const formData = new FormData()
+      formData.append('source_id', data.source_id)
+      formData.append('file', data.file)
 
       const response = await authApi.put(`/cv/${data.cv_id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
-      return response.data;
+      })
+      return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userCVs'] });
+      queryClient.invalidateQueries({ queryKey: ['userCVs'] })
     },
-  });
-};
+  })
+}
 
 const useDeleteCV = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation<GeneralResponse, Error, number>({
     mutationFn: async (cvId: number) => {
-      const response = await authApi.delete(`/cv/${cvId}`);
-      return response.data;
+      const response = await authApi.delete(`/cv/${cvId}`)
+      return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userCVs'] });
+      queryClient.invalidateQueries({ queryKey: ['userCVs'] })
     },
-  });
-};
+  })
+}
 
 // Format file size
 const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
 
 // Format date
 const formatDate = (dateString: string): string => {
@@ -140,61 +138,55 @@ const formatDate = (dateString: string): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  });
-};
+  })
+}
 
 // Edit Modal Component
 interface EditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  cv: CV | null;
-  onUpdate: (data: CVUpdateRequest) => void;
-  isUpdating: boolean;
+  isOpen: boolean
+  onClose: () => void
+  cv: CV | null
+  onUpdate: (data: CVUpdateRequest) => void
+  isUpdating: boolean
 }
 
-const EditCVModal: React.FC<EditModalProps> = ({
-  isOpen,
-  onClose,
-  cv,
-  onUpdate,
-  isUpdating,
-}) => {
-  const { t } = useTranslation();
-  const [file, setFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<{ file?: string }>({});
+const EditCVModal: React.FC<EditModalProps> = ({ isOpen, onClose, cv, onUpdate, isUpdating }) => {
+  const { t } = useTranslation()
+  const [file, setFile] = useState<File | null>(null)
+  const [errors, setErrors] = useState<{ file?: string }>({})
 
   React.useEffect(() => {
     if (cv) {
-      setFile(null);
-      setErrors({});
+      setFile(null)
+      setErrors({})
     }
-  }, [cv]);
+  }, [cv])
 
   const validate = (): boolean => {
-    const newErrors: { file?: string } = {};
+    const newErrors: { file?: string } = {}
 
     if (!file) {
-      newErrors.file = t('cvs.editModal.fileRequired');
+      newErrors.file = t('cvs.editModal.fileRequired')
     } else if (file.type !== 'application/pdf') {
-      newErrors.file = t('cvs.editModal.onlyPdf');
+      newErrors.file = t('cvs.editModal.onlyPdf')
     } else if (file.size > 10 * 1024 * 1024) {
-      newErrors.file = t('cvs.editModal.maxSize');
+      newErrors.file = t('cvs.editModal.maxSize')
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = () => {
     if (validate() && cv && file) {
-      const sourceId = Date.now().toString();
+      const sourceId = Date.now().toString()
       onUpdate({
         cv_id: cv.id,
         source_id: sourceId,
         file: file,
-      });
+      })
     }
-  };
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
@@ -236,77 +228,76 @@ const EditCVModal: React.FC<EditModalProps> = ({
         </ModalFooter>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
 // Upload Modal Component
 interface UploadModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: () => void
 }
 
-const UploadCVModal: React.FC<UploadModalProps> = ({
-  isOpen,
-  onClose,
-  onSuccess,
-}) => {
-  const { t } = useTranslation();
-  const [file, setFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<{ file?: string }>({});
-  const toast = useToast();
-  const uploadCV = useUploadCV();
+const UploadCVModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuccess }) => {
+  const { t } = useTranslation()
+  const [file, setFile] = useState<File | null>(null)
+  const [errors, setErrors] = useState<{ file?: string }>({})
+  const toast = useToast()
+  const uploadCV = useUploadCV()
 
   React.useEffect(() => {
     if (isOpen) {
-      setFile(null);
-      setErrors({});
+      setFile(null)
+      setErrors({})
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   const validate = (): boolean => {
-    const newErrors: { file?: string } = {};
+    const newErrors: { file?: string } = {}
 
     if (!file) {
-      newErrors.file = t('cvs.uploadModal.fileRequired');
+      newErrors.file = t('cvs.uploadModal.fileRequired')
     } else if (file.type !== 'application/pdf') {
-      newErrors.file = t('cvs.uploadModal.onlyPdf');
+      newErrors.file = t('cvs.uploadModal.onlyPdf')
     } else if (file.size > 10 * 1024 * 1024) {
-      newErrors.file = t('cvs.uploadModal.maxSize');
+      newErrors.file = t('cvs.uploadModal.maxSize')
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = () => {
     if (validate() && file) {
-      uploadCV.mutate({ file }, {
-        onSuccess: (data) => {
-          if (data.success) {
+      uploadCV.mutate(
+        { file },
+        {
+          onSuccess: (data) => {
+            if (data.success) {
+              toast({
+                title: t('cvs.toast.uploadedTitle'),
+                description: data.message || t('cvs.toast.uploadedDesc'),
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+              })
+              onSuccess()
+              onClose()
+            }
+          },
+          onError: (error) => {
             toast({
-              title: t('cvs.toast.uploadedTitle'),
-              description: data.message || t('cvs.toast.uploadedDesc'),
-              status: 'success',
+              title: t('cvs.toast.uploadFailTitle'),
+              description: error.message || t('cvs.toast.uploadFailDesc'),
+              status: 'error',
               duration: 5000,
               isClosable: true,
-            });
-            onSuccess();
-            onClose();
-          }
-        },
-        onError: (error) => {
-          toast({
-            title: t('cvs.toast.uploadFailTitle'),
-            description: error.message || t('cvs.toast.uploadFailDesc'),
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          });
-        },
-      });
+            })
+          },
+        }
+      )
     }
-  };
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
@@ -316,9 +307,7 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
-            <Text color="text.secondary">
-              {t('cvs.uploadModal.desc')}
-            </Text>
+            <Text color="text.secondary">{t('cvs.uploadModal.desc')}</Text>
             <FormControl isInvalid={!!errors.file}>
               <FormLabel>{t('cvs.uploadModal.fileLabel')}</FormLabel>
               <Input
@@ -350,38 +339,38 @@ const UploadCVModal: React.FC<UploadModalProps> = ({
         </ModalFooter>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
 // Main Component
 const UserCVPage: React.FC = () => {
-  const toast = useToast();
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
-  const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure();
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const toast = useToast()
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure()
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+  const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
+  const cancelRef = useRef<HTMLButtonElement>(null)
 
-  const [selectedCV, setSelectedCV] = useState<CV | null>(null);
-  const navigate = useNavigate();
-  const { data, isLoading, isError, error } = useUserCVs();
-  const updateCV = useUpdateCV();
-  const deleteCV = useDeleteCV();
+  const [selectedCV, setSelectedCV] = useState<CV | null>(null)
+  const navigate = useNavigate()
+  const { data, isLoading, isError, error } = useUserCVs()
+  const updateCV = useUpdateCV()
+  const deleteCV = useDeleteCV()
 
   const handleEditClick = (cv: CV) => {
-    setSelectedCV(cv);
-    onEditOpen();
-  };
+    setSelectedCV(cv)
+    onEditOpen()
+  }
 
   const handleUploadSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['userCVs'] });
-  };
+    queryClient.invalidateQueries({ queryKey: ['userCVs'] })
+  }
 
   const handleDeleteClick = (cv: CV) => {
-    setSelectedCV(cv);
-    onDeleteOpen();
-  };
+    setSelectedCV(cv)
+    onDeleteOpen()
+  }
 
   const handleUpdate = (data: CVUpdateRequest) => {
     updateCV.mutate(data, {
@@ -392,8 +381,8 @@ const UserCVPage: React.FC = () => {
           status: 'success',
           duration: 5000,
           isClosable: true,
-        });
-        onEditClose();
+        })
+        onEditClose()
       },
       onError: (error) => {
         toast({
@@ -402,10 +391,10 @@ const UserCVPage: React.FC = () => {
           status: 'error',
           duration: 5000,
           isClosable: true,
-        });
+        })
       },
-    });
-  };
+    })
+  }
 
   const handleDelete = () => {
     if (selectedCV) {
@@ -417,8 +406,8 @@ const UserCVPage: React.FC = () => {
             status: 'success',
             duration: 5000,
             isClosable: true,
-          });
-          onDeleteClose();
+          })
+          onDeleteClose()
         },
         onError: (error) => {
           toast({
@@ -427,20 +416,20 @@ const UserCVPage: React.FC = () => {
             status: 'error',
             duration: 5000,
             isClosable: true,
-          });
+          })
         },
-      });
+      })
     }
-  };
+  }
 
-  const cvs = data?.data?.cvs || [];
+  const cvs = data?.data?.cvs || []
 
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
         <Spinner size="xl" />
       </Box>
-    );
+    )
   }
 
   if (isError) {
@@ -454,7 +443,7 @@ const UserCVPage: React.FC = () => {
           </CardBody>
         </Card>
       </Box>
-    );
+    )
   }
 
   return (
@@ -522,8 +511,8 @@ const UserCVPage: React.FC = () => {
                             cv.status === 'processed'
                               ? 'green'
                               : cv.status === 'error'
-                              ? 'red'
-                              : 'yellow'
+                                ? 'red'
+                                : 'yellow'
                           }
                         >
                           {cv.status}
@@ -533,23 +522,12 @@ const UserCVPage: React.FC = () => {
                         <Text fontSize="sm">{formatDate(cv.created_at)}</Text>
                       </Td>
                       <Td>
-                        <HStack spacing={2}>
-                          <IconButton
-                            aria-label={t('cvs.editAriaLabel')}
-                            icon={<EditIcon />}
-                            size="sm"
-                            colorScheme="blue"
-                            variant="ghost"
-                            onClick={() => handleEditClick(cv)}
-                          />
-                          <IconButton
-                            aria-label={t('cvs.deleteAriaLabel')}
-                            icon={<DeleteIcon />}
-                            size="sm"
-                            variant="danger"
-                            onClick={() => handleDeleteClick(cv)}
-                          />
-                        </HStack>
+                        <ListingActionButtons
+                          editLabel={t('cvs.editAriaLabel')}
+                          onEdit={() => handleEditClick(cv)}
+                          deleteLabel={t('cvs.deleteAriaLabel')}
+                          onDelete={() => handleDeleteClick(cv)}
+                        />
                       </Td>
                     </Tr>
                   ))}
@@ -570,11 +548,7 @@ const UserCVPage: React.FC = () => {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        isOpen={isDeleteOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onDeleteClose}
-      >
+      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -610,7 +584,7 @@ const UserCVPage: React.FC = () => {
         onSuccess={handleUploadSuccess}
       />
     </Box>
-  );
-};
+  )
+}
 
-export default UserCVPage;
+export default UserCVPage

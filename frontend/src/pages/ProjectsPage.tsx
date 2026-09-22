@@ -32,7 +32,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react'
-import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons'
+import { AddIcon } from '@chakra-ui/icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -40,6 +40,7 @@ import { useTranslation } from 'react-i18next'
 import { authApi } from '@/api/client'
 import ProjectFormCard, { emptyProject } from '@/components/ProjectFormCard'
 import { GradientButton } from '@/components/ui/GradientButton'
+import { ListingActionButtons } from '@/components/ui/ListingActionButtons'
 import type { ProjectInput } from '@/components/ProjectFormCard'
 
 interface ProjectResponse {
@@ -619,27 +620,14 @@ const ProjectsPage: React.FC = () => {
                         </Box>
                       )}
                     </Box>
-                    <HStack spacing={2} flexShrink={0}>
-                      <GradientButton
-                        size="sm"
-                        height={9}
-                        px={4}
-                        leftIcon={<EditIcon />}
-                        onClick={() => handleEdit(p)}
-                      >
-                        {t('projects.editAriaLabel')}
-                      </GradientButton>
-                      <Button
-                        size="sm"
-                        height={9}
-                        px={4}
-                        leftIcon={<DeleteIcon />}
-                        variant="danger"
-                        onClick={() => handleDelete(p)}
-                      >
-                        {t('projects.delete')}
-                      </Button>
-                    </HStack>
+                    <Box flexShrink={0}>
+                      <ListingActionButtons
+                        editLabel={t('projects.editAriaLabel')}
+                        onEdit={() => handleEdit(p)}
+                        deleteLabel={t('projects.deleteAriaLabel')}
+                        onDelete={() => handleDelete(p)}
+                      />
+                    </Box>
                   </Flex>
                 </Box>
               </motion.div>
