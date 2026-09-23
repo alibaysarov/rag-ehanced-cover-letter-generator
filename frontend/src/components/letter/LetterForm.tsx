@@ -10,6 +10,7 @@ import {
   Switch,
   Text,
   Textarea,
+  Tooltip,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +33,6 @@ interface LetterFormProps {
   onDescriptionChange: (v: string) => void;
   language: string;
   onLanguageChange: (v: string) => void;
-  generationMode: 'ai' | 'template';
-  onGenerationModeChange: (mode: 'ai' | 'template') => void;
   isBusy: boolean;
   onSubmit: () => void;
 }
@@ -116,8 +115,6 @@ export function LetterForm({
   onDescriptionChange,
   language,
   onLanguageChange,
-  generationMode,
-  onGenerationModeChange,
   isBusy,
   onSubmit,
 }: LetterFormProps) {
@@ -221,19 +218,15 @@ export function LetterForm({
             </FormControl>
 
             <Flex align="center" gap={3} fontSize="sm">
-              <Text fontWeight={generationMode === 'template' ? 700 : 400}>
+              <Text fontWeight={700}>
                 {t('autoParse.templates')}
               </Text>
-              <Switch
-                isChecked={generationMode === 'ai'}
-                onChange={(e) => onGenerationModeChange(e.target.checked ? 'ai' : 'template')}
-                isDisabled={isBusy}
-                aria-label={t('autoParse.useAi')}
-              />
-              <Text fontWeight={generationMode === 'ai' ? 700 : 400}>
-                {t('autoParse.useAi')}
-              </Text>
-              <Text color="text.muted" title={t('autoParse.modeHint')}>ⓘ</Text>
+              <Switch isChecked={false} isDisabled aria-label={t('autoParse.useAi')} />
+              <Tooltip label={t('autoParse.aiUnavailable')} hasArrow placement="top">
+                <Text color="text.muted" cursor="help">
+                  {t('autoParse.useAi')} ⓘ
+                </Text>
+              </Tooltip>
             </Flex>
 
             <GradientButton

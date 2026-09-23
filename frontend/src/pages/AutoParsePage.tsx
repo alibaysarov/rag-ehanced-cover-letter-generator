@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Spinner,
   Text,
+  Tooltip,
   useToast,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
@@ -72,7 +73,6 @@ interface ParseSearchBarProps {
 function ParseSearchBar({ isDisabled, isLoading, onSubmit, parsers }: ParseSearchBarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState<GenerationMode>('template');
   const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
   const [selectedParserIds, setSelectedParserIds] = useState<number[]>([]);
   const [initializedSites, setInitializedSites] = useState(false);
@@ -88,7 +88,7 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit, parsers }: ParseSearc
     e.preventDefault();
     const trimmed = query.trim();
     if (!trimmed || !isValidVacancyLimit(vacancyLimit) || selectedParserIds.length === 0) return;
-    onSubmit(trimmed, mode, Number(vacancyLimit), selectedParserIds);
+    onSubmit(trimmed, 'template', Number(vacancyLimit), selectedParserIds);
   };
 
   return (
@@ -151,11 +151,13 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit, parsers }: ParseSearc
           isDisabled={isDisabled || isLoading}
         />
         <Flex mt={4} align="center" gap={3} fontSize="sm">
-          <Text fontWeight={mode === 'template' ? 700 : 400}>{t('autoParse.templates')}</Text>
-          <Switch isChecked={mode === 'ai'} onChange={(e) => setMode(e.target.checked ? 'ai' : 'template')}
-            isDisabled={isDisabled || isLoading} aria-label={t('autoParse.useAi')} />
-          <Text fontWeight={mode === 'ai' ? 700 : 400}>{t('autoParse.useAi')}</Text>
-          <Text color="text.muted" title={t('autoParse.modeHint')}>ⓘ</Text>
+          <Text fontWeight={700}>{t('autoParse.templates')}</Text>
+          <Switch isChecked={false} isDisabled aria-label={t('autoParse.useAi')} />
+          <Tooltip label={t('autoParse.aiUnavailable')} hasArrow placement="top">
+            <Text color="text.muted" cursor="help">
+              {t('autoParse.useAi')} ⓘ
+            </Text>
+          </Tooltip>
         </Flex>
       </form>
     </GlassCard>
@@ -446,9 +448,9 @@ export default function AutoParsePage() {
     startGeneration,
   } = useAutoParse();
   const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('hh');
-  const handleStartParse = async (query: string, mode: GenerationMode, vacancyLimit: number, parserIds: number[]) => {
+  const handleStartParse = async (query: string, _mode: GenerationMode, vacancyLimit: number, parserIds: number[]) => {
     try {
-      await startParse(query, mode, vacancyLimit, parserIds);
+      await startParse(query, 'template', vacancyLimit, parserIds);
       toast({
         title: 'Задача парсинга запущена',
         description: 'Вакансии появятся в списке по мере обработки.',

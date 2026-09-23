@@ -5,7 +5,6 @@ import { useStreamLetter, useStreamTranslate } from '@/hooks/useLetter';
 import LetterForm, { type LetterFormMode } from '@/components/letter/LetterForm';
 import LetterOutput from '@/components/letter/LetterOutput';
 import { TodayStatsCard } from '@/components/ui/TodayStatsCard';
-import type { GenerationMode } from '@/types/letter';
 
 export default function LetterGenerator() {
   const { t } = useTranslation();
@@ -14,7 +13,6 @@ export default function LetterGenerator() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [generateLanguage, setGenerateLanguage] = useState<string>('');
-  const [generationMode, setGenerationMode] = useState<GenerationMode>('template');
 
   const {
     content: streamContent,
@@ -39,9 +37,9 @@ export default function LetterGenerator() {
   const handleSubmit = () => {
     resetTranslate();
     if (mode === 'url') {
-      streamFromUrl({ url, generation_mode: generationMode });
+      streamFromUrl({ url, generation_mode: 'template' });
     } else {
-      streamFromText({ name, description, lang: generateLanguage || undefined, generation_mode: generationMode });
+      streamFromText({ name, description, lang: generateLanguage || undefined, generation_mode: 'template' });
     }
   };
 
@@ -90,8 +88,6 @@ export default function LetterGenerator() {
           onDescriptionChange={setDescription}
           language={generateLanguage}
           onLanguageChange={setGenerateLanguage}
-          generationMode={generationMode}
-          onGenerationModeChange={setGenerationMode}
           isBusy={isBusy}
           onSubmit={handleSubmit}
         />

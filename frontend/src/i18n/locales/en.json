@@ -316,6 +316,7 @@
     "templates": "Use templates",
     "useAi": "Use AI",
     "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. In template mode, each letter is generated automatically as soon as its vacancy is parsed, using prepared phrases, projects and technologies without an AI request.",
+    "aiUnavailable": "AI generation will be available soon",
     "sites": "Sites to parse",
     "sitesHint": "Choose which sites to use for this run",
     "selectAll": "Select all",
