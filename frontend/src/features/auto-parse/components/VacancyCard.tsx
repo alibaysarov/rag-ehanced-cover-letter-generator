@@ -257,10 +257,8 @@ function CompactVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerati
 
 function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPending = false }: VacancyCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [autoGenerate, setAutoGenerate] = useState(false);
   const [isApplied, setIsApplied] = useState(vacancy.is_applied);
   const [isViewed, setIsViewed] = useState(vacancy.is_viewed);
-  const isGenerationPending = isTemplateGenerationPending && !vacancy.is_generated;
 
   const openCard = () => {
     onOpen();
@@ -269,12 +267,6 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
       autoParseApi.markViewed(vacancy.id).catch(() => setIsViewed(false));
     }
   };
-  const generate = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (isGenerationPending) return;
-    setAutoGenerate(true);
-    openCard();
-  };
   const openVacancy = (event: React.MouseEvent) => {
     event.stopPropagation();
     copyLetterOnVacancyOpen(vacancy.cover_letter_text);
@@ -282,6 +274,11 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
       setIsViewed(true);
       autoParseApi.markViewed(vacancy.id).catch(() => setIsViewed(false));
     }
+    window.open(vacancy.url, '_blank', 'noopener,noreferrer');
+  };
+  const openDetails = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    openCard();
   };
   const markApplied = async (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -320,13 +317,13 @@ function HHVacancyCard({ vacancy, generationMode = 'ai', isTemplateGenerationPen
               <Flex mt={1.5} align="center" gap={1.5} color="text.secondary" fontSize="sm"><IconMapPin size={15} stroke={1.8} /><Text>Локация указана в вакансии</Text></Flex>
             </Box>
             <Flex justify="space-between" align={{ base: 'stretch', sm: 'center' }} direction={{ base: 'column', sm: 'row' }} gap={3}>
-              <GradientButton size="md" px={6} onClick={generate} isDisabled={isGenerationPending} leftIcon={<IconSparkles size={16} stroke={2} />}>{vacancy.is_generated ? 'Посмотреть письмо' : isGenerationPending ? 'Письмо готовится автоматически' : 'Сгенерировать'}</GradientButton>
-              <Link href={vacancy.url} isExternal onClick={openVacancy} color="blue.600" fontSize="sm" fontWeight="semibold">Открыть вакансию <IconExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /></Link>
+              <GradientButton size="md" px={6} onClick={openVacancy} leftIcon={<IconExternalLink size={16} stroke={2} />} sx={{ _hover: { backgroundPosition: '0% 0%', boxShadow: '0 6px 20px rgba(0, 123, 255, 0.32)' } }}>Открыть вакансию</GradientButton>
+              <Button variant="link" color="blue.600" fontSize="sm" fontWeight="semibold" onClick={openDetails}>Подробнее</Button>
             </Flex>
           </Flex>
         </Box>
       </Box>
-      <VacancyModal vacancy={vacancy} isOpen={isOpen} onClose={onClose} autoGenerate={autoGenerate && !vacancy.is_generated} generationMode={generationMode} isTemplateGenerationPending={isTemplateGenerationPending} onApplied={() => setIsApplied(true)} />
+      <VacancyModal vacancy={vacancy} isOpen={isOpen} onClose={onClose} generationMode={generationMode} isTemplateGenerationPending={isTemplateGenerationPending} onApplied={() => setIsApplied(true)} />
     </>
   );
 }
