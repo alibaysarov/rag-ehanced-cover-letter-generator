@@ -8,6 +8,7 @@ from pydantic import HttpUrl
 
 from app.dependencies import get_cover_letter_service, get_letter_service
 from app.helper import CurrentUser
+from app.schemas.generation_mode import GenerationMode
 from app.schemas.letter import CVUploadResponse, LetterResponse
 from app.services import LetterService
 from app.services.cover_letter import CoverLetterService
@@ -81,11 +82,12 @@ async def create_letter_from_url(
 async def stream_letter_from_url(
     user: CurrentUser,
     url: str = Form(...),
+    generation_mode: GenerationMode = Form(default=GenerationMode.AI),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
 
     return StreamingResponse(
-        _sse_wrap(cover_letter_service.stream_by_url(url, user)),
+        _sse_wrap(cover_letter_service.stream_by_url(url, user, generation_mode)),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -142,12 +144,15 @@ async def stream_letter_from_text(
     name: str = Form(..., min_length=1, max_length=100),
     description: str = Form(..., min_length=1),
     lang: Optional[str] = Form(None, max_length=50),
+    generation_mode: GenerationMode = Form(default=GenerationMode.AI),
     cover_letter_service: CoverLetterService = Depends(get_cover_letter_service),
 ):
 
     return StreamingResponse(
         _sse_wrap(
-            cover_letter_service.stream_by_text(name, description, user, lang=lang)
+            cover_letter_service.stream_by_text(
+                name, description, user, lang=lang, generation_mode=generation_mode
+            )
         ),
         media_type="text/event-stream",
         headers={

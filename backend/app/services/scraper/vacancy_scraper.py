@@ -7,10 +7,11 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
-from app.helper import get_body_from_page, get_domain_by_url, secure_request_route
+from app.helper import get_body_from_page, secure_request_route
 from app.models import ParserUsage, User
 from app.pw_instances import chromium as chromium_module
 from app.repository.parser_repository import ParserRepository
+from app.schemas.parser import normalize_site_key
 from app.schemas.vacancy.single_vacancy import SingleVacancy
 from app.services.parser_catalog import ParserCatalogService
 from app.services.scraper.parsers.configured import ConfiguredVacancyParser
@@ -49,8 +50,10 @@ class VacancyScrapingService:
             self._session, self._cache
         ).get_catalog(user_id, revision)
         parser_map = {item.site_key: item for item in snapshots}
-        domain = get_domain_by_url(url)
-        snapshot = parser_map.get(domain.lower() if domain else "")
+        # Match the parser by the normalized hostname from the submitted URL.
+        # Parser.base_url is normalized to this same site_key on save.
+        site_key = normalize_site_key(url)
+        snapshot = parser_map.get(site_key)
         usage: ParserUsage | None = None
         if snapshot is not None:
             persisted = await repository.get_owned(snapshot.id, user_id)

@@ -7,6 +7,7 @@ import {
   Input,
   Select,
   Stack,
+  Switch,
   Text,
   Textarea,
 } from '@chakra-ui/react';
@@ -31,6 +32,8 @@ interface LetterFormProps {
   onDescriptionChange: (v: string) => void;
   language: string;
   onLanguageChange: (v: string) => void;
+  generationMode: 'ai' | 'template';
+  onGenerationModeChange: (mode: 'ai' | 'template') => void;
   isBusy: boolean;
   onSubmit: () => void;
 }
@@ -113,6 +116,8 @@ export function LetterForm({
   onDescriptionChange,
   language,
   onLanguageChange,
+  generationMode,
+  onGenerationModeChange,
   isBusy,
   onSubmit,
 }: LetterFormProps) {
@@ -214,6 +219,22 @@ export function LetterForm({
                 ))}
               </Select>
             </FormControl>
+
+            <Flex align="center" gap={3} fontSize="sm">
+              <Text fontWeight={generationMode === 'template' ? 700 : 400}>
+                {t('autoParse.templates')}
+              </Text>
+              <Switch
+                isChecked={generationMode === 'ai'}
+                onChange={(e) => onGenerationModeChange(e.target.checked ? 'ai' : 'template')}
+                isDisabled={isBusy}
+                aria-label={t('autoParse.useAi')}
+              />
+              <Text fontWeight={generationMode === 'ai' ? 700 : 400}>
+                {t('autoParse.useAi')}
+              </Text>
+              <Text color="text.muted" title={t('autoParse.modeHint')}>ⓘ</Text>
+            </Flex>
 
             <GradientButton
               type="submit"

@@ -40,13 +40,17 @@ export interface LetterResponse {
 
 export interface StreamLetterFromUrlRequest {
   url: string;
+  generation_mode?: GenerationMode;
 }
 
 export interface StreamLetterFromTextRequest {
   name: string;
   description: string;
   lang?: string;
+  generation_mode?: GenerationMode;
 }
+
+export type GenerationMode = 'ai' | 'template';
 
 export type StreamStatus = 'idle' | 'parsing' | 'streaming' | 'done' | 'error';
 

@@ -118,6 +118,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
     (req: StreamLetterFromUrlRequest) => {
       const fd = new FormData();
       fd.append('url', req.url);
+      if (req.generation_mode) fd.append('generation_mode', req.generation_mode);
       _stream('url/stream', fd);
     },
     [_stream],
@@ -129,6 +130,7 @@ export function useStreamLetter(): UseStreamLetterReturn {
       fd.append('name', req.name);
       fd.append('description', req.description);
       if (req.lang) fd.append('lang', req.lang);
+      if (req.generation_mode) fd.append('generation_mode', req.generation_mode);
       _stream('text/stream', fd);
     },
     [_stream],

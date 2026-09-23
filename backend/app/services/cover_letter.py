@@ -8,6 +8,7 @@ from app.commands import GenerateCoverCommandLetterHandler, GenerateLetterComman
 from app.models import AutoParsedJob, Project, User
 from app.repository import AutoParseJobRepository, ProjectRepository
 from app.repository.user_repository import UserRepository
+from app.schemas.generation_mode import GenerationMode
 from app.schemas.llm_outputs.relevant_projects import RelevantProject
 from app.services.llm.cover_letter_prompt import CoverLetterPrompt
 from app.services.llm.relevant_projects import RelevantProjectsPrompt
@@ -58,7 +59,12 @@ class CoverLetterService:
         return result.content
 
     async def stream_by_text(
-        self, vacancy_name: str, vacancy_text: str, user: User, lang: str | None = None
+        self,
+        vacancy_name: str,
+        vacancy_text: str,
+        user: User,
+        lang: str | None = None,
+        generation_mode: GenerationMode = GenerationMode.AI,
     ):
         try:
             create_vacancy_dto = {
@@ -78,7 +84,10 @@ class CoverLetterService:
             )
 
             cover_letter_text = await self.generate_by_vacancy(
-                auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
+                auto_parse_job.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                generation_mode=generation_mode,
             )
             print("Cover letter", cover_letter_text)
             async for delta in self._clean_stream(cover_letter_text):
@@ -88,7 +97,12 @@ class CoverLetterService:
             yield "__URL_PARSE_ERROR__"
             return
 
-    async def stream_by_url(self, url: str, user: User):
+    async def stream_by_url(
+        self,
+        url: str,
+        user: User,
+        generation_mode: GenerationMode = GenerationMode.AI,
+    ):
         try:
             single_vacancy = await self.vacancy_scraping_service.parse_single(
                 url, user.id
@@ -109,7 +123,10 @@ class CoverLetterService:
                 **create_vacancy_dto
             )
             cover_letter_text = await self.generate_by_vacancy(
-                auto_parse_job.id, first_name=user.first_name, last_name=user.last_name
+                auto_parse_job.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                generation_mode=generation_mode,
             )
 
             async for delta in self._clean_stream(cover_letter_text):
@@ -126,7 +143,11 @@ class CoverLetterService:
     )
 
     async def generate_by_vacancy(
-        self, vacancy_id: int, first_name: str, last_name: str
+        self,
+        vacancy_id: int,
+        first_name: str,
+        last_name: str,
+        generation_mode: GenerationMode = GenerationMode.AI,
     ) -> str:
 
         command = GenerateLetterCommand(
@@ -134,6 +155,7 @@ class CoverLetterService:
             last_name=last_name,
             vacancy_id=vacancy_id,
             batch_id=None,
+            generation_mode=generation_mode,
         )
 
         cover_letter_text: str = (
