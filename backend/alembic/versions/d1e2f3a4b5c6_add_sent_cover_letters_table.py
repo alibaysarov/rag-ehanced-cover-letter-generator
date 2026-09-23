@@ -29,7 +29,6 @@ def upgrade() -> None:
             sa.Integer(),
             sa.ForeignKey("users.id"),
             nullable=False,
-            index=True,
         ),
         sa.Column("url", sa.Text(), nullable=True),
         sa.Column("job_name", sa.Text(), nullable=True),
