@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
   Badge,
   Box,
+  Checkbox,
   Button,
   Flex,
   Heading,
@@ -17,6 +18,9 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useParserList } from '@/features/search-sites/hooks';
+import type { ParserListItem } from '@/features/search-sites/types';
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList, IconSparkles } from '@tabler/icons-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
@@ -61,20 +65,30 @@ function StatusBadge({ status }: { status: ParsingJobStatus }) {
 interface ParseSearchBarProps {
   isDisabled: boolean;
   isLoading: boolean;
-  onSubmit: (query: string, mode: GenerationMode, vacancyLimit: number) => void;
+  onSubmit: (query: string, mode: GenerationMode, vacancyLimit: number, parserIds: number[]) => void;
+  parsers: ParserListItem[];
 }
 
-function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps) {
+function ParseSearchBar({ isDisabled, isLoading, onSubmit, parsers }: ParseSearchBarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<GenerationMode>('template');
   const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
+  const [selectedParserIds, setSelectedParserIds] = useState<number[]>([]);
+  const [initializedSites, setInitializedSites] = useState(false);
+
+  useEffect(() => {
+    if (!initializedSites && parsers.length > 0) {
+      setSelectedParserIds(parsers.map((parser) => parser.id));
+      setInitializedSites(true);
+    }
+  }, [initializedSites, parsers]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const trimmed = query.trim();
-    if (!trimmed || !isValidVacancyLimit(vacancyLimit)) return;
-    onSubmit(trimmed, mode, Number(vacancyLimit));
+    if (!trimmed || !isValidVacancyLimit(vacancyLimit) || selectedParserIds.length === 0) return;
+    onSubmit(trimmed, mode, Number(vacancyLimit), selectedParserIds);
   };
 
   return (
@@ -104,7 +118,7 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
           </Box>
           <GradientButton
             type="submit"
-            isDisabled={isDisabled || isLoading || !query.trim() || !isValidVacancyLimit(vacancyLimit)}
+            isDisabled={isDisabled || isLoading || !query.trim() || !isValidVacancyLimit(vacancyLimit) || selectedParserIds.length === 0}
             isLoading={isLoading}
             loadingText={t('autoParse.parsing')}
             flexShrink={0}
@@ -112,6 +126,25 @@ function ParseSearchBar({ isDisabled, isLoading, onSubmit }: ParseSearchBarProps
             {t('autoParse.parse')}
           </GradientButton>
         </Flex>
+        <Box mt={4} p={4} bg="surface.raised" borderRadius="xl" borderWidth="1px" borderColor="rgba(226,232,240,0.8)">
+          <Flex justify="space-between" align="center" mb={3} gap={3} wrap="wrap">
+            <Box>
+              <Text fontSize="sm" fontWeight="semibold" color="text.primary">{t("autoParse.sites")}</Text>
+              <Text fontSize="xs" color="text.muted">{t("autoParse.sitesHint")}</Text>
+            </Box>
+            <Flex gap={2}>
+              <Button size="xs" variant="ghost" onClick={() => setSelectedParserIds(parsers.map((parser) => parser.id))} isDisabled={isDisabled || isLoading || parsers.length === 0}>{t("autoParse.selectAll")}</Button>
+              <Button size="xs" variant="ghost" onClick={() => setSelectedParserIds([])} isDisabled={isDisabled || isLoading || parsers.length === 0}>{t("autoParse.clearAll")}</Button>
+            </Flex>
+          </Flex>
+          {parsers.length === 0 ? <Text fontSize="sm" color="text.muted">{t("autoParse.noSites")}</Text> : (
+            <Flex gap={4} wrap="wrap">
+              {parsers.map((parser) => <Checkbox key={parser.id} isChecked={selectedParserIds.includes(parser.id)} onChange={(event) => setSelectedParserIds((current) => event.target.checked ? [...current, parser.id] : current.filter((id) => id !== parser.id))} isDisabled={isDisabled || isLoading} colorScheme="blue">{parser.name || parser.site_key}</Checkbox>)}
+            </Flex>
+          )}
+          {parsers.length > 0 && selectedParserIds.length === 0 && <Text mt={2} fontSize="xs" color="red.500">{t("autoParse.selectAtLeastOne")}</Text>}
+        </Box>
+
         <VacancyLimitControl
           value={vacancyLimit}
           onChange={setVacancyLimit}
@@ -400,6 +433,8 @@ function VacancyList({ vacancies, variant, generationMode, isTemplateGenerationP
 export default function AutoParsePage() {
   const { t } = useTranslation();
   const toast = useToast();
+  const { user } = useAuth();
+  const parsersQuery = useParserList(user?.id ?? 0, 1, 100, { refetchInterval: false });
   const {
     job,
     vacancies,
@@ -411,9 +446,9 @@ export default function AutoParsePage() {
     startGeneration,
   } = useAutoParse();
   const [cardVariant, setCardVariant] = useState<'compact' | 'hh'>('hh');
-  const handleStartParse = async (query: string, mode: GenerationMode, vacancyLimit: number) => {
+  const handleStartParse = async (query: string, mode: GenerationMode, vacancyLimit: number, parserIds: number[]) => {
     try {
-      await startParse(query, mode, vacancyLimit);
+      await startParse(query, mode, vacancyLimit, parserIds);
       toast({
         title: 'Задача парсинга запущена',
         description: 'Вакансии появятся в списке по мере обработки.',
@@ -468,6 +503,7 @@ export default function AutoParsePage() {
             isDisabled={isStarting}
             isLoading={isStarting}
             onSubmit={handleStartParse}
+            parsers={parsersQuery.data?.items ?? []}
           />
         </Box>
 

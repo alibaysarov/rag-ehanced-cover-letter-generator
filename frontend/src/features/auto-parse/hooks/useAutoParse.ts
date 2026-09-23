@@ -17,7 +17,7 @@ interface UseAutoParseReturn {
   job: ParsingJob | null;
   vacancies: AutoParsedJob[];
   isStarting: boolean;
-  startParse: (query: string, mode: GenerationMode, vacancyLimit: number) => Promise<void>;
+  startParse: (query: string, mode: GenerationMode, vacancyLimit: number, parserIds?: number[]) => Promise<void>;
   loadVacanciesForJob: (jobId: number) => Promise<void>;
   // generation
   genState: GenerationState;
@@ -256,10 +256,10 @@ export function useAutoParse(): UseAutoParseReturn {
   }, [closeEventSource, closeGenEventSource]);
 
   const startParse = useCallback(
-    async (query: string, mode: GenerationMode, vacancyLimit: number) => {
+    async (query: string, mode: GenerationMode, vacancyLimit: number, parserIds?: number[]) => {
       setIsStarting(true);
       try {
-        const { parsing_job_id } = await autoParseApi.startParse(query, mode, vacancyLimit);
+        const { parsing_job_id } = await autoParseApi.startParse(query, mode, vacancyLimit, parserIds);
         await queryClient.invalidateQueries({ queryKey: ['parsers'] });
         localStorage.setItem(STORAGE_KEY, String(parsing_job_id));
         setJobId(parsing_job_id);

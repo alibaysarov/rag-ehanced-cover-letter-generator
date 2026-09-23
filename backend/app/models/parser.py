@@ -34,6 +34,14 @@ class Parser(SQLModel, table=True):
     format_url: dict[str, Any] = Field(sa_column=Column(JSONB, nullable=False))
     pagination_start: int = Field(default=0, nullable=False)
     max_pages: int = Field(default=5, nullable=False)
+    extraction_engine: str = Field(default="legacy_js", max_length=32, nullable=False)
+    fetch_mode: str = Field(default="playwright", max_length=32, nullable=False)
+    request_config: dict[str, Any] = Field(
+        default_factory=dict, sa_column=Column(JSONB, nullable=False)
+    )
+    extraction_config: dict[str, Any] | None = Field(
+        default=None, sa_column=Column(JSONB, nullable=True)
+    )
     version: int = Field(default=1, nullable=False)
     created_at: datetime = Field(
         default_factory=datetime.utcnow, sa_column=Column(DateTime, nullable=False)

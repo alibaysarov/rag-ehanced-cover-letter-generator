@@ -51,6 +51,7 @@ class ParsingJobRepository:
         generation_mode: GenerationMode = GenerationMode.AI,
         *,
         vacancy_limit: int | None = None,
+        parser_ids: list[int] | None = None,
     ) -> tuple[ParsingJob, list[ParsingSiteJob]]:
         """Freeze parser snapshots and distribute this run's vacancy budget."""
         if vacancy_limit is not None and vacancy_limit < 1:
@@ -61,15 +62,13 @@ class ParsingJobRepository:
             )
             if user is None:
                 raise LookupError("user not found")
-            parsers = list(
-                (
-                    await session.scalars(
-                        select(Parser)
-                        .where(Parser.user_id == user_id)
-                        .order_by(col(Parser.created_at).desc(), col(Parser.id).desc())
-                    )
-                ).all()
+            parser_query = select(Parser).where(Parser.user_id == user_id)
+            if parser_ids is not None:
+                parser_query = parser_query.where(Parser.id.in_(parser_ids))
+            parser_query = parser_query.order_by(
+                col(Parser.created_at).desc(), col(Parser.id).desc()
             )
+            parsers = list((await session.scalars(parser_query)).all())
             if not parsers:
                 raise ValueError("parsers_empty")
             per_site_limit = (

@@ -1,5 +1,6 @@
 import { authApi } from '@/api/client';
 import type { ParserDetail, ParserInput, ParserListResponse } from './types';
+export interface PreviewResponse { resolved_url: string; fetch_mode: 'http' | 'playwright'; stage: 'list' | 'detail' | 'pagination'; result: unknown; warnings: string[]; timing_ms: number }
 
 export const parserApi = {
   async list(page: number, pageSize: number): Promise<ParserListResponse> {
@@ -19,5 +20,8 @@ export const parserApi = {
   },
   async remove(id: number): Promise<void> {
     await authApi.delete(`/parsers/${id}`);
+  },
+  async preview(payload: { parser: ParserInput; stage: 'list' | 'detail' | 'pagination'; search_text?: string; page?: number; url?: string }): Promise<PreviewResponse> {
+    return (await authApi.post<PreviewResponse>('/parsers/preview', payload)).data;
   },
 };

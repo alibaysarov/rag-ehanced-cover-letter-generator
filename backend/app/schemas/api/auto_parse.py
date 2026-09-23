@@ -15,6 +15,7 @@ class StartParseRequest(BaseModel):
     query: str
     generation_mode: GenerationMode = GenerationMode.AI
     vacancy_limit: int | None = Field(default=None, ge=1, le=1000, strict=True)
+    parser_ids: list[int] | None = Field(default=None, min_length=1)
 
 
 class MarkAppliedRequest(BaseModel):

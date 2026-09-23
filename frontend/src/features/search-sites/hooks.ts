@@ -10,12 +10,12 @@ export const parserKeys = {
   detail: (userId: number, id: number) => ['parsers', userId, 'detail', id] as const,
 };
 
-export const useParserList = (userId: number, page: number, pageSize: number) =>
+export const useParserList = (userId: number, page: number, pageSize: number, options?: { refetchInterval?: number | false }) =>
   useQuery({
     queryKey: parserKeys.list(userId, page, pageSize),
     queryFn: () => parserApi.list(page, pageSize),
     enabled: userId > 0,
-    refetchInterval: 5000,
+    refetchInterval: options?.refetchInterval ?? 5000,
     refetchOnWindowFocus: true,
   });
 

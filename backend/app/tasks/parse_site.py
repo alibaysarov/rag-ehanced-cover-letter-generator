@@ -10,7 +10,7 @@ from app.pubsub.publish_event import publish_event_sync
 from app.repository.parsing_job_repository import ParsingJobRepository
 from app.schemas.api.auto_parse import AutoParsedJobRead, ParsingVacancySavedEvent
 from app.services.auto_generate import maybe_start_template_generation_for_vacancy
-from app.services.scraper.parsers.registry import create_parser
+from app.services.scraper.parsers.runtime_registry import create_runtime
 from app.services.scraper.site_parse_service import SiteParseService
 
 logger = logging.getLogger(__name__)
@@ -51,8 +51,25 @@ async def parse_site(parsing_site_job_id: int) -> None:
     try:
         if claimed.parser_snapshot is None:
             raise ValueError("Parser snapshot is missing")
-        parser = create_parser(claimed.parser_snapshot)
-        async with pw_browser(headless=True) as browser:
+        snapshot = claimed.parser_snapshot
+        needs_browser = snapshot.get("fetch_mode", "playwright") == "playwright"
+        if needs_browser:
+            async with pw_browser(headless=True) as browser:
+                runtime = create_runtime(snapshot, browser)
+                service = SiteParseService(repository, process_saved_vacancy)
+                await asyncio.wait_for(
+                    service.run(
+                        job_id=job_id,
+                        user_id=job.user_id,
+                        site_key=site_key,
+                        query=job.query,
+                        runtime=runtime,
+                        vacancy_limit=claimed.vacancy_limit,
+                    ),
+                    timeout=SITE_PARSE_DEADLINE_SECONDS,
+                )
+        else:
+            runtime = create_runtime(snapshot)
             service = SiteParseService(repository, process_saved_vacancy)
             await asyncio.wait_for(
                 service.run(
@@ -60,8 +77,7 @@ async def parse_site(parsing_site_job_id: int) -> None:
                     user_id=job.user_id,
                     site_key=site_key,
                     query=job.query,
-                    parser=parser,
-                    browser=browser,
+                    runtime=runtime,
                     vacancy_limit=claimed.vacancy_limit,
                 ),
                 timeout=SITE_PARSE_DEADLINE_SECONDS,

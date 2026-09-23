@@ -92,7 +92,11 @@ async def start_parse_test(
     repository = ParsingJobRepository(async_session_maker)
     try:
         parsing_job, site_jobs = await repository.create_job_with_parsers(
-            user.id, body.query, body.generation_mode, vacancy_limit=body.vacancy_limit
+            user.id,
+            body.query,
+            body.generation_mode,
+            vacancy_limit=body.vacancy_limit,
+            parser_ids=body.parser_ids,
         )
     except ValueError as exc:
         if str(exc) == "parsers_empty":

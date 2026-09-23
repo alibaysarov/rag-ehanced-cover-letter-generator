@@ -3,13 +3,23 @@ import inspect
 import logging
 import re
 from collections.abc import Awaitable, Callable
-
-from playwright.async_api import Browser, BrowserContext
+from typing import Protocol
 
 from app.models import AutoParsedJob
 from app.repository.parsing_job_repository import ParsingJobRepository
 from app.schemas.vacancy.vacancy import Vacancy
-from app.services.scraper.parsers.general import GeneralVacancyParser
+
+
+class VacancyParserRuntime(Protocol):
+    async def get_list(self, text: str, job_id: int) -> list[Vacancy]:
+        raise NotImplementedError
+
+    async def parse_single_vacancy(self, vacancy_id: str):
+        raise NotImplementedError
+
+    async def aclose(self) -> None:
+        raise NotImplementedError
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +42,19 @@ class SiteParseService:
         user_id: int,
         site_key: str,
         query: str,
-        parser: GeneralVacancyParser,
-        browser: Browser,
+        runtime: VacancyParserRuntime | None = None,
+        parser=None,
+        browser=None,
         vacancy_limit: int | None = None,
     ) -> None:
+        if runtime is None:
+            if parser is None or browser is None:
+                raise ValueError("runtime is required")
+            runtime = _LegacyCompatibilityRuntime(parser, browser)
         try:
             if vacancy_limit is not None and vacancy_limit < 1:
                 raise ValueError("vacancy_limit must be positive")
-            vacancy_list = await parser.get_list(browser, query, job_id)
+            vacancy_list = await runtime.get_list(query, job_id)
             vacancies = self._unique_vacancies(vacancy_list)
             if vacancy_limit is not None:
                 vacancies = vacancies[:vacancy_limit]
@@ -50,15 +65,13 @@ class SiteParseService:
             )
             raise
 
-        context = await browser.new_context(viewport={"width": 1280, "height": 720})
         semaphore = asyncio.Semaphore(4)
         try:
             results = await asyncio.gather(
                 *[
                     self._process_vacancy(
                         semaphore=semaphore,
-                        context=context,
-                        parser=parser,
+                        runtime=runtime,
                         vacancy=vacancy,
                         job_id=job_id,
                         user_id=user_id,
@@ -69,7 +82,7 @@ class SiteParseService:
                 return_exceptions=True,
             )
         finally:
-            await context.close()
+            await runtime.aclose()
 
         failures = [result for result in results if isinstance(result, Exception)]
         await self._repository.finish_site(
@@ -83,23 +96,33 @@ class SiteParseService:
         self,
         *,
         semaphore: asyncio.Semaphore,
-        context: BrowserContext,
-        parser: GeneralVacancyParser,
+        runtime: VacancyParserRuntime | None = None,
+        context=None,
+        parser=None,
         vacancy: Vacancy,
         job_id: int,
         user_id: int,
         site_key: str,
     ) -> None:
         async with semaphore:
-            page = await context.new_page()
             try:
-                item = await parser.parse_single_vacancy(page, vacancy.vacancy_id)
+                if runtime is not None:
+                    item = await runtime.parse_single_vacancy(vacancy.vacancy_id)
+                else:
+                    assert context is not None and parser is not None
+                    page = await context.new_page()
+                    try:
+                        item = await parser.parse_single_vacancy(
+                            page, vacancy.vacancy_id
+                        )
+                    finally:
+                        await page.close()
                 saved, inserted = await self._repository.save_vacancy(
                     job_id=job_id,
                     site_key=site_key,
                     user_id=user_id,
                     vacancy_id=vacancy.vacancy_id,
-                    url=item.job_url or parser.get_single_url(vacancy.vacancy_id),
+                    url=item.job_url,
                     job_title=self._normalize_text(item.job_title),
                     job_text=self._normalize_text(item.job_text),
                     company_name=(
@@ -118,8 +141,6 @@ class SiteParseService:
             except Exception:
                 await self._repository.record_vacancy_failure(job_id, site_key)
                 raise
-            finally:
-                await page.close()
 
     @staticmethod
     def _unique_vacancies(vacancies: list[Vacancy]) -> list[Vacancy]:
@@ -139,3 +160,30 @@ class SiteParseService:
     def _normalize_text(value: str) -> str:
         """Store compact text: whitespace has no semantic value for the LLM prompt."""
         return re.sub(r"\s+", " ", value).strip()
+
+
+class _LegacyCompatibilityRuntime(VacancyParserRuntime):
+    """Temporary adapter for callers still using the pre-runtime service API."""
+
+    def __init__(self, parser, browser):
+        self.parser = parser
+        self.browser = browser
+        self.context = None
+
+    async def get_list(self, text: str, job_id: int):
+        return await self.parser.get_list(self.browser, text, job_id)
+
+    async def parse_single_vacancy(self, vacancy_id: str):
+        if self.context is None:
+            self.context = await self.browser.new_context()
+        page = await self.context.new_page()
+        try:
+            return await self.parser.parse_single_vacancy(page, vacancy_id)
+        finally:
+            await page.close()
+
+    async def aclose(self):
+        if self.context is None:
+            self.context = await self.browser.new_context()
+        if self.context is not None:
+            await self.context.close()

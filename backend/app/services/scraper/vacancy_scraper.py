@@ -14,6 +14,7 @@ from app.repository.parser_repository import ParserRepository
 from app.schemas.vacancy.single_vacancy import SingleVacancy
 from app.services.parser_catalog import ParserCatalogService
 from app.services.scraper.parsers.configured import ConfiguredVacancyParser
+from app.services.scraper.parsers.runtime_registry import create_runtime
 
 logger = logging.getLogger(__name__)
 SINGLE_PARSE_DEADLINE_SECONDS = 120
@@ -65,16 +66,28 @@ class VacancyScrapingService:
         await self._session.commit()
 
         page = None
+        runtime = None
         try:
-            page = await chromium_module.chromium.new_page()
-            await page.route("**/*", secure_request_route)
-            assert page is not None
 
             async def extract() -> SingleVacancy:
+                nonlocal page, runtime
                 if snapshot is not None:
+                    if (
+                        snapshot.extraction_engine == "selectors_v1"
+                        and snapshot.fetch_mode == "http"
+                    ):
+                        runtime = create_runtime(snapshot)
+                        return await runtime.parse_single_by_url(url)
+                    page = await chromium_module.chromium.new_page()
+                    await page.route("**/*", secure_request_route)
+                    if snapshot.extraction_engine == "selectors_v1":
+                        runtime = create_runtime(snapshot, chromium_module.chromium)
+                        return await runtime.parse_single_by_url(url)
                     return await ConfiguredVacancyParser(snapshot).parse_single_by_url(
                         page, url
                     )
+                page = await chromium_module.chromium.new_page()
+                await page.route("**/*", secure_request_route)
                 body = await get_body_from_page(page, url)
                 return SingleVacancy(job_title="", job_text=body, job_url=url)
 
@@ -91,6 +104,8 @@ class VacancyScrapingService:
                     logger.warning("Vacancy text cache write failed", exc_info=True)
             return result
         finally:
+            if runtime is not None:
+                await runtime.aclose()
             if page is not None:
                 await page.close()
             if usage is not None and usage.id is not None:

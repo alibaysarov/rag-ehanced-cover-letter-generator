@@ -12,9 +12,31 @@ from app.schemas.parser import (
     ParserListItem,
     ParserUpdate,
 )
+from app.schemas.parser_preview import PreviewRequest, PreviewResponse
 from app.services.parser_catalog import ParserCatalogService
+from app.services.parser_preview import run_preview
 
 router = APIRouter()
+
+
+@router.post("/preview", response_model=PreviewResponse)
+async def preview_parser(payload: PreviewRequest, user: CurrentUser):
+    try:
+        return await run_preview(payload)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422, detail={"code": "preview_validation", "message": str(exc)}
+        ) from exc
+    except TimeoutError as exc:
+        raise HTTPException(
+            status_code=504,
+            detail={"code": "preview_timeout", "message": "Preview timed out"},
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={"code": "preview_failed", "message": str(exc)[:200]},
+        ) from exc
 
 
 def error_detail(code: str, message: str) -> dict[str, str]:

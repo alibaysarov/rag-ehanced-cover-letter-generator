@@ -315,12 +315,18 @@
     "employerLink":"Employer site",
     "templates": "Use templates",
     "useAi": "Use AI",
-    "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. In template mode, each letter is generated automatically as soon as its vacancy is parsed, using prepared phrases, projects and technologies without an AI request."
+    "modeHint": "With AI enabled, generation starts from a separate button and uses your vacancy and projects. In template mode, each letter is generated automatically as soon as its vacancy is parsed, using prepared phrases, projects and technologies without an AI request.",
+    "sites": "Sites to parse",
+    "sitesHint": "Choose which sites to use for this run",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
+    "noSites": "No search sites configured",
+    "selectAtLeastOne": "Select at least one site"
   },
   "searchSites": {
     "title": "Search sites", "subtitle": "Manage your personal vacancy sources", "newTitle": "Add site", "editTitle": "Edit site", "add": "Add site", "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel", "empty": "No sites yet", "loadError": "Could not load sites", "saveError": "Could not save site", "deleteError": "Could not delete site", "confirmDelete": "Delete site “{{name}}”?", "inUse": "In use", "cannotDelete": "Wait for parsing to finish", "editInUse": "Changes apply to future runs. Current parsing uses the previous settings.", "paginationOn": "Pagination enabled", "paginationOff": "No pagination", "previous": "Previous", "next": "Next", "addParam": "Add parameter",
-    "sections": { "main": "Main", "search": "Search", "pagination": "Pagination", "extraction": "Extraction" },
-    "fields": { "name": "Name", "baseUrl": "Search URL", "singleUrl": "Vacancy URL template", "urlTemplate": "URL template", "queryParams": "Query parameters", "hasPagination": "Visit multiple pages", "paginationStart": "First page number", "maxPages": "Maximum pages" },
+    "sections": { "main": "Main", "search": "Search", "pagination": "Pagination", "extraction": "Extraction", "mode": "Parser mode" },
+    "fields": { "name": "Name", "baseUrl": "Search URL", "singleUrl": "Vacancy URL template", "urlTemplate": "URL template", "queryParams": "Query parameters", "hasPagination": "Visit multiple pages", "paginationStart": "First page number", "maxPages": "Maximum pages", "extractionEngine": "Extraction method", "selectorsEngine": "CSS selectors", "legacyEngine": "JavaScript (legacy)", "fetchMode": "Page loading", "http": "HTTP (faster)", "playwright": "Playwright", "itemSelector": "Vacancy card CSS selector" },
     "hints": {
       "vacancyId": "The {vacancy_id} placeholder is required",
       "templates": "Use {base_url}, {text}, and {page}",
