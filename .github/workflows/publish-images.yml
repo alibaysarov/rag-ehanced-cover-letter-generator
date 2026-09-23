@@ -52,3 +52,7 @@ jobs:
           build-args: ${{ matrix.build_args }}
           push: true
           tags: |
+            ghcr.io/alibaysarov/cover-letter-${{ matrix.name }}:latest
+            ghcr.io/alibaysarov/cover-letter-${{ matrix.name }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
