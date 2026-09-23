@@ -51,6 +51,26 @@ AI-powered cover letter generator using Retrieval-Augmented Generation (RAG) and
 
 The frontend is available at http://localhost:5173 and the backend at http://localhost:8000.
 
+### Seed parser configurations
+
+After registering a user and applying migrations, you can fill that user's parser list from the bundled seed CSV:
+
+```bash
+docker compose --env-file backend/.env -f backend/docker-compose.local.yml exec backend \
+  uv run python -m scripts.seed_parsers --email <USER_EMAIL>
+```
+
+The default CSV is `backend/seed_data/parsers.csv`. It contains parser configurations for `geekjob.ru`, `career.habr.com`, and `hh.ru`. The seeder validates each row using the same parser schema as the API, assigns all imported parsers to the selected user, and skips existing parsers with the same `site_key`, so it is safe to run more than once.
+
+Instead of `--email`, you can pass `--user-id <USER_ID>`. Validate the CSV without changing the database:
+
+```bash
+docker compose --env-file backend/.env -f backend/docker-compose.local.yml exec backend \
+  uv run python -m scripts.seed_parsers --email <USER_EMAIL> --dry-run
+```
+
+To use another export, pass its path with `--csv`. When running outside Docker, execute the same script from `backend` with `uv run python -m scripts.seed_parsers ...` and a working `DATABASE_URL`.
+
 To stop the stack:
 
 ```bash

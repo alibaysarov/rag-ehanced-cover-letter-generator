@@ -1,0 +1,93 @@
+"id","user_id","name","site_key","base_url","single_url","has_pagination","evaluate_vacancy_list","evaluate_vacancy_page","evaluate_pagination","format_url","pagination_start","max_pages","version","created_at","updated_at","extraction_engine","fetch_mode","request_config","extraction_config"
+2,1,geekjob.ru,geekjob.ru,https://geekjob.ru/vacancies,https://geekjob.ru/vacancy/{vacancy_id},false,"'
+            () => [...document.querySelectorAll('ul.collection.serp-list li')]
+                    .map(v => {
+                        const elem = v.querySelector('p.truncate.vacancy-name a')
+                        const title = elem?.textContent || null;
+                        const link = elem?.href || null;
+                        const vacancy_id = link?.match(/\/vacancy\/([^/?#]+)/)?.[1] || null;
+
+                        return { title, link, vacancy_id };
+                    })
+                    .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
+        ","'
+        ()=>{
+            const job_title = (
+                document.querySelector('h1')?.textContent?.trim() ||
+                document.querySelector('main h1')?.textContent?.trim() ||
+                ''
+            );
+
+            const job_text = (
+                document.querySelector('article')?.textContent?.trim() ||
+                document.querySelector('[class*=""description""]')?.textContent?.trim() ||
+                document.body?.textContent?.trim() ||
+                ''
+            );
+
+            return {
+                job_title,
+                job_text,
+            }
+        }
+        ","'
+        () => [...document.querySelectorAll('[data-qa=""pager-page""]')]
+                .map(item => item.textContent?.trim() || null)
+                .filter(v => v != null)
+        ","{""query_params"": {""qs"": ""{text}"", ""page"": ""{page}""}, ""url_template"": ""{base_url}""}",0,5,1,2026-09-19 00:36:49.686,2026-09-19 00:36:49.686,legacy_js,playwright,{},""
+3,1,habr career,career.habr.com,https://career.habr.com/vacancies,https://career.habr.com/vacancies/{vacancy_id},true,"()=> {
+
+const list = document.querySelectorAll('.vacancy-card');
+const items = [...list].map(card=>{
+    const link = card.querySelector('a')?.href || null;
+    const vacancy_id = link?.match(/\/vacancies\/(\d+)/)?.[1] || null;
+    const title = card.querySelector('a.vacancy-card__title-link').innerText
+    return {
+        link, vacancy_id,title
+    }
+})
+return items;
+
+}","()=>{
+const job_title = document.querySelector("".page-title__title"");
+
+const job_text = document.querySelector("".vacancy-description__text"");
+return {
+job_title:job_title?.innerText ??'',
+job_text:job_text?.innerText ?? ''
+}
+}","()=>{
+
+const items = document.querySelectorAll('.with-pagination__pages a.with-pagination__page')
+
+const list = [...items]
+    .map(page=>page?.innerText || null)
+    .filter(e=>e!=null);
+return list;
+}","{""query_params"": {""q"": ""{text}"", ""page"": ""{page}""}, ""url_template"": ""{base_url}""}",1,5,2,2026-09-19 01:13:44.069,2026-09-21 10:30:18.535,legacy_js,playwright,{},""
+1,1,hh.ru,hh.ru,https://hh.ru/search/vacancy,https://hh.ru/vacancy/{vacancy_id},true,"'
+        
+            () => [...document.querySelectorAll('[data-qa^=vacancy-serp__vacancy]')]
+                    .map(v => {
+                        const title = v.querySelector('[data-qa=serp-item__title-text]')?.textContent || null;
+                        
+                        const link = v.querySelector('a')?.href || null;
+                        const vacancy_id = link?.match(/\/vacancy\/(\d+)/)?.[1] || null;
+
+                        return { title, link, vacancy_id };
+                    })
+                    .filter(({ title, vacancy_id, link }) => title && vacancy_id && link)
+        ","'
+        ()=>{
+            const job_title = document.querySelector('[data-qa=""vacancy-title""]');
+            const job_text = document.querySelector('[data-qa=""vacancy-description""]');
+            return {
+                job_title?.innerText??'',
+                job_text?.innerText??'',
+            }
+        }
+        ","'
+        () => [...document.querySelectorAll('[data-qa=""pager-page""]')]
+                .map(item => item.textContent?.trim() || null)
+                .filter(v => v != null)
+        ","{""query_params"": {""page"": ""{page}"", ""text"": ""{text}""}, ""url_template"": ""{base_url}""}",0,5,4,2026-09-19 00:36:49.686,2026-09-23 12:56:02.810,selectors_v1,http,"{""headers"": {}, ""playwright"": {""wait_until"": ""domcontentloaded"", ""scroll_to_bottom"": false, ""wait_for_selector"": null, ""post_load_delay_ms"": 0}, ""max_retries"": 2, ""timeout_seconds"": 20, ""retry_base_delay_seconds"": 0.5}","{""list"": {""fields"": {""link"": {""source"": {""kind"": ""selector"", ""extract"": ""attribute"", ""attribute"": ""href"", ""selectors"": [""a[data-qa='serp-item__title']""], ""absolute_url"": true}, ""required"": true, ""normalize"": {""strip"": true, ""collapse_whitespace"": false}, ""transforms"": []}, ""title"": {""source"": {""kind"": ""selector"", ""extract"": ""text"", ""attribute"": null, ""selectors"": [""[data-qa=\""serp-item__title-text\""]""], ""absolute_url"": false}, ""required"": true, ""normalize"": {""strip"": true, ""collapse_whitespace"": true}, ""transforms"": []}, ""vacancy_id"": {""source"": {""kind"": ""field"", ""field"": ""link""}, ""required"": true, ""normalize"": {""strip"": true, ""collapse_whitespace"": false}, ""transforms"": [{""kind"": ""regex"", ""group"": 1, ""pattern"": ""vacancy\\/(\\d+)""}]}}, ""item_selector"": ""[data-qa='vacancy-serp__vacancy']""}, ""detail"": {""fields"": {""job_text"": {""source"": {""kind"": ""selector"", ""extract"": ""text"", ""attribute"": null, ""selectors"": ["".vacancy-description""], ""absolute_url"": false}, ""required"": true, ""normalize"": {""strip"": true, ""collapse_whitespace"": true}, ""transforms"": []}, ""job_title"": {""source"": {""kind"": ""selector"", ""extract"": ""text"", ""attribute"": null, ""selectors"": [""[data-qa=\""vacancy-title\""]""], ""absolute_url"": false}, ""required"": true, ""normalize"": {""strip"": true, ""collapse_whitespace"": true}, ""transforms"": []}}}, ""pagination"": {""enabled"": true, ""extract"": ""text"", ""attribute"": null, ""selectors"": [""[data-qa=\""pager-page\""]""], ""transforms"": [{""kind"": ""regex"", ""group"": 0, ""pattern"": ""\\d+""}]}, ""schema_version"": 1}"
