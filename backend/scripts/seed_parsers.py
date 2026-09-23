@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import csv
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -105,12 +106,34 @@ def read_rows(csv_path: Path) -> list[tuple[int, dict[str, str]]]:
         return [(line_number, row) for line_number, row in enumerate(reader, start=2)]
 
 
+def upgrade_parser(existing: Parser, incoming: Parser) -> None:
+    for field in (
+        "name",
+        "base_url",
+        "single_url",
+        "has_pagination",
+        "evaluate_vacancy_list",
+        "evaluate_vacancy_page",
+        "evaluate_pagination",
+        "format_url",
+        "pagination_start",
+        "max_pages",
+        "extraction_engine",
+        "fetch_mode",
+        "request_config",
+        "extraction_config",
+    ):
+        setattr(existing, field, getattr(incoming, field))
+    existing.version += 1
+    existing.updated_at = datetime.utcnow()
+
+
 async def seed(
     csv_path: Path,
     user_id: int | None,
     email: str | None,
     dry_run: bool,
-) -> tuple[int, int]:
+) -> tuple[int, int, int]:
     rows = read_rows(csv_path)
     async with async_session_maker() as session:
         user = (
@@ -123,23 +146,33 @@ async def seed(
             raise ValueError(f"user {identity} does not exist")
         user_id = user.id
 
-        existing_site_keys = set(
-            (
-                await session.scalars(
-                    select(Parser.site_key).where(Parser.user_id == user_id)
-                )
+        existing_parsers = {
+            parser.site_key: parser
+            for parser in (
+                await session.scalars(select(Parser).where(Parser.user_id == user_id))
             ).all()
-        )
+        }
         pending_site_keys: set[str] = set()
         parsers: list[Parser] = []
+        updated = 0
         skipped = 0
 
         for row_number, row in rows:
             parser = row_to_parser(row, user_id, row_number)
-            if (
-                parser.site_key in existing_site_keys
-                or parser.site_key in pending_site_keys
-            ):
+            existing = existing_parsers.get(parser.site_key)
+            if existing is not None:
+                if (
+                    parser.extraction_engine == "selectors_v1"
+                    and existing.extraction_engine != "selectors_v1"
+                ):
+                    if not dry_run:
+                        upgrade_parser(existing, parser)
+                        user.parsers_revision += 1
+                    updated += 1
+                else:
+                    skipped += 1
+                continue
+            if parser.site_key in pending_site_keys:
                 skipped += 1
                 continue
             pending_site_keys.add(parser.site_key)
@@ -149,7 +182,7 @@ async def seed(
             session.add_all(parsers)
             await session.commit()
 
-        return len(parsers), skipped
+        return len(parsers), updated, skipped
 
 
 def parse_args() -> argparse.Namespace:
@@ -182,9 +215,14 @@ def parse_args() -> argparse.Namespace:
 
 async def main() -> None:
     args = parse_args()
-    created, skipped = await seed(args.csv, args.user_id, args.email, args.dry_run)
+    created, updated, skipped = await seed(
+        args.csv, args.user_id, args.email, args.dry_run
+    )
     action = "would import" if args.dry_run else "imported"
-    print(f"{action} {created} parser(s); skipped {skipped} existing parser(s)")
+    print(
+        f"{action} {created} parser(s); updated {updated}; "
+        f"skipped {skipped} existing parser(s)"
+    )
 
 
 if __name__ == "__main__":
